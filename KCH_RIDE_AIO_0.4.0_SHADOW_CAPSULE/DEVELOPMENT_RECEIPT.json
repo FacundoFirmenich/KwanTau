@@ -1,0 +1,83 @@
+{
+  "canonical_principle": "No run. No implant. Ride.",
+  "claim_ceiling": "SOFTWARE_REFERENCE_VALIDATION_NOT_PRODUCTION_SECURITY_OR_GENERAL_INTELLIGENCE_EVIDENCE",
+  "evidence": {
+    "browser_extension_files": 5,
+    "cli_commands": 47,
+    "daemon_endpoints_documented": 39,
+    "daemon_endpoints_implemented": 39,
+    "demo_receipt_sha256": "fa64756be0e6dfba10651f5decb58121eb8354a522d241ffe679e291a187e3d0",
+    "documentation_files": 17,
+    "json_schemas": 13,
+    "python_modules": 22,
+    "sbom_sha256": "38c752d5656cd725dfd63358a61d2798048e4e7f2e26d648375cede4d04ca186",
+    "test_modules": 7,
+    "unit_tests": 34,
+    "validation_checks": 13,
+    "validation_report_sha256": "d3466b29eed0c0134fe5b89b37e189d8313026f2838b3a523f45cfa91c27ce42",
+    "validation_result": "PASS",
+    "wheel_sha256": "efdb1e088e3b401dbb50b5002777396d0c5b1535589077e74d4fe9dcb18a8b24"
+  },
+  "generated_at": "2026-10-08T17:26:50.219931+00:00",
+  "github_shadow_target": {
+    "base_sha": "5bcbbcf6fdd90ff1cc9c84f4cac325e0a12292c0",
+    "branch": "ride/aio-0.4.0-shadow",
+    "main_modified": false,
+    "promotion": "NONE",
+    "repository": "FacundoFirmenich/KwanTau"
+  },
+  "lineage": [
+    {
+      "artifact": "kwan_country_world_rfc0.zip",
+      "sha256": "33734023dca9165c0e85e4350218333cc47a693adacd3356c3f7d1923308c408"
+    },
+    {
+      "artifact": "kwantau_dos_rfc1.zip",
+      "sha256": "b78fbf95fc6af8c7c9f8086bea55da7c046ef024fe060e4dc363097c817d9e23"
+    },
+    {
+      "artifact": "kwantau_dos_learning_rfc2.zip",
+      "sha256": "6a3233cc5f737aa2d7ad778ee98ed3fde1be6115ee08b88025a113d5c6288602"
+    }
+  ],
+  "materialized": {
+    "chromium_mv3_surface_no_content_scripts": true,
+    "country_world_conservative_context": true,
+    "detachable_surfaces": true,
+    "encrypted_signed_portability_without_authority_transfer": true,
+    "explicit_future_only_personal_learning": true,
+    "hoq_scheduler_and_fenced_worker": true,
+    "kch_default_deny_and_bounded_leases": true,
+    "loopback_daemon_and_openapi": true,
+    "observer_jarvis_proposals": true,
+    "parametric_training": "NOT_CONFIGURED_FAIL_CLOSED",
+    "ride_lifecycle": true,
+    "sqlite_wal_event_spine_outbox_receipts": true,
+    "sweetbox_zero_authority": true,
+    "truqueplace_verification_and_quarantine": true
+  },
+  "not_claimed": [
+    "compiled Chromium fork",
+    "native E2/E3 OS isolation",
+    "LLM weight training",
+    "live multi-device synchronization",
+    "operational Telegram integration",
+    "universal exactly-once external effects",
+    "empirical real-user intelligence improvement",
+    "production security"
+  ],
+  "release": "KwanTau DOS Ride AIO 0.4.0",
+  "schema": "kwantau.development.receipt.v1",
+  "software_fixture_results": {
+    "authority_transfer": 0,
+    "event_chain_valid": true,
+    "future_only_learning_observed": true,
+    "hoq_task_completed_through_kch": true,
+    "imported_active_leases": 0,
+    "imported_state": "DETACHED",
+    "jarvis_authority_granted": false,
+    "sqlite_integrity_valid": true,
+    "sweetbox_authority_inheritance": 0,
+    "truqueplace_activated": false
+  }
+}
