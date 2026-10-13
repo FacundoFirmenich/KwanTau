@@ -1,0 +1,100 @@
+name: KwanTau2DOS v0.14 external Component Model vector
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - kwan/integral-v0.14-shadow
+    paths:
+      - "kwan/v0.14/ci/**"
+      - ".github/workflows/kwantau2dos-v014-component-vector.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kwantau2dos-v014-component-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  material-component-vector:
+    name: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            platform: LINUX_X86_64_GITHUB_HOSTED
+            url: https://github.com/bytecodealliance/wasmtime/releases/download/v49.0.2/wasmtime-v49.0.2-x86_64-linux.tar.xz
+            sha256: a4d6e9e3a5a60f527cf7793d674c48930c80c2e8977995b8a275cad3254b9322
+            kind: tar.xz
+          - os: windows-2025
+            platform: WINDOWS_X86_64_GITHUB_HOSTED
+            url: https://github.com/bytecodealliance/wasmtime/releases/download/v49.0.2/wasmtime-v49.0.2-x86_64-windows.zip
+            sha256: c95a3925acde6398808baabe5ad13d0b1df02b004bc256c00cf8e2a36daccea8
+            kind: zip
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Download and verify pinned Wasmtime
+        shell: pwsh
+        env:
+          ENGINE_URL: ${{ matrix.url }}
+          ENGINE_SHA256: ${{ matrix.sha256 }}
+          ENGINE_KIND: ${{ matrix.kind }}
+        run: |
+          @'
+          import hashlib
+          import os
+          import pathlib
+          import shutil
+          import tarfile
+          import urllib.request
+          import zipfile
+
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'kwantau-wasmtime'
+          root.mkdir(parents=True, exist_ok=True)
+          archive = root / ('engine.zip' if os.environ['ENGINE_KIND'] == 'zip' else 'engine.tar.xz')
+          with urllib.request.urlopen(os.environ['ENGINE_URL'], timeout=120) as source, archive.open('wb') as target:
+              shutil.copyfileobj(source, target)
+          actual = hashlib.sha256(archive.read_bytes()).hexdigest()
+          if actual != os.environ['ENGINE_SHA256']:
+              raise SystemExit(f'Wasmtime archive SHA-256 mismatch: {actual}')
+          extract = root / 'extract'
+          extract.mkdir(exist_ok=True)
+          if os.environ['ENGINE_KIND'] == 'zip':
+              with zipfile.ZipFile(archive) as bundle:
+                  bundle.extractall(extract)
+              candidates = list(extract.rglob('wasmtime.exe'))
+          else:
+              with tarfile.open(archive, mode='r:xz') as bundle:
+                  bundle.extractall(extract, filter='data')
+              candidates = [path for path in extract.rglob('wasmtime') if path.is_file()]
+          if len(candidates) != 1:
+              raise SystemExit(f'expected one Wasmtime binary, found {len(candidates)}')
+          engine = candidates[0].resolve()
+          if os.name != 'nt':
+              engine.chmod(engine.stat().st_mode | 0o111)
+          pathlib.Path('engine-path.txt').write_text(str(engine), encoding='utf-8')
+          print(engine)
+          '@ | python -
+      - name: Execute exact material component vector
+        shell: pwsh
+        env:
+          KWAN_PLATFORM: ${{ matrix.platform }}
+        run: |
+          $engine = Get-Content engine-path.txt -Raw
+          python kwan/v0.14/ci/run_component_vector.py `
+            --engine $engine.Trim() `
+            --contract kwan/v0.14/ci/operator-contract.json `
+            --output "kwan/v0.14/ci/evidence/$env:KWAN_PLATFORM.json" `
+            --platform $env:KWAN_PLATFORM
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kwantau2dos-v014-${{ matrix.platform }}
+          path: kwan/v0.14/ci/evidence/${{ matrix.platform }}.json
+          if-no-files-found: error
