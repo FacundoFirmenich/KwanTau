@@ -16,53 +16,82 @@ This branch is a governed staging surface for migration into the canonical repos
 - KwanBlocks has authority ceiling `NONE`.
 - Sweetbox and CreaLabs remain `SHADOW` unless explicitly promoted through KCH.
 
-## Current reconciled release
+## Current release
 
-- Release: **KwanTau2DOS v0.13.0-alpha.2 — lineage reconciliation**
-- Release commit: `e5d6f72fecf43e892b982a0adef956919f4ab3e1`
-- Tested commit: `c5855b3893760e72658fe56e84e45801a95fc136`
-- Two-parent merge: `41e11e04d554df023ab7a6df255efd4abd536949`
-- Parent A: `7210e8000e5ee20b692458fd2f2930833bce6014`
-- Parent B: `4fca70ff36c0b050d22ad8d4787ce44df0bf0992`
-- Exact common predecessor: `a080c433b85278dcec61518df38aab108db49abe`
-- Tests: **102/102 PASS**
-- Source / clean ZIP / clean bundle clone: **PASS**
-- Logical files: `278`
-- Logical tree SHA-256: `ed370b838cd411a408d86978f82ca6c4a4f75e8ac677d2ad6d7a0959688c84eb`
-- Git bundle SHA-256: `23ed6fed12c623b04889d33deb3c78d273bc9cc92d01ad3b443bed638bade95e`
-- Release ZIP SHA-256: `8befe7553773ae61e3f3472388942458ab3c4a0e27b843175bdf12a7a9d8c155`
-- Delivery SHA-256: `ee12907e9896d2fa9f5aa86c318d150fd40a35c7b93d389c863dd2f07d796642`
+- Release: **KwanTau2DOS v0.14.0-alpha.1 — Material Component and Broker Fabric**
+- Release commit: `6575b814178130c115bfce61c0a215416248f3ff`
+- Predecessor: `e5d6f72fecf43e892b982a0adef956919f4ab3e1`
+- Preserved two-parent merge: `41e11e04d554df023ab7a6df255efd4abd536949`
+- Tests: **117/117 PASS** in source, clean ZIP and clean bundle clone
+- Logical files: `305`
+- Logical tree SHA-256: `3d83278304d2f5932647963d4aeb8c17fa85112087103cb80482dc0a1f191496`
+- Git bundle SHA-256: `a4ea89c4d04aea8151eb39212bcd66a8ceff611b00783e1978c02321b73d7b37`
+- Release ZIP SHA-256: `4f9787362f9fdcad6dd3b8bb9ae21bf9903523a4b442c84211b0af8ba34f297e`
+- Delivery SHA-256: `f5e2895f42e1728a6c39f7e67cfaec99351726f64af153f80b1511225e54e11a`
 
-## Reconciliation result
+## Material result
 
-The two independently sealed v0.13 candidates were not aliases. Alpha.2 preserves both histories and integrates their non-conflicting capabilities explicitly:
+v0.14 connects the reconciled operator contract to a four-part operational boundary:
 
-- atomic lease finalisation and validation before reservation;
-- provenance-bound signatures;
-- content-addressed operator artifacts;
-- portable logical `kwan://` resources;
-- deny, loopback-only and exact allowlist network declarations;
-- opaque-handle-only secret declarations;
-- parsed and hashed WIT contracts;
-- mandatory baseline, candidate and negative-control matrices;
-- KwanBlocks reconciliation receipts with authority ceiling `NONE`.
+```text
+ComponentExecutionContext
+→ pinned Wasmtime Component Model adapter
+→ separately leased filesystem/network/KwanMe brokers
+→ resource, interruption and effect receipts
+```
 
-No winner was inferred from test count, file count or recency. Registration, signature, assessment, conformance and a favourable matrix verdict remain distinct from authority, execution and promotion.
+Material additions:
+
+- schema-v12 contexts, runs, logical-resource bindings and broker operations;
+- content-addressed component artifacts and engine hashes;
+- WIT-bound WAVE scalar invocation;
+- exact `kwan://` filesystem grants with traversal and symlink rejection;
+- DENY, LOOPBACK_ONLY and literal-IP allowlist network mediation;
+- opaque one-shot KwanMe secret handles outside model and component context;
+- CPU, wall, RSS, stdout/stderr and interruption receipts;
+- fail-closed recovery: incomplete effectful operations become `UNCERTAIN` and are never replayed;
+- KwanBlocks evidence with authority ceiling `NONE`;
+- fourteen runtime services while preserving the nineteen-component integral map.
+
+## External Component Model evidence
+
+GitHub Actions run `38464386346` executed official pinned Wasmtime `49.0.2` on Ubuntu 24.04 and Windows Server 2025. Both jobs verified the official archive SHA-256, executed the exact zero-authority component and observed:
+
+```text
+add(17, 25) = 42
+```
+
+- Linux job: `115527435903`; artifact `11848276249`; artifact digest `sha256:9b4acfe1abad3a6d9708981444d44effd6ba838e867199ec7c06cb1662618881`
+- Windows job: `115527436171`; artifact `11848396241`; artifact digest `sha256:5b166e8792d67b07fa5ced1565fb51ba88796b887d94ab67c1082c03510e5cf5`
+
+This demonstrates portability of the exact component vector. It does **not** demonstrate that the complete Python broker fabric ran externally on both hosts.
+
+## Claim boundary
+
+Not demonstrated:
+
+- production sandbox hardening;
+- complete Wasmtime-plus-broker integration on Linux and Windows;
+- delegated cgroup v2, dedicated seccomp/Landlock or Windows AppContainer;
+- hostname DNS pinning and anti-rebinding;
+- hardware-backed KwanMe custody or strong Python-memory erasure;
+- cross-store atomicity for every broker effect;
+- automatic adjudication of `UNCERTAIN` effects;
+- ACTIVE readiness or scientific superiority.
 
 ## Repository state
 
 The existing `FacundoFirmenich/KwanTau` repository preserves an OpenClaw-derived history and is **not** the canonical final container for this corpus. This branch remains an additive SHADOW staging surface. `main` remains untouched and this branch must not be merged as a substitute for the canonical repository.
 
-The connected GitHub interface can write to existing repositories but does not expose account-level repository creation or rename. A publication script and complete Git bundle are sealed for `FacundoFirmenich/KwanTau2DOS`. Once that repository exists, the reconciled history can be pushed without reconstructing or rewriting either parent lineage.
+A complete, reproducible Git bundle and publication script are sealed for `FacundoFirmenich/KwanTau2DOS`. Once that repository exists, v0.14 can be pushed without reconstructing or rewriting the reconciled lineage.
 
 ## Next legitimate gate
 
-`v0.14 — Material Component and Broker Fabric`:
+`v0.15 — Brokered Component Imports and Effect Adjudication`:
 
-1. material Wasmtime Component Model execution against the WIT world;
-2. mediated filesystem capabilities instead of static host-path projection;
-3. exact network grants and request budgets;
-4. KwanMe opaque secret-use handles outside model context;
-5. per-run CPU, RAM, I/O and interruption receipts;
-6. preservation of outputs and adverse evidence in KwanBlocks;
-7. independent Linux and Windows enforcement validation.
+1. bind WIT imports directly to exact broker capabilities;
+2. execute the complete component-broker integration under pinned Wasmtime in CI;
+3. materialise DNS pinning and request-level network receipts;
+4. adjudicate or compensate `UNCERTAIN` effects without replay or authority reissue;
+5. add Linux cgroup/seccomp/Landlock and Windows Job Object/AppContainer adapters;
+6. link CreaLabs matrix outputs to component-run resource evidence without creating promotion or scientific authority.
