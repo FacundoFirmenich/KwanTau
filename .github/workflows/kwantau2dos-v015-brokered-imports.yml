@@ -1,0 +1,97 @@
+name: KwanTau2DOS v0.15 brokered Component imports
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - kwan/integral-v0.15-shadow
+    paths:
+      - "rust/kwan-component-import-host/**"
+      - ".github/workflows/kwantau2dos-v015-brokered-imports.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kwantau2dos-v015-brokered-imports-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  brokered-import-host:
+    name: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            platform: LINUX_X86_64_GITHUB_HOSTED
+          - os: windows-2025
+            platform: WINDOWS_X86_64_GITHUB_HOSTED
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --version
+          cargo --version
+      - name: Generate exact lockfile and build pinned host
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo generate-lockfile --manifest-path rust/kwan-component-import-host/Cargo.toml
+          cargo build --locked --release --manifest-path rust/kwan-component-import-host/Cargo.toml
+      - name: Execute brokered Component Model imports
+        shell: bash
+        env:
+          KWAN_PLATFORM: ${{ matrix.platform }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os, pathlib, subprocess, sys
+          root = pathlib.Path.cwd()
+          suffix = '.exe' if os.name == 'nt' else ''
+          binary = root / 'target' / 'release' / f'kwan-component-import-host{suffix}'
+          completed = subprocess.run([str(binary)], text=True, capture_output=True, timeout=60)
+          if completed.returncode != 0:
+              print(completed.stdout)
+              print(completed.stderr, file=sys.stderr)
+              raise SystemExit(completed.returncode)
+          lines = [line for line in completed.stdout.splitlines() if line.strip()]
+          if not lines:
+              raise SystemExit('host emitted no evidence')
+          report = json.loads(lines[-1])
+          required = {
+              'passed': True,
+              'observed_result': report.get('expected_result'),
+              'one_shot_imports': 3,
+              'payload_returned_to_component': False,
+              'plaintext_secret_returned': False,
+              'ambient_authority': False,
+              'authority_granted': False,
+              'promotion_performed': False,
+              'scientific_claim_created': False,
+          }
+          for key, expected in required.items():
+              if report.get(key) != expected:
+                  raise SystemExit(f'{key} mismatch: {report.get(key)!r} != {expected!r}')
+          report['platform_contract'] = os.environ['KWAN_PLATFORM']
+          report['binary_sha256'] = hashlib.sha256(binary.read_bytes()).hexdigest()
+          report['cargo_lock_sha256'] = hashlib.sha256((root / 'rust/kwan-component-import-host/Cargo.lock').read_bytes()).hexdigest()
+          report['workflow_authority_granted'] = False
+          report['workflow_promotion_performed'] = False
+          out = root / 'evidence' / 'external' / 'v015'
+          out.mkdir(parents=True, exist_ok=True)
+          path = out / f"{os.environ['KWAN_PLATFORM']}.json"
+          path.write_text(json.dumps(report, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          print(json.dumps({'evidence': str(path), 'observed_result': report['observed_result'], 'binary_sha256': report['binary_sha256']}, sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kwantau2dos-v015-${{ matrix.platform }}
+          path: |
+            evidence/external/v015/${{ matrix.platform }}.json
+            rust/kwan-component-import-host/Cargo.lock
+          if-no-files-found: error
