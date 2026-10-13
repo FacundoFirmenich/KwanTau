@@ -1,0 +1,38 @@
+{
+  "artifacts": {
+    "git_bundle_bytes": 1235309,
+    "git_bundle_sha256": "49f2d1b30f34d259603a000695d31f79be56ebfb9e90e52671329066ccd43381",
+    "release_zip_bytes": 1182129,
+    "release_zip_sha256": "6b8f06c56d8774a5f22215cd5e0338a379f4995c808edf3074956d85b9de1e1e"
+  },
+  "authority_granted": false,
+  "claim_boundary": {
+    "blind_replay_performed": false,
+    "distributed_exactly_once_demonstrated": false,
+    "github_repository_created": false,
+    "global_acid_demonstrated": false,
+    "multihost_consensus_demonstrated": false,
+    "scientific_superiority_claimed": false,
+    "uncertainty_preserved": true
+  },
+  "commit": "d194794a9de022e3778241bc5be5e227873b20ec",
+  "equivalence": {
+    "all_material_demos_passed": true,
+    "all_validation_passed": true,
+    "logical_file_count": 332,
+    "logical_tree_sha256": "f2ad41c886a79dd8b92d16fb88a08e33358a04c80c16afdd87339c69ec0442b6",
+    "same_logical_file_count": true,
+    "same_logical_tree": true
+  },
+  "format": "KWANTAU2DOS_V016_INDEPENDENT_VALIDATION_V1",
+  "incarnations": {
+    "bundle": {"conditional_engine_skip": true, "logical_file_count": 332, "logical_tree_sha256": "f2ad41c886a79dd8b92d16fb88a08e33358a04c80c16afdd87339c69ec0442b6", "material_demo_passed": true, "material_demo_report_sha256": "0eb2e78347d5cafe1e862dc4d6dcc45e988d547725ead4711538a5fd09b2bd9d", "tests_collected": 132, "tests_passed": 131, "tests_skipped": 1, "validation_passed": true, "validation_report_sha256": "3432dd8b33b4c82ccfa844d24044de4d1e121a7d52d42010aa5a6265c393bbae"},
+    "source": {"conditional_engine_skip": true, "logical_file_count": 332, "logical_tree_sha256": "f2ad41c886a79dd8b92d16fb88a08e33358a04c80c16afdd87339c69ec0442b6", "material_demo_passed": true, "material_demo_report_sha256": "0eb2e78347d5cafe1e862dc4d6dcc45e988d547725ead4711538a5fd09b2bd9d", "tests_collected": 132, "tests_passed": 131, "tests_skipped": 1, "validation_passed": true, "validation_report_sha256": "a0a8b26cd873b899b95bcd35fc4209a669bd12efd0bfadfc3ec91bd8e4e4f267"},
+    "zip": {"conditional_engine_skip": true, "logical_file_count": 332, "logical_tree_sha256": "f2ad41c886a79dd8b92d16fb88a08e33358a04c80c16afdd87339c69ec0442b6", "material_demo_passed": true, "material_demo_report_sha256": "0eb2e78347d5cafe1e862dc4d6dcc45e988d547725ead4711538a5fd09b2bd9d", "tests_collected": 132, "tests_passed": 131, "tests_skipped": 1, "validation_passed": true, "validation_report_sha256": "ef064822e600454b261532d0aec92da98208825ce4be6ede40a0a6b7ddf677a4"}
+  },
+  "promotion_performed": false,
+  "release": "0.16.0-alpha.1",
+  "report_sha256": "7945ba37ab7161aef5c08701f614b161d2db586a8367cf428675a7a17cf24c26",
+  "repository_name": "KwanTau2DOS",
+  "tag": "v0.16.0-alpha.1"
+}
