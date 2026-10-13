@@ -53,7 +53,7 @@ jobs:
           import hashlib, json, os, pathlib, subprocess, sys
           root = pathlib.Path.cwd()
           suffix = '.exe' if os.name == 'nt' else ''
-          binary = root / 'target' / 'release' / f'kwan-component-import-host{suffix}'
+          binary = root / 'rust' / 'kwan-component-import-host' / 'target' / 'release' / f'kwan-component-import-host{suffix}'
           completed = subprocess.run([str(binary)], text=True, capture_output=True, timeout=60)
           if completed.returncode != 0:
               print(completed.stdout)
