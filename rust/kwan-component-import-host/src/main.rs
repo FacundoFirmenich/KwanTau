@@ -175,7 +175,6 @@ fn main() -> AnyResult<()> {
     let instance = linker.instantiate(&mut store, &component)?;
     let run = instance.get_typed_func::<(), (u64,)>(&mut store, "run")?;
     let (observed,) = run.call(&mut store, ())?;
-    run.post_return(&mut store)?;
     server.join().map_err(|_| "loopback server panicked")??;
 
     let expected = digest_word(&fs_payload)
