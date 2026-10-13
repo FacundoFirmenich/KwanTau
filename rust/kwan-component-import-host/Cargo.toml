@@ -1,0 +1,10 @@
+[package]
+name = "kwan-component-import-host"
+version = "0.15.0-alpha.1"
+edition = "2024"
+publish = false
+
+[dependencies]
+hmac = "=0.12.1"
+sha2 = "=0.10.9"
+wasmtime = "=49.0.2"
