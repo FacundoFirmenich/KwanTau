@@ -55,7 +55,7 @@ echo 16 | sudo tee "$CG/pids.max" >/dev/null
 echo "50000 100000" | sudo tee "$CG/cpu.max" >/dev/null
 
 uid="$(id -u)"; gid="$(id -g)"
-sudo "$SRC/cgroup_exec.sh" "$CG" "$uid" "$gid" "$BUILD/pids-probe" | tee "$EVIDENCE_DIR/pids-probe.txt"
+sudo bash "$SRC/cgroup_exec.sh" "$CG" "$uid" "$gid" "$BUILD/pids-probe" | tee "$EVIDENCE_DIR/pids-probe.txt"
 grep -q 'blocked_errno=11' "$EVIDENCE_DIR/pids-probe.txt"
 
 set +e
