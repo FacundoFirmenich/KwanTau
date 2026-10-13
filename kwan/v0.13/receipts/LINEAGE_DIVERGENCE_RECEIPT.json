@@ -1,0 +1,39 @@
+{
+  "adjudication": "RECONCILIATION_REQUIRED",
+  "authority_granted": false,
+  "automatic_winner_selected": false,
+  "canonical_target_repository": "FacundoFirmenich/KwanTauDOS",
+  "candidates": [
+    {
+      "commit": "32c583dda6f4b477f4e9fbf8d4e3b02d05af7aa2",
+      "designation": "GITHUB_INTEGRATION_CANDIDATE",
+      "git_bundle_sha256": "10c420719bb49aea8b327225194c7a50c47ec4c21c2c73f244e4d487042ca364",
+      "logical_file_count": 249,
+      "logical_manifest_sha256": "2549322131a044033bfaf97837ec70496d2a4af211bd1b7e7bbb5409a3c1d0b6",
+      "release": "0.13.0-alpha.1",
+      "release_zip_sha256": "d914ba5ff357cd62515a77babac4e1bbb5e8eed5a0771a9656854dc152df5c32",
+      "tests_passed": 93
+    },
+    {
+      "commit": "4fca70ff36c0b050d22ad8d4787ce44df0bf0992",
+      "designation": "FULL_ECOSYSTEM_CANDIDATE",
+      "git_bundle_sha256": "28d5029c34ebd74af1dad442a3ecf794cf8fe27a557ba144041085c5edebb9f1",
+      "logical_manifest_sha256": "b77da575487748e25f71c9f61ebaa4e2f7629500059c24980362682cfe93f9d0",
+      "release": "0.13.0-alpha.1",
+      "release_zip_sha256": "ed2fffbe98ced04f8cb6186e34bcbdd5bba4cb448638bcf7e50e2b00cd4eca79",
+      "tests_passed": 92
+    }
+  ],
+  "common_predecessor": "a080c433b85278dcec61518df38aab108db49abe",
+  "format": "KWAN_LINEAGE_DIVERGENCE_RECEIPT_V1",
+  "next_release": "0.13.0-alpha.2",
+  "promotion_performed": false,
+  "required_resolution": [
+    "preserve both candidate lineages",
+    "compare actual source and contract deltas",
+    "retain the union of non-conflicting capabilities",
+    "adjudicate conflicting semantics explicitly",
+    "rerun complete source, ZIP and bundle validation",
+    "migrate only the reconciled successor into KwanTauDOS"
+  ]
+}
