@@ -1,5 +1,6 @@
 name: Constitutional Lockfile Bootstrap
 
+# One-shot branch workflow. Remove after the canonical importer is committed.
 on:
   push:
     branches:
