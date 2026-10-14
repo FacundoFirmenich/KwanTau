@@ -5,12 +5,17 @@ import type {
   ConstitutionalCancelParams,
   ConstitutionalExecuteParams,
   ConstitutionalPluginConfig,
+  ConstitutionalReconcileParams,
   ConstitutionalRecord,
   ConstitutionalStatus,
   ConstitutionalStatusValue,
   GatewayRequest,
 } from "./types.js";
-import { validateCancelParams, validateExecuteParams } from "./validator.js";
+import {
+  validateCancelParams,
+  validateExecuteParams,
+  validateReconcileParams,
+} from "./validator.js";
 
 function toStatus(record: ConstitutionalRecord): ConstitutionalStatus {
   return {
@@ -44,6 +49,13 @@ function terminalStatus(payload: Record<string, unknown>): ConstitutionalStatusV
   return "IN_DOUBT";
 }
 
+function mergedMetadata(
+  record: ConstitutionalRecord,
+  patch: Record<string, unknown>,
+): Record<string, unknown> {
+  return { ...(record.metadata ?? {}), ...patch };
+}
+
 export class ConstitutionalExecutionService {
   readonly store: ConstitutionalStore;
 
@@ -65,11 +77,8 @@ export class ConstitutionalExecutionService {
     if (this.config.mode === "shadow") {
       return toStatus(reserved.record);
     }
-    if (!reserved.created) {
-      if (["SUCCEEDED", "FAILED", "TIMEOUT", "RUNNING", "CANCEL_REQUESTED"].includes(reserved.record.status)) {
-        return toStatus(reserved.record);
-      }
-      if (reserved.record.runId) return toStatus(reserved.record);
+    if (!reserved.created && reserved.record.status !== "ACCEPTED") {
+      return toStatus(reserved.record);
     }
 
     const envelope = params.envelope;
@@ -79,6 +88,22 @@ export class ConstitutionalExecutionService {
         "The native v1 extension only dispatches openclaw.agent / agent.run.",
       );
     }
+
+    const claim = await this.store.transitionStatus(
+      params.idempotencyKey,
+      ["ACCEPTED"],
+      "DISPATCHING",
+      {
+        error: undefined,
+        metadata: mergedMetadata(reserved.record, {
+          dispatchStartedAtUnix: Date.now() / 1000,
+        }),
+      },
+    );
+    if (!claim.transitioned) {
+      return toStatus(claim.record);
+    }
+
     const payload = { ...envelope.payload, idempotencyKey: params.idempotencyKey };
     try {
       const acceptance = await this.gatewayRequest<Record<string, unknown>>(
@@ -97,12 +122,16 @@ export class ConstitutionalExecutionService {
       const updated = await this.store.setStatus(params.idempotencyKey, "RUNNING", {
         runId,
         sessionKey,
-        metadata: { acceptance },
+        error: undefined,
+        metadata: mergedMetadata(claim.record, { acceptance }),
       });
       return toStatus(updated);
     } catch (error) {
       const uncertain = await this.store.setStatus(params.idempotencyKey, "IN_DOUBT", {
         error: String(error),
+        metadata: mergedMetadata(claim.record, {
+          uncertaintyRecordedAtUnix: Date.now() / 1000,
+        }),
       });
       return toStatus(uncertain);
     }
@@ -113,7 +142,7 @@ export class ConstitutionalExecutionService {
     if (!record) {
       return { idempotencyKey, status: "UNKNOWN", mode: this.config.mode };
     }
-    if (!record.runId || !["ACCEPTED", "RUNNING", "IN_DOUBT"].includes(record.status)) {
+    if (!record.runId || !["RUNNING", "IN_DOUBT"].includes(record.status)) {
       return toStatus(record);
     }
     try {
@@ -133,15 +162,50 @@ export class ConstitutionalExecutionService {
             ? String(payload.error ?? payload.stopReason ?? status)
             : undefined,
         completedAtUnix: terminal ? Date.now() / 1000 : undefined,
-        metadata: { terminal: payload },
+        metadata: mergedMetadata(record, { terminal: payload }),
       });
       return toStatus(updated);
     } catch (error) {
       const updated = await this.store.setStatus(idempotencyKey, "IN_DOUBT", {
         error: String(error),
+        metadata: mergedMetadata(record, {
+          statusUncertaintyRecordedAtUnix: Date.now() / 1000,
+        }),
       });
       return toStatus(updated);
     }
+  }
+
+  async reconcile(params: ConstitutionalReconcileParams): Promise<ConstitutionalStatus> {
+    validateReconcileParams(params, this.config);
+    const current = await this.store.get(params.idempotencyKey);
+    if (!current) {
+      throw new ConstitutionalError("CONSTITUTION_UNKNOWN", "Unknown constitutional execution.");
+    }
+    if (!["DISPATCHING", "IN_DOUBT"].includes(current.status)) {
+      return toStatus(current);
+    }
+    if (current.runId && current.runId !== params.runId) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_IDEMPOTENCY_CONFLICT",
+        "Reconciliation runId conflicts with the persisted remote run.",
+      );
+    }
+    const transitioned = await this.store.transitionStatus(
+      params.idempotencyKey,
+      ["DISPATCHING", "IN_DOUBT"],
+      "RUNNING",
+      {
+        runId: params.runId,
+        sessionKey: params.sessionKey ?? current.sessionKey,
+        error: undefined,
+        metadata: mergedMetadata(current, {
+          reconciledAtUnix: Date.now() / 1000,
+          reconciliationReason: params.reason,
+        }),
+      },
+    );
+    return toStatus(transitioned.record);
   }
 
   async cancel(params: ConstitutionalCancelParams): Promise<ConstitutionalStatus> {
@@ -152,6 +216,9 @@ export class ConstitutionalExecutionService {
     }
     const updated = await this.store.setStatus(params.idempotencyKey, "CANCEL_REQUESTED", {
       error: `Cancellation requested but not dispatched: ${params.reason}`,
+      metadata: mergedMetadata(record, {
+        cancellationRequestedAtUnix: Date.now() / 1000,
+      }),
     });
     throw new ConstitutionalError(
       "CONSTITUTION_CANCEL_UNAVAILABLE",
