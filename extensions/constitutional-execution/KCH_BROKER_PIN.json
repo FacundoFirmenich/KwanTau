@@ -1,0 +1,8 @@
+{
+  "schema": "cfl.kch-kwantau-authority-pin.v1",
+  "repository": "FacundoFirmenich/KCH",
+  "commit": "5ab385bbdacd6db1fd386b2b99c06acd1f94ec0b",
+  "integrationPath": "integrations/kch-kwantau-authority",
+  "packageVersion": "0.1.0",
+  "sourcePr": 35
+}
