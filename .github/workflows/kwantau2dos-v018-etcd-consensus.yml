@@ -1,0 +1,57 @@
+name: KwanTau2DOS v0.18 external etcd consensus gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - kwan/integral-v0.18-shadow
+    paths:
+      - "kwan/v0.18/ci/**"
+      - ".github/workflows/kwantau2dos-v018-etcd-consensus.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kwantau2dos-v018-etcd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  three-member-fault-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Verify staged protocol vector
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="13d98223dbacccbcbe8aff8c35af49e882428799cf4658c4cde6476c1b2aef72"
+          echo "$expected  kwan/v0.18/ci/run_external_etcd_gate.py" | sha256sum -c -
+          python -m py_compile kwan/v0.18/ci/run_external_etcd_gate.py
+      - name: Download and verify pinned etcd 3.7.2
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://github.com/etcd-io/etcd/releases/download/v3.7.2/etcd-v3.7.2-linux-amd64.tar.gz"
+          expected="3a3679bc51a4ee9d30bccea1da7cd4fe62c6fc1d2ca1255068d2c53bf3026135"
+          curl -fL "$url" -o "$RUNNER_TEMP/etcd.tar.gz"
+          echo "$expected  $RUNNER_TEMP/etcd.tar.gz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/etcd"
+          tar -xzf "$RUNNER_TEMP/etcd.tar.gz" -C "$RUNNER_TEMP/etcd" --strip-components=1
+          "$RUNNER_TEMP/etcd/etcd" --version
+      - name: Execute leader-loss and quorum-loss gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python kwan/v0.18/ci/run_external_etcd_gate.py \
+            --etcd "$RUNNER_TEMP/etcd/etcd" \
+            --output kwan/v0.18/ci/KWANTAU2DOS_V018_EXTERNAL_ETCD_GATE.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kwantau2dos-v018-etcd-consensus-evidence
+          path: kwan/v0.18/ci/KWANTAU2DOS_V018_EXTERNAL_ETCD_GATE.json
+          if-no-files-found: error
