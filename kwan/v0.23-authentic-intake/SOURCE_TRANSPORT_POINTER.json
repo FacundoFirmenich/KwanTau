@@ -1,0 +1,18 @@
+{
+  "format": "KWANTAU2DOS_V023_SOURCE_TRANSPORT_POINTER_V1",
+  "canonical_repository_target": "FacundoFirmenich/KwanTau2DOS",
+  "canonical_target_present_in_connected_installation": false,
+  "staging_repository": "FacundoFirmenich/KwanTau",
+  "staging_branch": "kwan/integral-v0.23-authentic-intake-shadow",
+  "binary_transport_via_text_connector_claimed": false,
+  "source_zip": {"name": "KwanTau2DOS_v0_23_0-alpha.1.zip", "bytes": 6903799, "sha256": "c3de9565d4097a890dc39e7f4e35d968eb6c8c139c88762d86f8c17dd0c214df"},
+  "git_bundle": {"name": "KwanTau2DOS_v0_23_0-alpha.1.bundle", "bytes": 1705790, "sha256": "c87e947f3a2251a8aeb1814299816739706c737a58293bed80d422e07641ede9"},
+  "source_capsule": {"name": "KWANTAU2DOS_V0_23_0_SOURCE_CAPSULE.tar.gz", "bytes": 1378327, "sha256": "59922e2380fe26c37f527bfa0d818d7a769ebf0b8261ebf64a663c379c26dddb"},
+  "integral_delivery": {"name": "KWANTAU2DOS_V0_23_0_DELIVERY.zip", "bytes": 10151463, "sha256": "cec7b3d2cd6121034162556c76890a307ff5e2f84f2258e3c41dbe9e75f2a281"},
+  "publication_script": {"name": "PUBLISH_KWANTAU2DOS_V0_23_0.sh", "sha256": "f5989ced3ab7db4c030942fc33272ca973a7a766a8992f7fffa09d3f6eeba5ed"},
+  "required_branch": "kwantau2dos/v0.23.0-alpha.1",
+  "required_tag": "v0.23.0-alpha.1",
+  "required_commit": "f24a3258be7f2ccbe3904e2e341eaa19a5fa1131",
+  "authority_granted": false,
+  "promotion_performed": false
+}
