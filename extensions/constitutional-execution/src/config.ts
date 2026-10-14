@@ -1,3 +1,4 @@
+import { createPublicKey } from "node:crypto";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 import { ConstitutionalError } from "./errors.js";
@@ -71,6 +72,15 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
       typeof config.maxLeaseDurationMs === "number" && config.maxLeaseDurationMs > 0
         ? config.maxLeaseDurationMs
         : 5 * 60_000,
+    maxLiveAuthorityAgeMs:
+      typeof config.maxLiveAuthorityAgeMs === "number" && config.maxLiveAuthorityAgeMs > 0
+        ? config.maxLiveAuthorityAgeMs
+        : 5_000,
+    liveAuthorityVerifierMethod:
+      typeof config.liveAuthorityVerifierMethod === "string" &&
+      config.liveAuthorityVerifierMethod.trim()
+        ? config.liveAuthorityVerifierMethod.trim()
+        : undefined,
     clockSkewMs:
       typeof config.clockSkewMs === "number" && config.clockSkewMs >= 0
         ? config.clockSkewMs
@@ -110,6 +120,33 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
       throw new ConstitutionalError(
         "CONSTITUTION_INVALID",
         "At least one enabled Ed25519 verification key is required.",
+      );
+    }
+    for (const key of allowedKeys) {
+      let parsed;
+      try {
+        parsed = createPublicKey(key.publicKeyPem);
+      } catch {
+        throw new ConstitutionalError(
+          "CONSTITUTION_INVALID",
+          `Authority key ${key.keyId} is not a valid public key.`,
+        );
+      }
+      if (parsed.asymmetricKeyType !== "ed25519") {
+        throw new ConstitutionalError(
+          "CONSTITUTION_INVALID",
+          `Authority key ${key.keyId} must be Ed25519.`,
+        );
+      }
+    }
+    if (
+      mode === "enforce" &&
+      (!resolved.liveAuthorityVerifierMethod ||
+        resolved.liveAuthorityVerifierMethod.startsWith("constitutional."))
+    ) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_INVALID",
+        "Enforce mode requires a non-constitutional liveAuthorityVerifierMethod.",
       );
     }
     if (resolved.allowedExecutors.length === 0 || resolved.allowedCapabilities.length === 0) {
