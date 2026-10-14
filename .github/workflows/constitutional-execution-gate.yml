@@ -144,7 +144,7 @@ jobs:
           if (properties.mode?.default !== 'shadow') {
             throw new Error('plugin must default to shadow mode');
           }
-          for (const name of ['activePolicyHash', 'allowedKeys', 'allowedExecutors', 'allowedCapabilities', 'allowedContractHashes']) {
+          for (const name of ['activePolicyHash', 'allowedKeys', 'allowedExecutors', 'allowedCapabilities', 'allowedContractHashes', 'liveAuthorityVerifierMethod', 'maxLiveAuthorityAgeMs']) {
             if (!(name in properties)) throw new Error(`missing constitutional config field: ${name}`);
           }
           NODE
