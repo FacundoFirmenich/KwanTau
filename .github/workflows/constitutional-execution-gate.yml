@@ -11,8 +11,12 @@ on:
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "tsconfig.json"
+      - "tsconfig.plugin-sdk.dts.json"
+      - "scripts/run-tsgo.mjs"
       - "src/plugins/plugin-api.types.ts"
       - "src/plugins/runtime/types.ts"
+      - "src/plugin-sdk/**"
+      - "packages/plugin-sdk/**"
 
 permissions:
   contents: read
@@ -52,12 +56,19 @@ jobs:
             --filter '@openclaw/constitutional-execution...'
           git diff --exit-code -- pnpm-lock.yaml
 
-      - name: Install extension dependency closure
+      - name: Install canonical workspace dependencies
         shell: bash
         run: |
           set -euo pipefail
-          pnpm install --frozen-lockfile --ignore-scripts \
-            --filter '@openclaw/constitutional-execution...'
+          pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build canonical Plugin SDK declarations
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm build:plugin-sdk:dts
+          test -f dist/plugin-sdk/plugin-entry.d.ts
+          test -f dist/plugin-sdk/sqlite-runtime.d.ts
 
       - name: Check Plugin SDK contract drift
         id: contract
