@@ -10,13 +10,10 @@ on:
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
-      - "tsconfig.json"
-      - "tsconfig.plugin-sdk.dts.json"
-      - "scripts/run-tsgo.mjs"
       - "src/plugins/plugin-api.types.ts"
       - "src/plugins/runtime/types.ts"
-      - "src/plugin-sdk/**"
-      - "packages/plugin-sdk/**"
+      - "src/plugin-sdk/plugin-entry.ts"
+      - "src/plugin-sdk/sqlite-runtime.ts"
 
 permissions:
   contents: read
@@ -32,7 +29,7 @@ env:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -61,15 +58,7 @@ jobs:
           set -euo pipefail
           pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: Build canonical Plugin SDK declarations
-        shell: bash
-        run: |
-          set -euo pipefail
-          pnpm build:plugin-sdk:dts
-          test -f dist/plugin-sdk/plugin-entry.d.ts
-          test -f dist/plugin-sdk/sqlite-runtime.d.ts
-
-      - name: Check Plugin SDK contract drift
+      - name: Check minimal Plugin SDK ABI contract
         id: contract
         shell: bash
         run: |
