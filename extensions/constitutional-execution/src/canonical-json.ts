@@ -15,13 +15,18 @@ function canonicalize(value: unknown): unknown {
   }
   if (typeof value === "object") {
     const input = value as Record<string, unknown>;
-    const output: Record<string, unknown> = {};
+    const output = Object.create(null) as Record<string, unknown>;
     for (const key of Object.keys(input).sort()) {
       const item = input[key];
       if (item === undefined) {
         continue;
       }
-      output[key] = canonicalize(item);
+      Object.defineProperty(output, key, {
+        value: canonicalize(item),
+        enumerable: true,
+        configurable: false,
+        writable: false,
+      });
     }
     return output;
   }
