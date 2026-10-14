@@ -190,17 +190,12 @@ export class ConstitutionalExecutionService {
         error instanceof ConstitutionalError &&
         error.code === "CONSTITUTION_LIVE_AUTHORITY_UNAVAILABLE"
       ) {
-        await this.store.transitionStatus(
-          params.idempotencyKey,
-          ["DISPATCHING"],
-          "ACCEPTED",
-          {
-            error: error.message,
-            metadata: mergedMetadata(claim.record, {
-              liveAuthorityUnavailableAtUnix: Date.now() / 1000,
-            }),
-          },
-        );
+        await this.store.transitionStatus(params.idempotencyKey, ["DISPATCHING"], "ACCEPTED", {
+          error: error.message,
+          metadata: mergedMetadata(claim.record, {
+            liveAuthorityUnavailableAtUnix: Date.now() / 1000,
+          }),
+        });
       } else {
         await this.store.setStatus(params.idempotencyKey, "FAILED", {
           error: String(error),
