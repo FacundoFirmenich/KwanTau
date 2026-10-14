@@ -31,7 +31,6 @@ env:
 
 jobs:
   verify:
-    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -146,6 +145,7 @@ jobs:
           tests_exit=${{ steps.tests.outputs.exit_code }}
           manifest_exit=${{ steps.manifest.outputs.exit_code }}
           tested_head_sha=${{ github.event.pull_request.head.sha || github.sha }}
+          draft=${{ github.event.pull_request.draft || false }}
           EOF
 
       - name: Upload diagnostic evidence
