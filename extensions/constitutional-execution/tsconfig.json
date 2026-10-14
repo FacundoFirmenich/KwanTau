@@ -1,9 +1,20 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "declaration": false,
     "noEmit": true,
+    "rootDir": ".",
+    "paths": {
+      "openclaw/plugin-sdk/plugin-entry": ["types/plugin-entry.d.ts"]
+    },
     "types": ["node", "vitest/globals"]
   },
-  "include": ["index.ts", "src/**/*.ts", "tests/**/*.ts", "vitest.config.ts"]
+  "include": [
+    "index.ts",
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "types/**/*.d.ts",
+    "vitest.config.ts"
+  ]
 }
