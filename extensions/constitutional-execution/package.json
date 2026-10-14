@@ -5,7 +5,8 @@
   "description": "CFL-KCH intent-bound constitutional execution for the OpenClaw Gateway",
   "type": "module",
   "scripts": {
-    "check": "pnpm run typecheck && pnpm run test",
+    "check": "pnpm run contract-check && pnpm run typecheck && pnpm run test",
+    "contract-check": "node scripts/check-plugin-contract.mjs",
     "test": "vitest run --config vitest.config.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
