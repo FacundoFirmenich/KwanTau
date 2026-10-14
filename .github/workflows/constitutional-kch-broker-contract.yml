@@ -1,0 +1,83 @@
+name: Constitutional KCH Cross-Repo Contract
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+    paths:
+      - '.github/workflows/constitutional-kch-broker-contract.yml'
+      - 'extensions/constitutional-execution/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN: 'false'
+
+jobs:
+  broker-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout KwanTau
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Read pinned KCH broker commit
+        id: pin
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(node -p "JSON.parse(require('fs').readFileSync('extensions/constitutional-execution/KCH_BROKER_PIN.json','utf8')).commit")
+          repo=$(node -p "JSON.parse(require('fs').readFileSync('extensions/constitutional-execution/KCH_BROKER_PIN.json','utf8')).repository")
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "repo=$repo" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout pinned KCH source
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          repository: ${{ steps.pin.outputs.repo }}
+          ref: ${{ steps.pin.outputs.sha }}
+          path: .kch-authority-source
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate and install pinned KCH broker
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv .kch-authority-venv
+          .kch-authority-venv/bin/python -m pip install -e .kch-authority-source/integrations/kch-kwantau-authority
+          .kch-authority-venv/bin/python -B -m unittest discover \
+            -s .kch-authority-source/integrations/kch-kwantau-authority/tests -v
+
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-env
+        with:
+          install-bun: 'false'
+          install-deps: 'false'
+          use-actions-cache: 'true'
+
+      - name: Install canonical KwanTau workspace
+        shell: bash
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Typecheck constitutional extension
+        shell: bash
+        run: pnpm --filter @openclaw/constitutional-execution run typecheck
+
+      - name: Run cross-language Node-Python-SQLite contract
+        shell: bash
+        env:
+          KCH_AUTHORITY_BROKER_COMMAND: ${{ github.workspace }}/.kch-authority-venv/bin/kch-kwantau-authority
+        run: pnpm --filter @openclaw/constitutional-execution run test
