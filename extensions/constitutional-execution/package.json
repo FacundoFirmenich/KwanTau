@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "check": "pnpm run typecheck && pnpm run test",
-    "test": "vitest run tests/service.test.ts",
+    "test": "vitest run --config vitest.config.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
