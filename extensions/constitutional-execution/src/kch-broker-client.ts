@@ -44,6 +44,11 @@ export type KchAuthorityBroker = {
   commit(params: {
     claimId: string;
     envelopeHash: string;
+    dispatchId: string;
+  }): Promise<KchAuthorityClaim>;
+  receipt(params: {
+    claimId: string;
+    envelopeHash: string;
     runId: string;
     receiptHash: string;
   }): Promise<KchAuthorityClaim>;
@@ -301,8 +306,11 @@ export class StdioKchAuthorityBroker implements KchAuthorityBroker {
   prepare(params: KchAuthorityPrepareParams) {
     return this.request("kch.authority.prepare", params as unknown as Record<string, unknown>);
   }
-  commit(params: { claimId: string; envelopeHash: string; runId: string; receiptHash: string }) {
+  commit(params: { claimId: string; envelopeHash: string; dispatchId: string }) {
     return this.request("kch.authority.commit", params);
+  }
+  receipt(params: { claimId: string; envelopeHash: string; runId: string; receiptHash: string }) {
+    return this.request("kch.authority.receipt", params);
   }
   abort(params: { claimId: string; envelopeHash: string; reason: string }) {
     return this.request("kch.authority.abort", params);
