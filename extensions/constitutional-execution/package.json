@@ -1,0 +1,15 @@
+{
+  "name": "@openclaw/constitutional-execution",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CFL-KCH intent-bound constitutional execution for the OpenClaw Gateway",
+  "type": "module",
+  "devDependencies": {
+    "@openclaw/plugin-sdk": "workspace:*"
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}
