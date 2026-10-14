@@ -7,16 +7,17 @@ const root = resolve(extensionRoot, "../..");
 const pluginEntryPath = resolve(root, "src/plugin-sdk/plugin-entry.ts");
 const pluginApiPath = resolve(root, "src/plugins/plugin-api.types.ts");
 const runtimeTypesPath = resolve(root, "src/plugins/runtime/types.ts");
-const abiPath = resolve(extensionRoot, "types/plugin-entry.d.ts");
+const packageSdkPath = resolve(root, "packages/plugin-sdk/package.json");
 const extensionEntryPath = resolve(extensionRoot, "index.ts");
 
-const [pluginEntry, pluginApi, runtimeTypes, abi, extensionEntry] = await Promise.all([
+const [pluginEntry, pluginApi, runtimeTypes, packageSdkRaw, extensionEntry] = await Promise.all([
   readFile(pluginEntryPath, "utf8"),
   readFile(pluginApiPath, "utf8"),
   readFile(runtimeTypesPath, "utf8"),
-  readFile(abiPath, "utf8"),
+  readFile(packageSdkPath, "utf8"),
   readFile(extensionEntryPath, "utf8"),
 ]);
+const packageSdk = JSON.parse(packageSdkRaw);
 
 const projections = [
   {
@@ -54,17 +55,6 @@ const projections = [
       ") => Promise<T>",
     ],
   },
-  {
-    name: "local-abi",
-    source: abi,
-    required: [
-      "export type OpenClawPluginApi = {",
-      "pluginConfig?: Record<string, unknown>;",
-      "registerGatewayMethod: (",
-      "registerService: (service: OpenClawPluginService) => void;",
-      "export declare function definePluginEntry(",
-    ],
-  },
 ];
 
 const consumedProjection = [];
@@ -79,14 +69,27 @@ for (const projection of projections) {
   }
 }
 
-if (/\bdeclare\s+module\b/.test(abi)) {
-  throw new Error("Local ABI must be an imported module, never an ambient module declaration.");
+const packageExport = packageSdk.exports?.["./plugin-entry"];
+if (packageSdk.name !== "@openclaw/plugin-sdk") {
+  throw new Error("Unexpected package SDK identity.");
 }
-if (!extensionEntry.includes('from "openclaw/plugin-sdk/plugin-entry"')) {
-  throw new Error("Extension runtime must import the canonical openclaw/plugin-sdk ABI.");
+if (packageExport?.types !== "./dist/src/plugin-sdk/plugin-entry.d.ts") {
+  throw new Error("Plugin SDK must expose generated plugin-entry declarations.");
+}
+if (packageExport?.default !== "./src/plugin-entry.ts") {
+  throw new Error("Plugin SDK must expose the canonical plugin-entry runtime.");
+}
+if (!extensionEntry.includes('from "@openclaw/plugin-sdk/plugin-entry"')) {
+  throw new Error("Extension must import the package-owned generated Plugin SDK ABI.");
+}
+if (extensionEntry.includes('from "openclaw/plugin-sdk/plugin-entry"')) {
+  throw new Error("Extension must not bypass the package boundary through the root package.");
 }
 
-const abiSha256 = createHash("sha256").update(abi).digest("hex");
+consumedProjection.push(`package-sdk:name=${packageSdk.name}`);
+consumedProjection.push(`package-sdk:types=${packageExport.types}`);
+consumedProjection.push(`package-sdk:default=${packageExport.default}`);
+
 const sourceContractSha256 = createHash("sha256")
   .update(consumedProjection.sort().join("\n"))
   .digest("hex");
@@ -97,8 +100,7 @@ console.log(
     pluginEntryPath,
     pluginApiPath,
     runtimeTypesPath,
-    abiPath,
-    abiSha256,
+    packageSdkPath,
     sourceContractSha256,
     consumedFragments: consumedProjection.length,
   }),
