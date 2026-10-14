@@ -478,24 +478,65 @@ export class ConstitutionalExecutionService {
         "No KCH claim is bound to this uncertain execution.",
       );
     }
+
+    let remote: Record<string, unknown>;
+    try {
+      remote = await this.gatewayRequest<Record<string, unknown>>(
+        "agent.wait",
+        { runId: params.runId, timeoutMs: this.config.waitTimeoutMs },
+        { timeoutMs: this.config.waitTimeoutMs + 5_000, scopes: ["operator.write"] },
+      );
+    } catch (error) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_REMOTE_ERROR",
+        "The remote run cannot be independently observed for reconciliation.",
+        { retryable: true, details: { cause: String(error) } },
+      );
+    }
+    const observedReceiptHash = sha256Hex(remote);
+    if (observedReceiptHash !== params.receiptHash) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_IDEMPOTENCY_CONFLICT",
+        "Signed reconciliation receipt hash does not match the observed Gateway run.",
+      );
+    }
+    const observedStatus = terminalStatus(remote);
+    if (observedStatus === "IN_DOUBT") {
+      throw new ConstitutionalError(
+        "CONSTITUTION_REMOTE_ERROR",
+        "Gateway run remains semantically indeterminate.",
+        { retryable: true },
+      );
+    }
+
     await this.authorityBroker.receipt({
       claimId,
       envelopeHash: current.envelopeHash,
       runId: params.runId,
-      receiptHash: params.receiptHash,
+      receiptHash: observedReceiptHash,
     });
+
+    const terminal = ["SUCCEEDED", "FAILED", "TIMEOUT"].includes(observedStatus);
+    const output = observedStatus === "SUCCEEDED" ? remote : undefined;
     const transitioned = await this.store.transitionStatus(
       params.idempotencyKey,
       ["DISPATCHING", "IN_DOUBT"],
-      "RUNNING",
+      observedStatus,
       {
         runId: params.runId,
         sessionKey: params.sessionKey ?? current.sessionKey,
-        error: undefined,
+        output,
+        outputHash: output === undefined ? undefined : observedReceiptHash,
+        error:
+          observedStatus === "FAILED" || observedStatus === "TIMEOUT"
+            ? String(remote.error ?? remote.stopReason ?? observedStatus)
+            : undefined,
+        completedAtUnix: terminal ? Date.now() / 1000 : undefined,
         metadata: mergedMetadata(current, {
           reconciledAtUnix: Date.now() / 1000,
           reconciliationReason: params.reason,
-          acceptanceReceiptHash: params.receiptHash,
+          acceptanceReceiptHash: observedReceiptHash,
+          reconciliationObservation: remote,
         }),
       },
     );
