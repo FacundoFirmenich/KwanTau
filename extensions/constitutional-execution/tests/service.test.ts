@@ -11,6 +11,7 @@ import type {
   ConstitutionalCommandEnvelope,
   ConstitutionalExecuteParams,
   ConstitutionalPluginConfig,
+  ConstitutionalReconcileParams,
   GatewayRequest,
 } from "../src/types.js";
 
@@ -98,23 +99,52 @@ function executeParams(value = envelope()): ConstitutionalExecuteParams {
   };
 }
 
+function signedOperation<T extends Record<string, unknown>>(
+  intent: T,
+): ConstitutionalCancelParams["authorityProof"] {
+  const signedHash = sha256Hex(intent);
+  return {
+    algorithm: "Ed25519",
+    keyId: "test-key",
+    signedHash,
+    signatureBase64: sign(null, Buffer.from(signedHash, "hex"), privateKey).toString("base64"),
+  };
+}
+
 function cancelParams(idempotencyKey: string, reason: string): ConstitutionalCancelParams {
-  const signedHash = sha256Hex({
-    operation: "constitutional.cancel",
-    idempotencyKey,
-    reason,
-    policyHash,
-    hostId,
-  });
   return {
     idempotencyKey,
     reason,
-    authorityProof: {
-      algorithm: "Ed25519",
-      keyId: "test-key",
-      signedHash,
-      signatureBase64: sign(null, Buffer.from(signedHash, "hex"), privateKey).toString("base64"),
-    },
+    authorityProof: signedOperation({
+      operation: "constitutional.cancel",
+      idempotencyKey,
+      reason,
+      policyHash,
+      hostId,
+    }),
+  };
+}
+
+function reconcileParams(
+  idempotencyKey: string,
+  runId: string,
+  reason: string,
+): ConstitutionalReconcileParams {
+  const sessionKey = "agent:test:main";
+  return {
+    idempotencyKey,
+    runId,
+    sessionKey,
+    reason,
+    authorityProof: signedOperation({
+      operation: "constitutional.reconcile",
+      idempotencyKey,
+      runId,
+      sessionKey,
+      reason,
+      policyHash,
+      hostId,
+    }),
   };
 }
 
@@ -166,6 +196,65 @@ describe("constitutional execution service", () => {
     await service.execute(params);
     await service.execute(params);
     expect(gateway.calls.filter((call) => call.method === "agent")).toHaveLength(1);
+  });
+
+  it("admits only one dispatcher under concurrent replay", async () => {
+    let release!: () => void;
+    const barrier = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    let agentCalls = 0;
+    const request: GatewayRequest = async <T>(method: string) => {
+      if (method !== "agent") throw new Error("unexpected method");
+      agentCalls += 1;
+      await barrier;
+      return { runId: "run-concurrent", sessionKey: "agent:test:main" } as T;
+    };
+    const service = new ConstitutionalExecutionService(config(await tempStore()), request);
+    const params = executeParams();
+    const first = service.execute(params);
+    const second = service.execute(params);
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    release();
+    const results = await Promise.all([first, second]);
+    expect(agentCalls).toBe(1);
+    expect(results.map((result) => result.status)).toContain("RUNNING");
+    expect(results.map((result) => result.status)).toContain("DISPATCHING");
+  });
+
+  it("never redispatches an in-doubt remote acceptance", async () => {
+    let agentCalls = 0;
+    const request: GatewayRequest = async <T>() => {
+      agentCalls += 1;
+      throw new Error("response lost after possible acceptance");
+    };
+    const service = new ConstitutionalExecutionService(config(await tempStore()), request);
+    const params = executeParams();
+    expect((await service.execute(params)).status).toBe("IN_DOUBT");
+    expect((await service.execute(params)).status).toBe("IN_DOUBT");
+    expect(agentCalls).toBe(1);
+  });
+
+  it("requires signed reconciliation before observing an in-doubt run", async () => {
+    const calls: string[] = [];
+    const request: GatewayRequest = async <T>(method: string) => {
+      calls.push(method);
+      if (method === "agent") throw new Error("acceptance response lost");
+      if (method === "agent.wait") {
+        return { status: "ok", endedAt: Date.now() } as T;
+      }
+      throw new Error("unexpected method");
+    };
+    const service = new ConstitutionalExecutionService(config(await tempStore()), request);
+    const params = executeParams();
+    expect((await service.execute(params)).status).toBe("IN_DOUBT");
+    const reconciled = await service.reconcile(
+      reconcileParams(params.idempotencyKey, "run-recovered", "operator inspected Gateway"),
+    );
+    expect(reconciled.status).toBe("RUNNING");
+    expect(reconciled.runId).toBe("run-recovered");
+    expect((await service.status(params.idempotencyKey)).status).toBe("SUCCEEDED");
+    expect(calls).toEqual(["agent", "agent.wait"]);
   });
 
   it("rejects an idempotency-key conflict", async () => {
