@@ -1,5 +1,5 @@
 import { createPublicKey, verify } from "node:crypto";
-import { canonicalJson, sha256Hex } from "./canonical-json.js";
+import { sha256Hex } from "./canonical-json.js";
 import { ConstitutionalError } from "./errors.js";
 import type {
   ConstitutionalAuthorityProof,
@@ -256,10 +256,6 @@ export function validateExecuteParams(
   validateTemporalBounds(envelope, config, nowMs);
   const envelopeHash = validateProof(envelope, params.authorityProof, config);
   return { envelopeHash, payloadHash };
-}
-
-export function canonicalEnvelopeBytes(envelope: ConstitutionalCommandEnvelope): Buffer {
-  return Buffer.from(canonicalJson(envelope), "utf8");
 }
 
 export function validateCancelParams(
