@@ -35,6 +35,8 @@ function config(
     activePolicyHash: policyHash,
     maxIntentAgeMs: 300_000,
     maxLeaseDurationMs: 300_000,
+    maxLiveAuthorityAgeMs: 5_000,
+    liveAuthorityVerifierMethod: "kch.authority.verify",
     clockSkewMs: 30_000,
     minimumEpoch: 0,
     revokedLeaseIds: [],
@@ -153,9 +155,26 @@ function reconcileParams(
 }
 
 function gatewayMock() {
-  const calls: Array<{ method: string; params: unknown }> = [];
-  const request: GatewayRequest = async <T>(method: string, params?: Record<string, unknown>) => {
-    calls.push({ method, params });
+  const calls: Array<{ method: string; params: unknown; options: unknown }> = [];
+  const request: GatewayRequest = async <T>(
+    method: string,
+    params?: Record<string, unknown>,
+    options?: unknown,
+  ) => {
+    calls.push({ method, params, options });
+    if (method === "kch.authority.verify") {
+      return {
+        active: true,
+        leaseId: String(params?.leaseId),
+        reservationId: String(params?.reservationId),
+        decisionId: String(params?.decisionId),
+        intentId: String(params?.intentId),
+        policyHash: String(params?.policyHash),
+        epoch: Number(params?.epoch),
+        generation: "generation-test",
+        verifiedAtUnix: Date.now() / 1000,
+      } as T;
+    }
     if (method === "agent") {
       return { runId: "run-1", sessionKey: "agent:test:main", status: "in_flight" } as T;
     }
@@ -178,8 +197,8 @@ describe("constitutional execution service", () => {
     const result = await service.execute(executeParams());
     expect(result.status).toBe("RUNNING");
     expect(result.runId).toBe("run-1");
-    expect(gateway.calls).toHaveLength(1);
-    expect(gateway.calls[0]?.method).toBe("agent");
+    expect(gateway.calls.filter((call) => call.method === "kch.authority.verify")).toHaveLength(1);
+    expect(gateway.calls.filter((call) => call.method === "agent")).toHaveLength(1);
   });
 
   it("rejects payload mutation before side effects", async () => {
@@ -208,7 +227,23 @@ describe("constitutional execution service", () => {
       release = resolve;
     });
     let agentCalls = 0;
-    const request: GatewayRequest = async <T>(method: string) => {
+    const request: GatewayRequest = async <T>(
+      method: string,
+      params?: Record<string, unknown>,
+    ) => {
+      if (method === "kch.authority.verify") {
+        return {
+          active: true,
+          leaseId: String(params?.leaseId),
+          reservationId: String(params?.reservationId),
+          decisionId: String(params?.decisionId),
+          intentId: String(params?.intentId),
+          policyHash: String(params?.policyHash),
+          epoch: Number(params?.epoch),
+          generation: "generation-concurrent",
+          verifiedAtUnix: Date.now() / 1000,
+        } as T;
+      }
       if (method !== "agent") throw new Error("unexpected method");
       agentCalls += 1;
       await barrier;
@@ -228,7 +263,23 @@ describe("constitutional execution service", () => {
 
   it("never redispatches an in-doubt remote acceptance", async () => {
     let agentCalls = 0;
-    const request: GatewayRequest = async <T>() => {
+    const request: GatewayRequest = async <T>(
+      method: string,
+      params?: Record<string, unknown>,
+    ) => {
+      if (method === "kch.authority.verify") {
+        return {
+          active: true,
+          leaseId: String(params?.leaseId),
+          reservationId: String(params?.reservationId),
+          decisionId: String(params?.decisionId),
+          intentId: String(params?.intentId),
+          policyHash: String(params?.policyHash),
+          epoch: Number(params?.epoch),
+          generation: "generation-indoubt",
+          verifiedAtUnix: Date.now() / 1000,
+        } as T;
+      }
       agentCalls += 1;
       throw new Error("response lost after possible acceptance");
     };
@@ -241,8 +292,24 @@ describe("constitutional execution service", () => {
 
   it("requires signed reconciliation before observing an in-doubt run", async () => {
     const calls: string[] = [];
-    const request: GatewayRequest = async <T>(method: string) => {
+    const request: GatewayRequest = async <T>(
+      method: string,
+      params?: Record<string, unknown>,
+    ) => {
       calls.push(method);
+      if (method === "kch.authority.verify") {
+        return {
+          active: true,
+          leaseId: String(params?.leaseId),
+          reservationId: String(params?.reservationId),
+          decisionId: String(params?.decisionId),
+          intentId: String(params?.intentId),
+          policyHash: String(params?.policyHash),
+          epoch: Number(params?.epoch),
+          generation: "generation-reconcile",
+          verifiedAtUnix: Date.now() / 1000,
+        } as T;
+      }
       if (method === "agent") throw new Error("acceptance response lost");
       if (method === "agent.wait") {
         return { status: "ok", endedAt: Date.now() } as T;
@@ -258,7 +325,7 @@ describe("constitutional execution service", () => {
     expect(reconciled.status).toBe("RUNNING");
     expect(reconciled.runId).toBe("run-recovered");
     expect((await service.status(params.idempotencyKey)).status).toBe("SUCCEEDED");
-    expect(calls).toEqual(["agent", "agent.wait"]);
+    expect(calls).toEqual(["kch.authority.verify", "agent", "agent.wait"]);
   });
 
   it("rejects an idempotency-key conflict", async () => {
@@ -288,6 +355,8 @@ describe("constitutional execution service", () => {
     const result = await service.status("idem-1");
     expect(result.status).toBe("SUCCEEDED");
     expect(result.outputHash).toMatch(/^[a-f0-9]{64}$/);
+    const waitCall = gateway.calls.find((call) => call.method === "agent.wait");
+    expect(waitCall?.options).toMatchObject({ scopes: ["operator.write"] });
   });
 
   it("records signed cancellation but refuses an unaudited remote abort", async () => {
@@ -298,6 +367,64 @@ describe("constitutional execution service", () => {
       code: "CONSTITUTION_CANCEL_UNAVAILABLE",
     });
     expect((await service.store.get("idem-1"))?.status).toBe("CANCEL_REQUESTED");
+  });
+
+
+  it("fails closed when live KCH authority is unavailable", async () => {
+    let agentCalls = 0;
+    const request: GatewayRequest = async <T>(method: string) => {
+      if (method === "kch.authority.verify") throw new Error("KCH verifier unavailable");
+      if (method === "agent") agentCalls += 1;
+      throw new Error("unexpected method");
+    };
+    const service = new ConstitutionalExecutionService(config(await tempStore()), request);
+    await expect(service.execute(executeParams())).rejects.toMatchObject({
+      code: "CONSTITUTION_LIVE_AUTHORITY_UNAVAILABLE",
+    });
+    expect(agentCalls).toBe(0);
+    expect((await service.store.get("idem-1"))?.status).toBe("ACCEPTED");
+  });
+
+  it("fails closed when live KCH authority is stale or revoked", async () => {
+    let agentCalls = 0;
+    const request: GatewayRequest = async <T>(
+      method: string,
+      params?: Record<string, unknown>,
+    ) => {
+      if (method === "kch.authority.verify") {
+        return {
+          active: false,
+          leaseId: String(params?.leaseId),
+          reservationId: String(params?.reservationId),
+          decisionId: String(params?.decisionId),
+          intentId: String(params?.intentId),
+          policyHash: String(params?.policyHash),
+          epoch: Number(params?.epoch),
+          generation: "generation-revoked",
+          verifiedAtUnix: Date.now() / 1000,
+          reason: "lease revoked upstream",
+        } as T;
+      }
+      if (method === "agent") agentCalls += 1;
+      throw new Error("unexpected method");
+    };
+    const service = new ConstitutionalExecutionService(config(await tempStore()), request);
+    await expect(service.execute(executeParams())).rejects.toMatchObject({
+      code: "CONSTITUTION_LIVE_AUTHORITY_DENIED",
+    });
+    expect(agentCalls).toBe(0);
+    expect((await service.store.get("idem-1"))?.status).toBe("FAILED");
+  });
+
+  it("does not let late cancellation overwrite a terminal outcome", async () => {
+    const gateway = gatewayMock();
+    const service = new ConstitutionalExecutionService(config(await tempStore()), gateway.request);
+    await service.execute(executeParams());
+    expect((await service.status("idem-1")).status).toBe("SUCCEEDED");
+    await expect(service.cancel(cancelParams("idem-1", "too late"))).rejects.toMatchObject({
+      code: "CONSTITUTION_CANCEL_UNAVAILABLE",
+    });
+    expect((await service.store.get("idem-1"))?.status).toBe("SUCCEEDED");
   });
 
   it("rejects mismatched session binding and revoked leases", async () => {
