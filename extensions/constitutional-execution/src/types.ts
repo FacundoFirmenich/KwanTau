@@ -94,6 +94,8 @@ export type ConstitutionalPluginConfig = {
   activePolicyHash: string;
   maxIntentAgeMs: number;
   maxLeaseDurationMs: number;
+  maxLiveAuthorityAgeMs: number;
+  liveAuthorityVerifierMethod?: string;
   clockSkewMs: number;
   minimumEpoch: number;
   revokedLeaseIds: string[];
@@ -135,6 +137,19 @@ type GatewayScope =
   | "operator.pairing"
   | "operator.talk"
   | "operator.talk.secrets";
+
+export type ConstitutionalLiveAuthorityResult = {
+  active: boolean;
+  leaseId: string;
+  reservationId: string;
+  decisionId: string;
+  intentId: string;
+  policyHash: string;
+  epoch: number;
+  generation: string;
+  verifiedAtUnix: number;
+  reason?: string;
+};
 
 export type GatewayRequest = <T = unknown>(
   method: string,
