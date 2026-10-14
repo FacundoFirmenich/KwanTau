@@ -1,0 +1,38 @@
+{
+  "artifacts": {
+    "browser_zip": {"bytes": 42699, "name": "KwanBrowser_v0_19_0-alpha.1.zip", "sha256": "dbe02417e22077473cb7776f1efff78a090b74f6ab0f3f5f8d705089f4e05743"},
+    "git_bundle": {"bytes": 1454605, "name": "KwanTau2DOS_v0_19_0-alpha.1.bundle", "sha256": "48695db3f6837380c60583acbf3e837941a691f13af9c8ad3524afc80297ed26"},
+    "independent_validation": {"bytes": 1791, "name": "KWANTAU2DOS_V0_19_0_INDEPENDENT_VALIDATION.json", "sha256": "8dff15a433583952cc5f197422d4b220eb6c46fd7aa4e11ec486d381b2b2ac5b"},
+    "source_zip": {"bytes": 5751144, "name": "KwanTau2DOS_v0_19_0-alpha.1.zip", "sha256": "b405bfb055e3b7920d48a0db45813a35f2f0a64a8c25b9e148b2515e2b872aa9"}
+  },
+  "authority_granted": false,
+  "branch": "kwantau2dos/v0.19.0-alpha.1",
+  "claim_boundary": {
+    "complete_country_world_coverage_claimed": false,
+    "country_world_bitemporal_evidence_material": true,
+    "external_transparency_witnesses": 0,
+    "global_non_equivocation_claimed": false,
+    "hardware_attestation_claimed": false,
+    "legal_correctness_claimed": false,
+    "local_transparency_material": true,
+    "production_readiness_claimed": false,
+    "spire_issued_claimed": false
+  },
+  "format": "KWANTAU2DOS_V019_RELEASE_RECEIPT_V1",
+  "independent_validation_passed": true,
+  "logical_file_count": 439,
+  "logical_tree_sha256": "440a7c0ec06eef24fd0806b7d58855d34e4700befe19f1bc6b2d5370efb62275",
+  "mandatory_components": 19,
+  "material_demo_passed": true,
+  "predecessor_commit": "d5b1d98ae1dca175905e100dc73e9e0a61998b1d",
+  "promotion_performed": false,
+  "receipt_sha256": "fac9b09d68f8eb3c1adaafa32f4cadf45fc42215fbdfdcb82e9e5783ead3dc0f",
+  "release": "0.19.0-alpha.1",
+  "release_commit": "cbc557e25c46b195f8e389609c2e6a83e3b188f3",
+  "runtime_services": 21,
+  "schema_version": 17,
+  "scientific_claim_created": false,
+  "source_zip_byte_reproducible": true,
+  "tag_target": "cbc557e25c46b195f8e389609c2e6a83e3b188f3",
+  "tests": {"collected": 160, "errors": 0, "failed": 0, "passed": 159, "skipped": 1, "test_files": 41, "timeouts": 0}
+}
