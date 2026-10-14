@@ -14,8 +14,10 @@ on:
       - "src/plugins/plugin-api.types.ts"
       - "src/plugins/runtime/types.ts"
 
+# Temporary write authority is used only to materialize the minimal workspace
+# importer. It is removed after the lockfile commit lands on the PR branch.
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -31,10 +33,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Checkout
+      - name: Checkout PR branch
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
-          persist-credentials: false
+          persist-credentials: true
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Setup Node and pnpm
         uses: ./.github/actions/setup-node-env
@@ -43,21 +46,55 @@ jobs:
           install-deps: "false"
           use-actions-cache: "true"
 
-      - name: Generate canonical lockfile candidate
+      - name: Generate minimal canonical lockfile importer
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p constitutional-gate-artifacts
+          cp pnpm-lock.yaml /tmp/pnpm-lock.base.yaml
           pnpm install --lockfile-only --no-frozen-lockfile \
             --filter '@openclaw/constitutional-execution...'
-          mkdir -p constitutional-gate-artifacts
           cp pnpm-lock.yaml constitutional-gate-artifacts/pnpm-lock.generated.yaml
+          python - <<'PY'
+          from pathlib import Path
+          candidate = Path('pnpm-lock.yaml').read_text()
+          base = Path('/tmp/pnpm-lock.base.yaml').read_text()
+          marker = '  extensions/constitutional-execution:\n'
+          if marker in base:
+              Path('pnpm-lock.yaml').write_text(base)
+              raise SystemExit(0)
+          start = candidate.index(marker)
+          end = candidate.index('\n  extensions/', start + len(marker)) + 1
+          block = candidate[start:end]
+          insertion = base.index('  extensions/copilot:\n')
+          Path('pnpm-lock.yaml').write_text(base[:insertion] + block + base[insertion:])
+          PY
           git diff -- pnpm-lock.yaml > constitutional-gate-artifacts/pnpm-lock.patch || true
+          pnpm install --lockfile-only --frozen-lockfile \
+            --filter '@openclaw/constitutional-execution...'
+
+      - name: Commit canonical importer once
+        id: lockfile
+        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- pnpm-lock.yaml; then
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "chore(deps): lock constitutional execution workspace"
+          git push origin HEAD:${{ github.head_ref }}
+          echo "committed=true" >> "$GITHUB_OUTPUT"
 
       - name: Install extension dependency closure
         shell: bash
         run: |
           set -euo pipefail
-          pnpm install --no-frozen-lockfile --ignore-scripts \
+          pnpm install --frozen-lockfile --ignore-scripts \
             --filter '@openclaw/constitutional-execution...'
 
       - name: Check Plugin SDK contract drift
@@ -135,10 +172,12 @@ jobs:
           typecheck_exit=${{ steps.typecheck.outputs.exit_code }}
           tests_exit=${{ steps.tests.outputs.exit_code }}
           manifest_exit=${{ steps.manifest.outputs.exit_code }}
-          head_sha=${{ github.sha }}
+          lockfile_committed=${{ steps.lockfile.outputs.committed }}
+          event_head_sha=${{ github.sha }}
+          tested_head_sha=$(git rev-parse HEAD)
           EOF
 
-      - name: Upload generated lockfile and diagnostics
+      - name: Upload lockfile and diagnostic evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
