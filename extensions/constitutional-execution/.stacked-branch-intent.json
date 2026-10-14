@@ -1,0 +1,1 @@
+{"baseBranch":"codex/constitutional-execution-shadow-v1","targetBranch":"codex/constitutional-execution-durable-v2","purpose":"SQLite/WAL durable store, outbox and recovery"}
