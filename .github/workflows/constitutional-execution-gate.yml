@@ -31,10 +31,23 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
-      - name: Checkout
+      - name: Checkout exact promotion candidate
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify checkout provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          actual="$(git rev-parse HEAD)"
+          if [[ "$actual" != "$expected" ]]; then
+            echo "::error::tested checkout $actual differs from promotion candidate $expected"
+            exit 1
+          fi
+          printf 'tested_head_sha=%s\n' "$actual" > constitutional-tested-head.txt
 
       - name: Setup Node and pnpm
         uses: ./.github/actions/setup-node-env
@@ -48,6 +61,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p constitutional-gate-artifacts
+          cp constitutional-tested-head.txt constitutional-gate-artifacts/tested-head.txt
           pnpm install --lockfile-only --frozen-lockfile \
             --filter '@openclaw/constitutional-execution...'
           git diff --exit-code -- pnpm-lock.yaml
