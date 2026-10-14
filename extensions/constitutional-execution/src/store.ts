@@ -175,6 +175,30 @@ export class ConstitutionalStore {
     }
   }
 
+  private writeRecord(database: DatabaseSync, record: ConstitutionalRecord): void {
+    database
+      .prepare(`
+        UPDATE constitutional_records SET
+          status = ?, mode = ?, run_id = ?, session_key = ?, output_json = ?,
+          output_hash = ?, error = ?, updated_at_unix = ?, completed_at_unix = ?,
+          metadata_json = ?
+        WHERE idempotency_key = ?
+      `)
+      .run(
+        record.status,
+        record.mode,
+        record.runId ?? null,
+        record.sessionKey ?? null,
+        jsonOrNull(record.output),
+        record.outputHash ?? null,
+        record.error ?? null,
+        record.updatedAtUnix,
+        record.completedAtUnix ?? null,
+        jsonOrNull(record.metadata),
+        record.idempotencyKey,
+      );
+  }
+
   async reserve(input: {
     idempotencyKey: string;
     envelopeHash: string;
@@ -251,29 +275,41 @@ export class ConstitutionalStore {
         ...definedPatch(patch),
         updatedAtUnix: Date.now() / 1000,
       };
-      database
-        .prepare(`
-          UPDATE constitutional_records SET
-            status = ?, mode = ?, run_id = ?, session_key = ?, output_json = ?,
-            output_hash = ?, error = ?, updated_at_unix = ?, completed_at_unix = ?,
-            metadata_json = ?
-          WHERE idempotency_key = ?
-        `)
-        .run(
-          updated.status,
-          updated.mode,
-          updated.runId ?? null,
-          updated.sessionKey ?? null,
-          jsonOrNull(updated.output),
-          updated.outputHash ?? null,
-          updated.error ?? null,
-          updated.updatedAtUnix,
-          updated.completedAtUnix ?? null,
-          jsonOrNull(updated.metadata),
-          idempotencyKey,
-        );
+      this.writeRecord(database, updated);
       this.appendEvent(database, eventType, updated);
       return structuredClone(updated);
+    });
+  }
+
+  async transitionStatus(
+    idempotencyKey: string,
+    fromStatuses: readonly ConstitutionalStatusValue[],
+    status: ConstitutionalStatusValue,
+    patch: Partial<
+      Omit<ConstitutionalRecord, "idempotencyKey" | "envelopeHash" | "payloadHash" | "status">
+    > = {},
+  ): Promise<{ record: ConstitutionalRecord; transitioned: boolean }> {
+    const database = await this.database();
+    return this.transaction(database, () => {
+      const current = this.selectRecord(database, idempotencyKey);
+      if (!current) {
+        throw new ConstitutionalError(
+          "CONSTITUTION_UNKNOWN",
+          "Unknown constitutional execution.",
+        );
+      }
+      if (!fromStatuses.includes(current.status)) {
+        return { record: structuredClone(current), transitioned: false };
+      }
+      const updated: ConstitutionalRecord = {
+        ...current,
+        ...definedPatch(patch),
+        status,
+        updatedAtUnix: Date.now() / 1000,
+      };
+      this.writeRecord(database, updated);
+      this.appendEvent(database, `STATUS_${status}`, updated);
+      return { record: structuredClone(updated), transitioned: true };
     });
   }
 
