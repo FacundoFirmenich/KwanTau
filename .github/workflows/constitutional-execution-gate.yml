@@ -29,7 +29,7 @@ env:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -58,14 +58,14 @@ jobs:
           set -euo pipefail
           pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: Build canonical Plugin SDK declarations
-        id: plugin_sdk_dts
+      - name: Build canonical strict runtime and Plugin SDK declarations
+        id: strict_build
         shell: bash
         run: |
           set +e
           set -o pipefail
-          pnpm build:plugin-sdk:dts \
-            2>&1 | tee constitutional-gate-artifacts/plugin-sdk-dts.log
+          pnpm build:strict-smoke \
+            2>&1 | tee constitutional-gate-artifacts/strict-build.log
           exit_code=${PIPESTATUS[0]}
           echo "exit_code=${exit_code}" >> "$GITHUB_OUTPUT"
           exit 0
@@ -157,7 +157,7 @@ jobs:
         shell: bash
         run: |
           cat > constitutional-gate-artifacts/summary.txt <<EOF
-          plugin_sdk_dts_exit=${{ steps.plugin_sdk_dts.outputs.exit_code }}
+          strict_build_exit=${{ steps.strict_build.outputs.exit_code }}
           format_exit=${{ steps.format.outputs.exit_code }}
           contract_exit=${{ steps.contract.outputs.exit_code }}
           typecheck_exit=${{ steps.typecheck.outputs.exit_code }}
@@ -181,8 +181,8 @@ jobs:
         run: |
           set -euo pipefail
           failure=0
-          if [[ "${{ steps.plugin_sdk_dts.outputs.exit_code }}" != "0" ]]; then
-            echo "::error::canonical Plugin SDK declaration build failed"
+          if [[ "${{ steps.strict_build.outputs.exit_code }}" != "0" ]]; then
+            echo "::error::canonical strict runtime/SDK build failed"
             failure=1
           fi
           if [[ "${{ steps.format.outputs.exit_code }}" != "0" ]]; then
