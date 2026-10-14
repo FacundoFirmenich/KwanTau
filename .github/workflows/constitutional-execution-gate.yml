@@ -58,17 +58,38 @@ jobs:
           pnpm install --no-frozen-lockfile --ignore-scripts \
             --filter '@openclaw/constitutional-execution...'
 
-      - name: Typecheck extension
-        run: pnpm --filter @openclaw/constitutional-execution run typecheck
-
-      - name: Test extension
-        run: pnpm --filter @openclaw/constitutional-execution run test
-
-      - name: Validate plugin manifest and safety defaults
+      - name: Typecheck extension with captured diagnostics
+        id: typecheck
         shell: bash
         run: |
-          set -euo pipefail
-          node --input-type=module <<'NODE'
+          set +e
+          set -o pipefail
+          pnpm --filter @openclaw/constitutional-execution run typecheck \
+            2>&1 | tee constitutional-gate-artifacts/typecheck.log
+          exit_code=${PIPESTATUS[0]}
+          echo "exit_code=${exit_code}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Test extension with captured diagnostics
+        id: tests
+        shell: bash
+        run: |
+          set +e
+          set -o pipefail
+          pnpm --filter @openclaw/constitutional-execution run test \
+            2>&1 | tee constitutional-gate-artifacts/tests.log
+          exit_code=${PIPESTATUS[0]}
+          echo "exit_code=${exit_code}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Validate plugin manifest and safety defaults
+        id: manifest
+        shell: bash
+        run: |
+          set +e
+          set -o pipefail
+          node --input-type=module <<'NODE' \
+            2>&1 | tee constitutional-gate-artifacts/manifest.log
           import { readFile } from 'node:fs/promises';
           const manifest = JSON.parse(
             await readFile('extensions/constitutional-execution/openclaw.plugin.json', 'utf8'),
@@ -87,22 +108,50 @@ jobs:
             if (!(name in properties)) throw new Error(`missing constitutional config field: ${name}`);
           }
           NODE
+          exit_code=${PIPESTATUS[0]}
+          echo "exit_code=${exit_code}" >> "$GITHUB_OUTPUT"
+          exit 0
 
-      - name: Upload generated lockfile evidence
+      - name: Record gate summary
+        if: always()
+        shell: bash
+        run: |
+          cat > constitutional-gate-artifacts/summary.txt <<EOF
+          typecheck_exit=${{ steps.typecheck.outputs.exit_code }}
+          tests_exit=${{ steps.tests.outputs.exit_code }}
+          manifest_exit=${{ steps.manifest.outputs.exit_code }}
+          head_sha=${{ github.sha }}
+          EOF
+
+      - name: Upload generated lockfile and diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: constitutional-execution-lockfile-${{ github.sha }}
+          name: constitutional-execution-gate-${{ github.sha }}
           path: constitutional-gate-artifacts/
           if-no-files-found: error
           retention-days: 7
 
-      - name: Enforce committed lockfile consistency
+      - name: Enforce gate results and lockfile consistency
         shell: bash
         run: |
           set -euo pipefail
+          failure=0
+          if [[ "${{ steps.typecheck.outputs.exit_code }}" != "0" ]]; then
+            echo "::error::constitutional extension typecheck failed"
+            failure=1
+          fi
+          if [[ "${{ steps.tests.outputs.exit_code }}" != "0" ]]; then
+            echo "::error::constitutional extension tests failed"
+            failure=1
+          fi
+          if [[ "${{ steps.manifest.outputs.exit_code }}" != "0" ]]; then
+            echo "::error::constitutional plugin manifest validation failed"
+            failure=1
+          fi
           if ! git diff --quiet -- pnpm-lock.yaml; then
             echo "::error::pnpm-lock.yaml is stale for the constitutional-execution workspace importer"
             git diff -- pnpm-lock.yaml
-            exit 1
+            failure=1
           fi
+          exit "$failure"
