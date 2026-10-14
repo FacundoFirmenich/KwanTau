@@ -84,7 +84,10 @@ export type ConstitutionalPluginConfig = {
   hostId: string;
   activePolicyHash: string;
   maxIntentAgeMs: number;
+  maxLeaseDurationMs: number;
   clockSkewMs: number;
+  minimumEpoch: number;
+  revokedLeaseIds: string[];
   waitTimeoutMs: number;
   allowedKeys: Array<{
     keyId: string;
@@ -93,6 +96,7 @@ export type ConstitutionalPluginConfig = {
   }>;
   allowedExecutors: string[];
   allowedCapabilities: string[];
+  allowedContractHashes: string[];
   allowedSessionPrefixes: string[];
   maxBudget: Record<string, number>;
 };
