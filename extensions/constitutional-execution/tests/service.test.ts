@@ -227,10 +227,7 @@ describe("constitutional execution service", () => {
       release = resolve;
     });
     let agentCalls = 0;
-    const request: GatewayRequest = async <T>(
-      method: string,
-      params?: Record<string, unknown>,
-    ) => {
+    const request: GatewayRequest = async <T>(method: string, params?: Record<string, unknown>) => {
       if (method === "kch.authority.verify") {
         return {
           active: true,
@@ -263,10 +260,7 @@ describe("constitutional execution service", () => {
 
   it("never redispatches an in-doubt remote acceptance", async () => {
     let agentCalls = 0;
-    const request: GatewayRequest = async <T>(
-      method: string,
-      params?: Record<string, unknown>,
-    ) => {
+    const request: GatewayRequest = async <T>(method: string, params?: Record<string, unknown>) => {
       if (method === "kch.authority.verify") {
         return {
           active: true,
@@ -292,10 +286,7 @@ describe("constitutional execution service", () => {
 
   it("requires signed reconciliation before observing an in-doubt run", async () => {
     const calls: string[] = [];
-    const request: GatewayRequest = async <T>(
-      method: string,
-      params?: Record<string, unknown>,
-    ) => {
+    const request: GatewayRequest = async <T>(method: string, params?: Record<string, unknown>) => {
       calls.push(method);
       if (method === "kch.authority.verify") {
         return {
@@ -369,7 +360,6 @@ describe("constitutional execution service", () => {
     expect((await service.store.get("idem-1"))?.status).toBe("CANCEL_REQUESTED");
   });
 
-
   it("fails closed when live KCH authority is unavailable", async () => {
     let agentCalls = 0;
     const request: GatewayRequest = async <T>(method: string) => {
@@ -387,10 +377,7 @@ describe("constitutional execution service", () => {
 
   it("fails closed when live KCH authority is stale or revoked", async () => {
     let agentCalls = 0;
-    const request: GatewayRequest = async <T>(
-      method: string,
-      params?: Record<string, unknown>,
-    ) => {
+    const request: GatewayRequest = async <T>(method: string, params?: Record<string, unknown>) => {
       if (method === "kch.authority.verify") {
         return {
           active: false,
