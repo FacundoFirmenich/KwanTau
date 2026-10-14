@@ -25,7 +25,7 @@ const projections = [
     source: pluginEntry,
     required: [
       "type DefinePluginEntryOptions = {",
-      "register: NonNullable<OpenClawPluginDefinition[\"register\"]>;",
+      'register: NonNullable<OpenClawPluginDefinition["register"]>;'
       "export function definePluginEntry({",
       "}: DefinePluginEntryOptions): DefinedPluginEntry",
     ],
@@ -61,9 +61,7 @@ const consumedProjection = [];
 for (const projection of projections) {
   for (const fragment of projection.required) {
     if (!projection.source.includes(fragment)) {
-      throw new Error(
-        `${projection.name} contract drift: missing ${JSON.stringify(fragment)}`,
-      );
+      throw new Error(`${projection.name} contract drift: missing ${JSON.stringify(fragment)}`);
     }
     consumedProjection.push(`${projection.name}:${fragment}`);
   }
