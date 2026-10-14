@@ -1,0 +1,66 @@
+{
+  "artifact": "kwantau_dos_kwan_enforced_operator_fabric_v0_13_0",
+  "authority_granted": false,
+  "canonical_repository": "FacundoFirmenich/KwanTauDOS",
+  "canonical_repository_container_created": false,
+  "claim_boundary": {
+    "cosign_local_key_verification_claimed": true,
+    "distributed_consensus_claimed": false,
+    "external_authority_imported": false,
+    "external_kwan_blocks_lineage_transported_exactly": true,
+    "external_publication_claimed": false,
+    "external_scientific_claim_imported": false,
+    "host_profile_assessment_applies_controls": false,
+    "host_profile_assessment_claimed": true,
+    "immutable_historical_lineage_bytes_embedded": true,
+    "implemented_claims_backed_by_tests": true,
+    "matrix_verdict_creates_scientific_authority": false,
+    "matrix_verdict_promotes_candidate": false,
+    "official_cedar_opa_exact_vector_conformance_claimed": true,
+    "operator_registry_grants_execution": false,
+    "oras_local_oci_roundtrip_claimed": true,
+    "package_verification_mints_authority": false,
+    "policy_support_mints_authority": false,
+    "preregistered_matrix_claimed": true,
+    "production_update_repository_claimed": false,
+    "rekor_or_keyless_claimed": false,
+    "scalar_completeness_score_used": false,
+    "signed_operator_contract_registry_claimed": true,
+    "tuf_local_rollback_vector_claimed": true,
+    "unsupported_capabilities_listed": true,
+    "wasi_component_execution_claimed": false,
+    "wasi_component_model_claimed": false,
+    "wasmtime_linux_enclosure_exact_gate_claimed": true,
+    "wit_contract_published": true
+  },
+  "commit": "4fca70ff36c0b050d22ad8d4787ce44df0bf0992",
+  "equivalence": {
+    "release_zip_reproducible_byte_for_byte": true,
+    "source_zip_bundle_same_logical_manifest": true
+  },
+  "format": "KWAN_INDEPENDENT_VALIDATION_V1",
+  "git_bundle": {
+    "bytes": 991866,
+    "file_manifest_sha256": "b77da575487748e25f71c9f61ebaa4e2f7629500059c24980362682cfe93f9d0",
+    "head": "4fca70ff36c0b050d22ad8d4787ce44df0bf0992",
+    "sha256": "28d5029c34ebd74af1dad442a3ecf794cf8fe27a557ba144041085c5edebb9f1",
+    "validation": "PASS"
+  },
+  "parent": "a080c433b85278dcec61518df38aab108db49abe",
+  "promotion_performed": false,
+  "release": "0.13.0-alpha.1",
+  "release_zip": {
+    "bytes": 3834832,
+    "file_manifest_sha256": "b77da575487748e25f71c9f61ebaa4e2f7629500059c24980362682cfe93f9d0",
+    "sha256": "ed2fffbe98ced04f8cb6186e34bcbdd5bba4cb448638bcf7e50e2b00cd4eca79",
+    "validation": "PASS"
+  },
+  "source": {
+    "file_manifest_sha256": "b77da575487748e25f71c9f61ebaa4e2f7629500059c24980362682cfe93f9d0",
+    "validation": "PASS",
+    "validation_report_sha256": "b208123bccc7269822307e5ee976ba68047512f20e4180d640f94a7ca97945f1"
+  },
+  "staging_branch": "kwan/integral-v0.13-shadow",
+  "staging_repository": "FacundoFirmenich/KwanTau",
+  "tests_passed": 92
+}
