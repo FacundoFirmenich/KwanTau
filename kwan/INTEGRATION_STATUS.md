@@ -17,68 +17,94 @@ This branch is a governed textual audit surface for migration into the canonical
 
 ## Current release
 
-- Release: **KwanTau2DOS v0.24.0-alpha.1 — Integral Mission Fabric**
-- Release commit: `2be70dc224ea4fab05db1f118adc4722b2ca83b4`
-- Feature commit: `dd514e9036653817c1b86444b95acbd674806b0c`
-- Predecessor: `8fd1f1d095e9da112a840f11df28122c0d9d3f3c`
-- Tests: **191 executed, 190 passed, 1 explicit conditional Wasmtime skip** in source, clean ZIP and clean bundle clone
-- Logical files: `596`
-- Logical tree SHA-256: `89ac896fe13150e53ce5912b5eae4b06dbc998ad4604ec58d09998e369daeb9f`
-- Git bundle SHA-256: `93db33cdc9152c31ef85795e0fade304541622de65fb65adab15cfa9ba0b993c`
-- Release ZIP SHA-256: `51ac8873267442dbb9f517c1fc337e6cd5a82a312e70648605874ab667b11736`
-- Kwan Browser SHA-256: `361f038e75ecb99ade6c2d0b1156dddfb1ead0f162031eb20cf724e6089ec8e9`
-- Delivery SHA-256: `9c885b75c7dd6f0a08485a3317318c11f883141b0a11297bb9e0307f01c842a8`
+- Release: **KwanTau2DOS v0.25.0-alpha.1 — Durable Mission Runtime and Human Authority Console**
+- Release commit: `b99ee39b2f11adfebf78cb604816879935023622`
+- Feature commit: `823cef1a69ac17ba9a302d6c61ba3ec81ac87be2`
+- Predecessor: `2be70dc224ea4fab05db1f118adc4722b2ca83b4`
+- Tests: **198 executed, 197 passed, 1 explicit conditional Wasmtime skip** in source, clean ZIP and clean bundle clone
+- Logical files: `619`
+- Logical tree SHA-256: `5abdb778c7c2519eff80929eaf5c8238bacaf8ebce01de6f43a15983497b4320`
+- Git bundle SHA-256: `572e183076053683df90dcf422eb591c39f10567dd7294083fdaf0721010841a`
+- Release ZIP SHA-256: `ee683efd3c30e7071a214f57585346787bfbd0d73c7bf72f6f8833768f2ae073`
+- Kwan Browser SHA-256: `99a7a53e5df54fd095bd42a7d95d1acca457f795614b305c1ba4376838362408`
+- Delivery SHA-256: `d026ddb241c495a8c0388ea989f7980e917e179838534c501a4bc9c47b129fa3`
 
 ## Integral result
 
-v0.24 changes the unit of integration from the most recently developed service to the whole-Ride mission:
+v0.25 converts the v0.24 mission DAG into a durable local runtime while preserving all nineteen mandatory components:
 
 ```text
-all 19 mandatory components declared
-→ content-addressed causal DAG
-→ step-local authority
-→ checkpoints, artifacts and surfaces
-→ KwanBlocks evidence
-→ candidate-only learning
-→ SHADOW succession
-→ no automatic execution or promotion
+sealed integral mission
+→ durable run and work queue
+→ dependency-aware scheduler
+→ worker claim and heartbeat
+→ human authority request
+→ exact human decision record
+→ separate component execution lease
+→ observed effect binding
+→ mission-scoped closure
 ```
 
-An `INTEGRAL` mission cannot be sealed if a mandatory component is omitted. Components that remain open must be explicit `DEFERRED` entries with a reason and next gate. The runtime exposes 27 services and SQLite schema v22 while preserving the 19-component architectural map.
+The runtime exposes 28 services and SQLite schema v23. It does not own a universal execution capability. Worker claims coordinate work only; human approval records consent only; productive completion requires a separately authorised and already observed component effect.
 
 ## Material fixture
 
-The fixture traverses Observer–Jarvis, CSI, KwanMe, Country World, CreaLabs, Sweetbox, KwanDocs, KwanBlocks, Kwan Browser and Onboarding Learning. It passes an intermediate evidence checkpoint, attaches a read-only surface, records a learning candidate, blocks an unauthorised outward effect without attempting it, blocks final closure and creates a zero-authority SHADOW successor.
+The fixture executes a real local encrypted KwanMe document effect inside a temporary isolated home:
 
 ```text
-scientific claim      PROTOCOL_FIXTURE_ONLY
-real-world effect     false
-authority granted     false
-promotion performed   false
+nonproductive step                         SUCCEEDED
+productive step before approval            WAITING_HUMAN
+human decision                             APPROVE
+missing execution lease                    rejected
+exact KwanMe execution lease               required
+local encrypted effect                     COMPLETED
+bound observed effect                      true
+mission run                                SUCCEEDED
 ```
+
+```text
+scientific claim                           PROTOCOL_FIXTURE_ONLY
+local material effect                      true
+external effect                            false
+authority granted by mission               false
+promotion performed                        false
+cleartext at rest                          absent
+```
+
+## Recovery and authority boundaries
+
+- expired claims for safe unstarted nonproductive work may return to the queue;
+- claimed or running work found after rehydration is quarantined;
+- no work is replayed automatically;
+- no authority is reissued;
+- a human approval is not a productive KCH lease;
+- a mission claim is not execution authority;
+- pause, resume and abort obey explicit state transitions;
+- rejected secret-like decision constraints do not consume the one-time authority challenge.
 
 ## Claim boundary
 
 Demonstrated:
 
-- mandatory declaration of all nineteen components;
-- explicit deferred boundaries rather than hidden omissions;
-- DAG and cycle validation;
-- component-local execution authority;
-- mission-scoped checkpoints;
-- surface attachment without authority transfer;
-- candidate-only learning;
-- fail-closed rehydration;
+- durable local scheduling and dependency reconciliation;
+- exact worker claims and heartbeat expiry;
+- human authority requests with alternatives, consequences and reversibility;
+- encrypted rationale and fail-closed local challenge;
+- separation between human decision and component execution authority;
+- local encrypted KwanMe effect and exact effect binding;
+- productive completion only after observed effect evidence;
+- fail-closed rehydration without replay or authority reissue;
 - source/ZIP/bundle logical equivalence.
 
 Not demonstrated:
 
-- production workflow engine;
-- distributed scheduler;
-- global multi-store atomicity;
-- full implementation of all nineteen components;
-- real-world mission utility;
-- empirical learning gain;
+- distributed or multihost scheduling;
+- global ACID across mission and effect stores;
+- production external effects;
+- general exactly-once execution;
+- remote human identity attestation;
+- production security hardening;
+- real-world user utility;
 - ACTIVE readiness or scientific superiority.
 
 ## Repository state
@@ -87,4 +113,4 @@ The current `FacundoFirmenich/KwanTau` repository remains a SHADOW textual stagi
 
 ## Next legitimate gate
 
-`v0.25 — Durable Mission Runtime and Human Authority Console`: close crash consistency across mission state and component effects, add durable scheduling and compensation semantics, implement a human authority console with exact previews, materialise deferred components where possible, and execute a first user-approved non-fixture mission without converting mission completion into global scientific authority.
+`v0.26 — Federated Mission Execution and Attested Human Authority`: coordinate mission work and effect outboxes transactionally, add multihost worker fencing, attest human-console sessions, connect exact compensation and adjudication paths, and execute the first explicitly approved non-fixture mission without allowing mission success to mint authority or scientific validity.
