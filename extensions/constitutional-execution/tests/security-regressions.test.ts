@@ -21,7 +21,10 @@ function baseConfig(publicKeyPem: string) {
 
 describe("constitutional security regressions", () => {
   it("preserves an own __proto__ member in canonical commitments", () => {
-    const withProto = JSON.parse('{"__proto__":{"polluted":true},"x":1}') as Record<string, unknown>;
+    const withProto = JSON.parse('{"__proto__":{"polluted":true},"x":1}') as Record<
+      string,
+      unknown
+    >;
     const withoutProto = JSON.parse('{"x":1}') as Record<string, unknown>;
     expect(Object.prototype.hasOwnProperty.call(withProto, "__proto__")).toBe(true);
     expect(canonicalJson(withProto)).toContain('"__proto__"');
