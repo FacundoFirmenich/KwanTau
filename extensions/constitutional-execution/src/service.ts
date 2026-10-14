@@ -4,6 +4,7 @@ import { ConstitutionalStore } from "./store.js";
 import type {
   ConstitutionalCancelParams,
   ConstitutionalExecuteParams,
+  ConstitutionalLiveAuthorityResult,
   ConstitutionalPluginConfig,
   ConstitutionalReconcileParams,
   ConstitutionalRecord,
@@ -66,6 +67,82 @@ export class ConstitutionalExecutionService {
     this.store = new ConstitutionalStore(config.storePath);
   }
 
+  private async verifyLiveAuthority(
+    params: ConstitutionalExecuteParams,
+  ): Promise<ConstitutionalLiveAuthorityResult> {
+    const method = this.config.liveAuthorityVerifierMethod;
+    if (!method) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_LIVE_AUTHORITY_UNAVAILABLE",
+        "Enforce mode requires a live KCH authority verifier.",
+        { retryable: true },
+      );
+    }
+    const envelope = params.envelope;
+    let result: ConstitutionalLiveAuthorityResult;
+    try {
+      result = await this.gatewayRequest<ConstitutionalLiveAuthorityResult>(
+        method,
+        {
+          envelopeHash: sha256Hex(envelope),
+          leaseId: envelope.lease_id,
+          reservationId: envelope.reservation_id,
+          decisionId: envelope.decision_id,
+          intentId: envelope.intent_id,
+          candidateId: envelope.candidate_id,
+          permissionId: envelope.permission_id,
+          supportCertificateId: envelope.support_certificate_id,
+          assuranceId: envelope.assurance_id,
+          epoch: envelope.epoch,
+          policyHash: envelope.policy_hash,
+          hostId: envelope.host_id,
+          sessionId: envelope.session_id,
+        },
+        { scopes: ["operator.admin"] },
+      );
+    } catch (error) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_LIVE_AUTHORITY_UNAVAILABLE",
+        "Live KCH authority verification is unavailable.",
+        { retryable: true, details: { cause: String(error) } },
+      );
+    }
+    const now = Date.now() / 1000;
+    const maxAgeSeconds = this.config.maxLiveAuthorityAgeMs / 1000;
+    const maxFutureSkewSeconds = this.config.clockSkewMs / 1000;
+    const identityMatches =
+      result.leaseId === envelope.lease_id &&
+      result.reservationId === envelope.reservation_id &&
+      result.decisionId === envelope.decision_id &&
+      result.intentId === envelope.intent_id &&
+      result.policyHash === envelope.policy_hash &&
+      result.epoch >= envelope.epoch;
+    const freshnessValid =
+      Number.isFinite(result.verifiedAtUnix) &&
+      result.verifiedAtUnix <= now + maxFutureSkewSeconds &&
+      now - result.verifiedAtUnix <= maxAgeSeconds;
+    if (
+      result.active !== true ||
+      !identityMatches ||
+      !freshnessValid ||
+      typeof result.generation !== "string" ||
+      !result.generation.trim()
+    ) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_LIVE_AUTHORITY_DENIED",
+        result.reason || "Live KCH authority does not match the executable envelope.",
+        {
+          details: {
+            active: result.active,
+            generation: result.generation,
+            verifiedAtUnix: result.verifiedAtUnix,
+          },
+        },
+      );
+    }
+    return result;
+  }
+
   async execute(params: ConstitutionalExecuteParams): Promise<ConstitutionalStatus> {
     const verified = validateExecuteParams(params, this.config);
     const reserved = await this.store.reserve({
@@ -102,6 +179,49 @@ export class ConstitutionalExecutionService {
     );
     if (!claim.transitioned) {
       return toStatus(claim.record);
+    }
+
+    try {
+      validateExecuteParams(params, this.config);
+      const liveAuthority = await this.verifyLiveAuthority(params);
+      await this.store.update(
+        params.idempotencyKey,
+        {
+          metadata: mergedMetadata(claim.record, {
+            liveAuthority: {
+              generation: liveAuthority.generation,
+              verifiedAtUnix: liveAuthority.verifiedAtUnix,
+            },
+          }),
+        },
+        "LIVE_AUTHORITY_VERIFIED",
+      );
+    } catch (error) {
+      if (
+        error instanceof ConstitutionalError &&
+        error.code === "CONSTITUTION_LIVE_AUTHORITY_UNAVAILABLE"
+      ) {
+        await this.store.transitionStatus(
+          params.idempotencyKey,
+          ["DISPATCHING"],
+          "ACCEPTED",
+          {
+            error: error.message,
+            metadata: mergedMetadata(claim.record, {
+              liveAuthorityUnavailableAtUnix: Date.now() / 1000,
+            }),
+          },
+        );
+      } else {
+        await this.store.setStatus(params.idempotencyKey, "FAILED", {
+          error: String(error),
+          completedAtUnix: Date.now() / 1000,
+          metadata: mergedMetadata(claim.record, {
+            liveAuthorityDeniedAtUnix: Date.now() / 1000,
+          }),
+        });
+      }
+      throw error;
     }
 
     const payload = { ...envelope.payload, idempotencyKey: params.idempotencyKey };
@@ -148,7 +268,7 @@ export class ConstitutionalExecutionService {
       const payload = await this.gatewayRequest<Record<string, unknown>>(
         "agent.wait",
         { runId: record.runId, timeoutMs: this.config.waitTimeoutMs },
-        { timeoutMs: this.config.waitTimeoutMs + 5_000, scopes: ["operator.read"] },
+        { timeoutMs: this.config.waitTimeoutMs + 5_000, scopes: ["operator.write"] },
       );
       const status = terminalStatus(payload);
       const terminal = ["SUCCEEDED", "FAILED", "TIMEOUT"].includes(status);
@@ -213,16 +333,23 @@ export class ConstitutionalExecutionService {
     if (!record) {
       throw new ConstitutionalError("CONSTITUTION_UNKNOWN", "Unknown constitutional execution.");
     }
-    const updated = await this.store.setStatus(params.idempotencyKey, "CANCEL_REQUESTED", {
-      error: `Cancellation requested but not dispatched: ${params.reason}`,
-      metadata: mergedMetadata(record, {
-        cancellationRequestedAtUnix: Date.now() / 1000,
-      }),
-    });
+    const transition = await this.store.transitionStatus(
+      params.idempotencyKey,
+      ["SHADOW_ACCEPTED", "ACCEPTED", "DISPATCHING", "RUNNING", "IN_DOUBT"],
+      "CANCEL_REQUESTED",
+      {
+        error: `Cancellation requested but not dispatched: ${params.reason}`,
+        metadata: mergedMetadata(record, {
+          cancellationRequestedAtUnix: Date.now() / 1000,
+        }),
+      },
+    );
     throw new ConstitutionalError(
       "CONSTITUTION_CANCEL_UNAVAILABLE",
-      "Cancellation is recorded but fail-closed until the exact Gateway abort mapping is audited.",
-      { details: { status: toStatus(updated) } },
+      transition.transitioned
+        ? "Cancellation is recorded but fail-closed until the exact Gateway abort mapping is audited."
+        : "Cancellation cannot supersede an existing terminal or prior cancellation state.",
+      { details: { status: toStatus(transition.record) } },
     );
   }
 }
