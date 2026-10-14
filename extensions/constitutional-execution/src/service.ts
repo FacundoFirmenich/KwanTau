@@ -284,6 +284,21 @@ export class ConstitutionalExecutionService {
       });
       this.assertBrokerClaim(committed, params, verified.envelopeHash, "COMMITTED", false);
     } catch (error) {
+      if (
+        error instanceof ConstitutionalError &&
+        error.code === "CONSTITUTION_LIVE_AUTHORITY_DENIED"
+      ) {
+        return toStatus(
+          await this.store.setStatus(params.idempotencyKey, "FAILED", {
+            error: error.message,
+            completedAtUnix: Date.now() / 1000,
+            metadata: mergedMetadata(localClaim.record, {
+              kchAuthority: this.authorityMetadata(prepared),
+              kchCommitDeniedAtUnix: Date.now() / 1000,
+            }),
+          }),
+        );
+      }
       const uncertain = await this.store.setStatus(params.idempotencyKey, "IN_DOUBT", {
         error: String(error),
         metadata: mergedMetadata(localClaim.record, {
