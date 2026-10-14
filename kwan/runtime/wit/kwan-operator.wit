@@ -1,0 +1,14 @@
+package kwan:operator@1.0.0;
+
+interface context {
+  record budget {
+    cpu-ms: u64,
+    wall-ms: u64,
+    memory-bytes: u64,
+    io-bytes: u64,
+  }
+}
+
+world operator {
+  export run: func(input: list<u8>) -> result<list<u8>, string>;
+}
