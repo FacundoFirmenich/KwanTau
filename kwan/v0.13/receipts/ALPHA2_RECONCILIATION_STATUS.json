@@ -1,0 +1,28 @@
+{
+  "authority_granted": false,
+  "automatic_winner_selected": false,
+  "branch": "kwantau2dos/v0.13.0-alpha.2",
+  "canonical_remote": "FacundoFirmenich/KwanTau2DOS",
+  "canonical_remote_created": false,
+  "common_predecessor": "a080c433b85278dcec61518df38aab108db49abe",
+  "delivery_sha256": "ee12907e9896d2fa9f5aa86c318d150fd40a35c7b93d389c863dd2f07d796642",
+  "format": "KWANTAU2DOS_ALPHA2_STAGING_STATUS_V1",
+  "git_bundle_sha256": "23ed6fed12c623b04889d33deb3c78d273bc9cc92d01ad3b443bed638bade95e",
+  "lineage_merge_commit": "41e11e04d554df023ab7a6df255efd4abd536949",
+  "logical_file_count": 278,
+  "logical_tree_sha256": "ed370b838cd411a408d86978f82ca6c4a4f75e8ac677d2ad6d7a0959688c84eb",
+  "parent_commits": [
+    "7210e8000e5ee20b692458fd2f2930833bce6014",
+    "4fca70ff36c0b050d22ad8d4787ce44df0bf0992"
+  ],
+  "promotion_performed": false,
+  "release": "0.13.0-alpha.2",
+  "release_commit": "e5d6f72fecf43e892b982a0adef956919f4ab3e1",
+  "release_zip_sha256": "8befe7553773ae61e3f3472388942458ab3c4a0e27b843175bdf12a7a9d8c155",
+  "scientific_claim_created": false,
+  "source_zip_bundle_equivalent": true,
+  "staging_branch": "kwan/integral-v0.13-shadow",
+  "staging_repository": "FacundoFirmenich/KwanTau",
+  "tested_commit": "c5855b3893760e72658fe56e84e45801a95fc136",
+  "tests_passed": 102
+}

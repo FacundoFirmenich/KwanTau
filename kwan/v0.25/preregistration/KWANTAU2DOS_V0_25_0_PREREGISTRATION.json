@@ -1,0 +1,18 @@
+{
+  "format": "KWANTAU2DOS_V025_PREREGISTRATION_V1",
+  "release": "0.25.0-alpha.1",
+  "primary_question": "Can an integral mission be durably scheduled through a human authority gate while preserving separate component execution authority and exact effect evidence?",
+  "required_invariants": [
+    "worker claim is not execution authority",
+    "human approval is not execution lease",
+    "productive completion requires a pre-existing effect binding",
+    "rehydration performs no work replay",
+    "rehydration reissues no authority",
+    "mission closure does not imply ecosystem completeness"
+  ],
+  "material_fixture": "local encrypted KwanMe document effect",
+  "external_effect_permitted": false,
+  "scientific_claim": "PROTOCOL_FIXTURE_ONLY",
+  "automatic_promotion": false,
+  "authority_inherited": false
+}
