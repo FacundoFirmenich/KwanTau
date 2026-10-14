@@ -4,8 +4,16 @@
   "private": true,
   "description": "CFL-KCH intent-bound constitutional execution for the OpenClaw Gateway",
   "type": "module",
+  "scripts": {
+    "check": "pnpm run typecheck && pnpm run test",
+    "test": "vitest run tests/service.test.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@openclaw/plugin-sdk": "workspace:*",
+    "@types/node": "26.1.2",
+    "typescript": "6.0.3",
+    "vitest": "4.1.10"
   },
   "openclaw": {
     "extensions": [
