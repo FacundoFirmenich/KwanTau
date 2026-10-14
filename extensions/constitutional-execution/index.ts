@@ -5,6 +5,7 @@ import { ConstitutionalExecutionService } from "./src/service.js";
 import type {
   ConstitutionalCancelParams,
   ConstitutionalExecuteParams,
+  ConstitutionalReconcileParams,
 } from "./src/types.js";
 
 type GatewayErrorShape = {
@@ -68,6 +69,18 @@ export default definePluginEntry({
             );
           }
           respond(true, await service.status(idempotencyKey));
+        } catch (error) {
+          respond(false, undefined, gatewayErrorShape(error));
+        }
+      },
+      { scope: "operator.admin" },
+    );
+
+    api.registerGatewayMethod(
+      "constitutional.reconcile",
+      async ({ params, respond }) => {
+        try {
+          respond(true, await service.reconcile(params as ConstitutionalReconcileParams));
         } catch (error) {
           respond(false, undefined, gatewayErrorShape(error));
         }
