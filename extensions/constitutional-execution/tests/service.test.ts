@@ -31,11 +31,15 @@ function config(storePath: string, mode: "shadow" | "enforce" = "enforce"): Cons
     hostId,
     activePolicyHash: policyHash,
     maxIntentAgeMs: 300_000,
+    maxLeaseDurationMs: 300_000,
     clockSkewMs: 30_000,
+    minimumEpoch: 0,
+    revokedLeaseIds: [],
     waitTimeoutMs: 10,
     allowedKeys: [{ keyId: "test-key", publicKeyPem, enabled: true }],
     allowedExecutors: ["openclaw.agent"],
     allowedCapabilities: ["agent.run"],
+    allowedContractHashes: ["e".repeat(64)],
     allowedSessionPrefixes: ["agent:test:"],
     maxBudget: { tokens: 4096, seconds: 120 },
   };
@@ -201,5 +205,24 @@ describe("constitutional execution service", () => {
       code: "CONSTITUTION_CANCEL_UNAVAILABLE",
     });
     expect((await service.store.get("idem-1"))?.status).toBe("CANCEL_REQUESTED");
+  });
+
+  it("rejects mismatched session binding and revoked leases", async () => {
+    const gateway = gatewayMock();
+    const base = config(await tempStore());
+    const service = new ConstitutionalExecutionService(base, gateway.request);
+    await expect(
+      service.execute(executeParams(envelope({ session_id: "agent:test:other" }))),
+    ).rejects.toMatchObject({ code: "CONSTITUTION_SCOPE_DENIED" });
+    const revokedService = new ConstitutionalExecutionService(
+      { ...base, revokedLeaseIds: ["revoked-lease"] },
+      gateway.request,
+    );
+    await expect(
+      revokedService.execute(
+        executeParams(envelope({ idempotency_key: "idem-revoked", lease_id: "revoked-lease" })),
+      ),
+    ).rejects.toMatchObject({ code: "CONSTITUTION_EXPIRED" });
+    expect(gateway.calls).toHaveLength(0);
   });
 });
