@@ -11,83 +11,89 @@ This branch is a governed textual audit surface for migration into the canonical
 - In Spanish use **centrum** for KWAN-developed architectural centra; in English, **core** is acceptable.
 - **KwanBlocks** is canonical and plural. The former blog-like transcription never existed as a product.
 - Capability ≠ support ≠ permission ≠ authority ≠ execution ≠ training.
-- Rehydration, replay, import, installation, federation, intent recovery, mission feedback and CI PASS do not transport ACTIVE authority.
+- Rehydration, replay, import, installation, federation, evaluation, repair and CI PASS do not transport ACTIVE authority.
 - KwanMe personal payloads do not become ambient model context by default.
 - KwanBlocks has authority ceiling `NONE`.
 
 ## Current release
 
-- Release: **KwanTau2DOS v0.27.0-alpha.1 — Thread Federation, Missing-Intent Recovery and Mission Feedback Closure**
-- Release commit: `8d9077a13d5ee0c5b92658fb608ee058ef6997eb`
-- Feature commit: `e3d54e4e4379f230a7ab9b7975fb1e683349da8b`
-- Predecessor: `5b95d90a7913d2977a2983f2462d7d748bbdf430`
-- Historical suite: **213 collected, 212 passed, 1 explicit conditional Wasmtime skip**
-- Logical files: `670`
-- Logical tree SHA-256: `7f65df26b1e87734761da20bbbf2e527d06e448f0cc5d7ba45ef4076bd549747`
-- Git bundle SHA-256: `b0afbd235183b18b2e840fcd1fd886b0b5f09f957ab91c1ea168fa08c1f85194`
-- Release ZIP SHA-256: `1ffa41a34e7a3e3412fdf01ee3f7a656c5c62c59c762b40b49f06dd8b359f1f0`
-- Kwan Browser SHA-256: `cfefae452882a6f0c6eed0185f1b37e25e55b246c2bbeb5d48ad04aaccf7bcef`
-- Source capsule SHA-256: `302494d4684138129de6ffe2e85920859f6ece79b85657f8acdf39059b8052d3`
+- Release: **KwanTau2DOS v0.28.0-alpha.1 — Prospective Thread Utility and Causal Mission Repair**
+- Release commit: `f7f3270cc523763db357c893cdaf3bf00b158177`
+- Feature commit: `c4a6127fa08ff549aa8f4f7462f235673091e967`
+- Predecessor: `8d9077a13d5ee20b692458fd2f2930833bce6014`
+- Tests: **217 executed, 216 passed, 1 explicit conditional Wasmtime skip** in source, clean ZIP and clean bundle clone
+- Logical files: `704`
+- Logical tree SHA-256: `9200855660147ffdaa9a791138a099c49b04a040adc7c29b864ca85257f30113`
+- Git bundle SHA-256: `862f651fab2d9bc91bf715407bd2b7fb64ab5f920ba8e046e2ddf45a3b67ae83`
+- Release ZIP SHA-256: `964198b92a2eaf0f5112251f8ffce7d17c9a3e58cf9f510fc10416ed408dad4d`
+- Kwan Browser SHA-256: `f63bda79d591fbc61ee75906d75a23738351bf61128b0dbe66cd950a77105715`
+- Source capsule SHA-256: `fdcbcb3133a1bc39b13ca38f702d863867a95e13c2eaa957bf955c0368f36074`
+- Delivery SHA-256: `919e90ec57b56b63cb53ec3256dedf918c89506b4f89782b0f7e983159859e40`
 
 ## Integral result
 
-v0.27 extends KwanThread from a local user-turn compiler into three connected but separately governed services:
+v0.28 connects KwanThread, KwanMe, CreaLabs, KCH, KwanBlocks, the Integral Mission Fabric, the durable Mission Runtime and Kwan Browser without narrowing the nineteen-component KWAN envelope.
 
 ```text
-KwanThread Federation
-+ Missing-Intent Recovery
-+ Mission Feedback Closure
+future-only campaign freeze
+→ explicitly approved future case
+→ RAW_TASK / LOCAL_THREAD / FEDERATED_THREAD / INTEGRAL_CONTEXT
+→ blinded structural review
+→ deterministic preregistered blind-label assignment
+→ later arm-specific outcome
+→ local analysis with no fixture-to-evidence promotion
 ```
 
 ```text
-encrypted user-turn thread
-→ signed authority-free capsule
-→ cross-device provenance and reconciliation
-→ explicit missing-intent slot
-→ maximum-two hypothetical candidates
-→ user-only resolution or STILL_UNKNOWN
-→ requirement/effect mission assessment
-→ premature-closure and uncovered-requirement evidence
+closed mission
+→ Mission Feedback assessment
+→ uncovered user-originated requirements
+→ explicit repair approval
+→ separate repair and mission-seal leases
+→ new SHADOW successor mission
+→ before/after assessment
+→ parent remains immutable
 ```
 
-The runtime exposes 32 services and SQLite schema v25 while preserving all nineteen mandatory architectural components.
+The runtime exposes 34 services and SQLite schema v26 while preserving all nineteen mandatory components.
 
-## Material fixture
+## Material result
 
-The fixture federates three user-originated turns across two devices, imports an encrypted capsule, leaves a missing intention explicitly unknown and assesses a completed mission with only half of its required user-originated items satisfied.
+The software fixture demonstrates structural differences among the four arms and a complete causal-repair successor. It intentionally contains **zero real prospective cases**.
 
 ```text
-capsule imports authority          false
-plaintext in SQLite                absent
-past turn mutated                  false
-missing intent auto-bound          false
-missing intent result              STILL_UNKNOWN
-mission feedback decision          PREMATURE_CLOSURE_RISK
-requirement coverage               0.5
-scalar conduciveness score         null
-training performed                 false
-promotion performed                false
+real prospective cases             0
+scientific decision                STRUCTURAL_AUDIT_ONLY
+empirical user-utility claim       false
+causal effect identified           false
+arm identity before review         hidden
+outcome wrong-label binding         rejected
+parent mission mutated             false
+repair target items resolved        all
+training performed                  false
+authority granted                   false
+promotion performed                 false
 ```
 
 ## Constitutional boundaries
 
 ```text
-federated state ≠ authority
-candidate intent ≠ remembered fact
-user resolution ≠ retroactive mutation
-mission outcome ≠ requirement satisfaction
-requirement coverage ≠ permission
-KwanBlocks receipt ≠ scientific truth
+more context ≠ better plan
+better structural plan ≠ user utility
+user utility ≠ authority safety
+fixture success ≠ empirical evidence
+repair successor ≠ mutation of parent
+mission repair ≠ automatic promotion
 ```
 
 ## Validation boundary
 
-The complete historical suite was executed on the source tree and sealed through 40 preregistered JUnit shards. Earlier monolithic and naive parallel runners retained historical descendants or suffered resource contention; no console-only success signal was accepted. Clean ZIP and bundle-clone incarnations reproduce the same logical tree, verify the complete-suite receipt and independently rerun the six v0.27-specific tests.
+The complete suite ran one test file per isolated process group, requiring complete JUnit before evidence aggregation. The gate detected and corrected three instrument/method problems before resealing: absolute-versus-relative path comparison, a Browser-token expectation mismatch and an outcome model initially not tied to the preregistered executed blind label. Source, ZIP and bundle clone subsequently converged on the same logical tree.
 
 ## Repository state
 
-The current `FacundoFirmenich/KwanTau` repository remains a SHADOW textual staging surface. `main` is untouched. The canonical target `FacundoFirmenich/KwanTau2DOS` is not claimed as created. The complete Git bundle and publication script are sealed for exact migration.
+The current `FacundoFirmenich/KwanTau` repository remains a SHADOW textual staging surface. `main` is untouched. The canonical target `FacundoFirmenich/KwanTau2DOS` still returns `404` and is not claimed as created. The complete Git bundle and publication script are sealed for exact migration.
 
 ## Next legitimate gate
 
-`v0.28 — Prospective Thread Utility and Causal Mission Repair`: preregister future real tasks, compare planning with and without KwanThread contracts, measure local omission and repetition rates, create repair successors instead of mutating closed missions, and test whether the fabric improves conduciveness without increasing privacy leakage, false memory or authority expansion.
+`v0.29 — Real Prospective Task Campaign and Integral Repair Trial`: admit the first explicitly approved future tasks after campaign freeze, generate all four blinded plans, collect independent reviews and later outcomes, audit authority and privacy locally, and create repair successors only when the observed mission fails its user-originated contract. No empirical claim is allowed before the preregistered case threshold and all four arms are represented.
