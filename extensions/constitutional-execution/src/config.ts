@@ -5,12 +5,6 @@ import type { ConstitutionalPluginConfig } from "./types.js";
 
 const SHA256_HEX = /^[a-f0-9]{64}$/;
 
-function asRecord(value: unknown): Record<string, unknown> {
-  return value && typeof value === "object" && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {};
-}
-
 function asStringArray(value: unknown): string[] {
   if (!Array.isArray(value) || value.some((item) => typeof item !== "string")) {
     return [];
@@ -23,7 +17,10 @@ function expandHome(path: string): string {
 }
 
 export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginConfig {
-  const config = asRecord(raw);
+  const config =
+    raw && typeof raw === "object" && !Array.isArray(raw)
+      ? (raw as Record<string, unknown>)
+      : {};
   const mode = config.mode === "enforce" ? "enforce" : "shadow";
   const enabled = config.enabled === true;
   const hostId = typeof config.hostId === "string" ? config.hostId.trim() : "";
@@ -38,7 +35,11 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
 
   const allowedKeys = Array.isArray(config.allowedKeys)
     ? config.allowedKeys
-        .map((item) => asRecord(item))
+        .map((item) =>
+          item && typeof item === "object" && !Array.isArray(item)
+            ? (item as Record<string, unknown>)
+            : {},
+        )
         .filter((item) => item.enabled !== false)
         .map((item) => ({
           keyId: typeof item.keyId === "string" ? item.keyId.trim() : "",
@@ -49,7 +50,10 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
         .filter((item) => item.keyId && item.publicKeyPem)
     : [];
 
-  const maxBudgetRaw = asRecord(config.maxBudget);
+  const maxBudgetRaw =
+    config.maxBudget && typeof config.maxBudget === "object" && !Array.isArray(config.maxBudget)
+      ? (config.maxBudget as Record<string, unknown>)
+      : {};
   const maxBudget: Record<string, number> = {};
   for (const [key, value] of Object.entries(maxBudgetRaw)) {
     if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
@@ -80,7 +84,9 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
         ? config.clockSkewMs
         : 30_000,
     minimumEpoch:
-      typeof config.minimumEpoch === "number" && Number.isInteger(config.minimumEpoch) && config.minimumEpoch >= 0
+      typeof config.minimumEpoch === "number" &&
+      Number.isInteger(config.minimumEpoch) &&
+      config.minimumEpoch >= 0
         ? config.minimumEpoch
         : 0,
     revokedLeaseIds: asStringArray(config.revokedLeaseIds),
@@ -91,7 +97,9 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
     allowedKeys,
     allowedExecutors: asStringArray(config.allowedExecutors),
     allowedCapabilities: asStringArray(config.allowedCapabilities),
-    allowedContractHashes: asStringArray(config.allowedContractHashes).map((value) => value.toLowerCase()),
+    allowedContractHashes: asStringArray(config.allowedContractHashes).map((value) =>
+      value.toLowerCase(),
+    ),
     allowedSessionPrefixes: asStringArray(config.allowedSessionPrefixes),
     maxBudget,
   };
