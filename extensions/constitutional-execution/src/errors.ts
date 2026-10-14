@@ -1,4 +1,4 @@
-export type ConstitutionalErrorCode =
+type ConstitutionalErrorCode =
   | "CONSTITUTION_DISABLED"
   | "CONSTITUTION_INVALID"
   | "CONSTITUTION_SIGNATURE_INVALID"
