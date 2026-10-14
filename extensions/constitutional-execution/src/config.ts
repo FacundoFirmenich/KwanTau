@@ -18,16 +18,12 @@ function expandHome(path: string): string {
 
 export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginConfig {
   const config =
-    raw && typeof raw === "object" && !Array.isArray(raw)
-      ? (raw as Record<string, unknown>)
-      : {};
+    raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
   const mode = config.mode === "enforce" ? "enforce" : "shadow";
   const enabled = config.enabled === true;
   const hostId = typeof config.hostId === "string" ? config.hostId.trim() : "";
   const activePolicyHash =
-    typeof config.activePolicyHash === "string"
-      ? config.activePolicyHash.trim().toLowerCase()
-      : "";
+    typeof config.activePolicyHash === "string" ? config.activePolicyHash.trim().toLowerCase() : "";
   const storePath =
     typeof config.storePath === "string" && config.storePath.trim()
       ? expandHome(config.storePath.trim())
@@ -43,8 +39,7 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
         .filter((item) => item.enabled !== false)
         .map((item) => ({
           keyId: typeof item.keyId === "string" ? item.keyId.trim() : "",
-          publicKeyPem:
-            typeof item.publicKeyPem === "string" ? item.publicKeyPem.trim() : "",
+          publicKeyPem: typeof item.publicKeyPem === "string" ? item.publicKeyPem.trim() : "",
           enabled: item.enabled !== false,
         }))
         .filter((item) => item.keyId && item.publicKeyPem)
@@ -57,10 +52,7 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
   const maxBudget: Record<string, number> = {};
   for (const [key, value] of Object.entries(maxBudgetRaw)) {
     if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
-      throw new ConstitutionalError(
-        "CONSTITUTION_INVALID",
-        `Invalid maxBudget value for ${key}.`,
-      );
+      throw new ConstitutionalError("CONSTITUTION_INVALID", `Invalid maxBudget value for ${key}.`);
     }
     maxBudget[key] = value;
   }
