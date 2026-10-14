@@ -400,10 +400,21 @@ describe("transactional KCH constitutional execution", () => {
     expect(kch.calls.filter((item) => item === "commit")).toHaveLength(1);
   });
 
-  it("requires a signed receipt hash to reconcile an uncertain run", async () => {
+  it("requires an observed signed receipt hash to reconcile an uncertain run", async () => {
     const kch = brokerMock();
-    const request: GatewayRequest = async () => {
-      throw new Error("acceptance response lost");
+    let dispatchAttempted = false;
+    const remote = {
+      status: "ok",
+      endedAt: 123456,
+      terminalReceipt: { runId: "run-recovered", status: "ok" },
+    };
+    const request: GatewayRequest = async <T>(method: string) => {
+      if (method === "agent") {
+        dispatchAttempted = true;
+        throw new Error("acceptance response lost");
+      }
+      if (method === "agent.wait" && dispatchAttempted) return remote as T;
+      throw new Error("unexpected method");
     };
     const service = new ConstitutionalExecutionService(
       config(await tempStore()),
@@ -412,12 +423,13 @@ describe("transactional KCH constitutional execution", () => {
     );
     const params = executeParams();
     expect((await service.execute(params)).status).toBe("IN_DOUBT");
-    const receiptHash = "9".repeat(64);
+    const receiptHash = sha256Hex(remote);
     const reconciled = await service.reconcile(
       reconcileParams(params.idempotencyKey, "run-recovered", receiptHash, "operator inspected Gateway"),
     );
-    expect(reconciled.status).toBe("RUNNING");
+    expect(reconciled.status).toBe("SUCCEEDED");
     expect(reconciled.runId).toBe("run-recovered");
+    expect(reconciled.outputHash).toBe(receiptHash);
     expect(kch.calls).toContain("receipt");
   });
 
