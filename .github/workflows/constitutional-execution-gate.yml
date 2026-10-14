@@ -29,7 +29,7 @@ env:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -57,6 +57,18 @@ jobs:
         run: |
           set -euo pipefail
           pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Build canonical Plugin SDK declarations
+        id: plugin_sdk_dts
+        shell: bash
+        run: |
+          set +e
+          set -o pipefail
+          pnpm build:plugin-sdk:dts \
+            2>&1 | tee constitutional-gate-artifacts/plugin-sdk-dts.log
+          exit_code=${PIPESTATUS[0]}
+          echo "exit_code=${exit_code}" >> "$GITHUB_OUTPUT"
+          exit 0
 
       - name: Produce canonical formatting evidence
         id: format
@@ -145,6 +157,7 @@ jobs:
         shell: bash
         run: |
           cat > constitutional-gate-artifacts/summary.txt <<EOF
+          plugin_sdk_dts_exit=${{ steps.plugin_sdk_dts.outputs.exit_code }}
           format_exit=${{ steps.format.outputs.exit_code }}
           contract_exit=${{ steps.contract.outputs.exit_code }}
           typecheck_exit=${{ steps.typecheck.outputs.exit_code }}
@@ -168,6 +181,10 @@ jobs:
         run: |
           set -euo pipefail
           failure=0
+          if [[ "${{ steps.plugin_sdk_dts.outputs.exit_code }}" != "0" ]]; then
+            echo "::error::canonical Plugin SDK declaration build failed"
+            failure=1
+          fi
           if [[ "${{ steps.format.outputs.exit_code }}" != "0" ]]; then
             echo "::error::constitutional extension requires canonical formatting"
             failure=1
