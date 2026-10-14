@@ -106,11 +106,9 @@ export class ConstitutionalExecutionService {
 
     const payload = { ...envelope.payload, idempotencyKey: params.idempotencyKey };
     try {
-      const acceptance = await this.gatewayRequest<Record<string, unknown>>(
-        "agent",
-        payload,
-        { scopes: ["operator.write"] },
-      );
+      const acceptance = await this.gatewayRequest<Record<string, unknown>>("agent", payload, {
+        scopes: ["operator.write"],
+      });
       const runId = acceptance.runId;
       if (typeof runId !== "string" || !runId.trim()) {
         throw new ConstitutionalError(
@@ -118,7 +116,8 @@ export class ConstitutionalExecutionService {
           "Gateway agent acceptance lacks runId.",
         );
       }
-      const sessionKey = typeof acceptance.sessionKey === "string" ? acceptance.sessionKey : undefined;
+      const sessionKey =
+        typeof acceptance.sessionKey === "string" ? acceptance.sessionKey : undefined;
       const updated = await this.store.setStatus(params.idempotencyKey, "RUNNING", {
         runId,
         sessionKey,

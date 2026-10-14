@@ -3,7 +3,6 @@ import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-
 import { sha256Hex } from "../src/canonical-json.js";
 import { ConstitutionalExecutionService } from "../src/service.js";
 import type {
@@ -24,7 +23,10 @@ async function tempStore() {
   return mkdtemp(join(tmpdir(), "constitutional-execution-"));
 }
 
-function config(storePath: string, mode: "shadow" | "enforce" = "enforce"): ConstitutionalPluginConfig {
+function config(
+  storePath: string,
+  mode: "shadow" | "enforce" = "enforce",
+): ConstitutionalPluginConfig {
   return {
     enabled: true,
     mode,
@@ -46,7 +48,9 @@ function config(storePath: string, mode: "shadow" | "enforce" = "enforce"): Cons
   };
 }
 
-function envelope(overrides: Partial<ConstitutionalCommandEnvelope> = {}): ConstitutionalCommandEnvelope {
+function envelope(
+  overrides: Partial<ConstitutionalCommandEnvelope> = {},
+): ConstitutionalCommandEnvelope {
   const now = Date.now() / 1000;
   const payload = {
     message: "Return exactly READY.",

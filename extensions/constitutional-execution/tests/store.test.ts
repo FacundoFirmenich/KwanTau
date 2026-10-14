@@ -20,10 +20,7 @@ describe("constitutional SQLite store", () => {
     const root = await tempStoreRoot();
     const first = new ConstitutionalStore(root);
     const second = new ConstitutionalStore(root);
-    const results = await Promise.all([
-      first.reserve(reservation),
-      second.reserve(reservation),
-    ]);
+    const results = await Promise.all([first.reserve(reservation), second.reserve(reservation)]);
     expect(results.filter((result) => result.created)).toHaveLength(1);
     expect(results.filter((result) => !result.created)).toHaveLength(1);
     expect(await first.eventCount("idem-atomic")).toBe(1);

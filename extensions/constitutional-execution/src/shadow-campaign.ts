@@ -1,11 +1,7 @@
 import { appendFile, mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { canonicalJson, sha256Hex } from "./canonical-json.js";
-import type {
-  ConstitutionalExecuteParams,
-  ConstitutionalStatus,
-  GatewayRequest,
-} from "./types.js";
+import type { ConstitutionalExecuteParams, ConstitutionalStatus, GatewayRequest } from "./types.js";
 
 export type ShadowExpectation = "ACCEPT" | "REJECT";
 
@@ -93,8 +89,7 @@ function finalizeSummary(
     rejectedObserved: observations.filter((item) => item.observed === "REJECT").length,
     errorCodeMatches: observations.filter(
       (item) =>
-        item.expectedErrorCode === undefined ||
-        item.expectedErrorCode === item.observedErrorCode,
+        item.expectedErrorCode === undefined || item.expectedErrorCode === item.observedErrorCode,
     ).length,
   };
   return { ...withoutHash, reportHash: sha256Hex({ ...withoutHash, observations }) };

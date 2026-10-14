@@ -1,9 +1,9 @@
 #!/usr/bin/env node
+import { spawnSync } from "node:child_process";
 import { createHash, createPrivateKey, sign } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { spawnSync } from "node:child_process";
 
 function canonicalize(value) {
   if (value === null || typeof value === "string" || typeof value === "boolean") return value;
@@ -185,45 +185,129 @@ export function buildShadowCases(options) {
     payloadMutation,
     invalidSignature,
     unknownKey,
-    make("stale-policy", "policy", "policy hash is not active", "REJECT", (e) => {
-      e.policy_hash = flipHash(options.policyHash);
-    }, "CONSTITUTION_POLICY_MISMATCH"),
-    make("bad-contract", "policy", "contract hash is not admitted", "REJECT", (e) => {
-      e.contract_hash = flipHash(options.contractHash);
-    }, "CONSTITUTION_POLICY_MISMATCH"),
-    make("host-mismatch", "scope", "host binding differs", "REJECT", (e) => {
-      e.host_id = `${options.hostId}-other`;
-    }, "CONSTITUTION_SCOPE_DENIED"),
-    make("payload-session-mismatch", "scope", "payload session differs from lease session", "REJECT", (e) => {
-      e.payload = { ...e.payload, sessionKey: `${options.sessionKey}:other` };
-      e.payload_hash = sha256Hex(e.payload);
-    }, "CONSTITUTION_SCOPE_DENIED"),
-    make("scope-session-mismatch", "scope", "declared scope differs from lease session", "REJECT", (e) => {
-      e.scope = { session: `${options.sessionKey}:other` };
-    }, "CONSTITUTION_SCOPE_DENIED"),
-    make("unsupported-executor", "capability", "executor is not admitted", "REJECT", (e) => {
-      e.executor_id = "openclaw.system.run";
-    }, "CONSTITUTION_EXECUTOR_UNSUPPORTED"),
-    make("unsupported-capability", "capability", "capability is not admitted", "REJECT", (e) => {
-      e.capability = "system.run";
-    }, "CONSTITUTION_EXECUTOR_UNSUPPORTED"),
-    make("budget-overrun", "budget", "token budget exceeds configured ceiling", "REJECT", (e) => {
-      e.budget = { tokens: options.maxTokens + 1, seconds: 30 };
-    }, "CONSTITUTION_BUDGET_DENIED"),
-    make("stale-epoch", "temporal", "epoch predates the active minimum", "REJECT", (e) => {
-      e.epoch = options.minimumEpoch - 1;
-    }, "CONSTITUTION_EXPIRED"),
-    make("revoked-lease", "temporal", "lease is explicitly revoked", "REJECT", (e) => {
-      e.lease_id = options.revokedLeaseId;
-    }, "CONSTITUTION_EXPIRED"),
-    make("expired", "temporal", "lease expired before submission", "REJECT", (e) => {
-      e.created_at_unix = now - 60;
-      e.expires_at_unix = now - 1;
-    }, "CONSTITUTION_EXPIRED"),
-    make("overlong-lease", "temporal", "lease duration exceeds policy", "REJECT", (e) => {
-      e.created_at_unix = now;
-      e.expires_at_unix = now + options.maxLeaseSeconds + 1;
-    }, "CONSTITUTION_EXPIRED"),
+    make(
+      "stale-policy",
+      "policy",
+      "policy hash is not active",
+      "REJECT",
+      (e) => {
+        e.policy_hash = flipHash(options.policyHash);
+      },
+      "CONSTITUTION_POLICY_MISMATCH",
+    ),
+    make(
+      "bad-contract",
+      "policy",
+      "contract hash is not admitted",
+      "REJECT",
+      (e) => {
+        e.contract_hash = flipHash(options.contractHash);
+      },
+      "CONSTITUTION_POLICY_MISMATCH",
+    ),
+    make(
+      "host-mismatch",
+      "scope",
+      "host binding differs",
+      "REJECT",
+      (e) => {
+        e.host_id = `${options.hostId}-other`;
+      },
+      "CONSTITUTION_SCOPE_DENIED",
+    ),
+    make(
+      "payload-session-mismatch",
+      "scope",
+      "payload session differs from lease session",
+      "REJECT",
+      (e) => {
+        e.payload = { ...e.payload, sessionKey: `${options.sessionKey}:other` };
+        e.payload_hash = sha256Hex(e.payload);
+      },
+      "CONSTITUTION_SCOPE_DENIED",
+    ),
+    make(
+      "scope-session-mismatch",
+      "scope",
+      "declared scope differs from lease session",
+      "REJECT",
+      (e) => {
+        e.scope = { session: `${options.sessionKey}:other` };
+      },
+      "CONSTITUTION_SCOPE_DENIED",
+    ),
+    make(
+      "unsupported-executor",
+      "capability",
+      "executor is not admitted",
+      "REJECT",
+      (e) => {
+        e.executor_id = "openclaw.system.run";
+      },
+      "CONSTITUTION_EXECUTOR_UNSUPPORTED",
+    ),
+    make(
+      "unsupported-capability",
+      "capability",
+      "capability is not admitted",
+      "REJECT",
+      (e) => {
+        e.capability = "system.run";
+      },
+      "CONSTITUTION_EXECUTOR_UNSUPPORTED",
+    ),
+    make(
+      "budget-overrun",
+      "budget",
+      "token budget exceeds configured ceiling",
+      "REJECT",
+      (e) => {
+        e.budget = { tokens: options.maxTokens + 1, seconds: 30 };
+      },
+      "CONSTITUTION_BUDGET_DENIED",
+    ),
+    make(
+      "stale-epoch",
+      "temporal",
+      "epoch predates the active minimum",
+      "REJECT",
+      (e) => {
+        e.epoch = options.minimumEpoch - 1;
+      },
+      "CONSTITUTION_EXPIRED",
+    ),
+    make(
+      "revoked-lease",
+      "temporal",
+      "lease is explicitly revoked",
+      "REJECT",
+      (e) => {
+        e.lease_id = options.revokedLeaseId;
+      },
+      "CONSTITUTION_EXPIRED",
+    ),
+    make(
+      "expired",
+      "temporal",
+      "lease expired before submission",
+      "REJECT",
+      (e) => {
+        e.created_at_unix = now - 60;
+        e.expires_at_unix = now - 1;
+      },
+      "CONSTITUTION_EXPIRED",
+    ),
+    make(
+      "overlong-lease",
+      "temporal",
+      "lease duration exceeds policy",
+      "REJECT",
+      (e) => {
+        e.created_at_unix = now;
+        e.expires_at_unix = now + options.maxLeaseSeconds + 1;
+      },
+      "CONSTITUTION_EXPIRED",
+    ),
   ];
 }
 
@@ -296,9 +380,8 @@ export async function runLiveShadowCampaign(options) {
     const status = deepFind(result.parsed, ["status"]);
     const runId = deepFind(result.parsed, ["runId"]);
     const observedErrorCode = deepFind(result.parsed, ["CONSTITUTION_CODE_SENTINEL", "code"]);
-    const observed = result.ok && status === "SHADOW_ACCEPTED" && runId === undefined
-      ? "ACCEPT"
-      : "REJECT";
+    const observed =
+      result.ok && status === "SHADOW_ACCEPTED" && runId === undefined ? "ACCEPT" : "REJECT";
     const matched =
       observed === item.expectation &&
       (item.expectedErrorCode === undefined || observedErrorCode === item.expectedErrorCode);
@@ -334,7 +417,8 @@ export async function runLiveShadowCampaign(options) {
     unexpectedRunIds: observations.filter((item) => item.runIdPresent).length,
     persistedStatus,
     persistedRunIdPresent: persistedRunId !== undefined,
-    statusCheckOk: statusResult.ok && persistedStatus === "SHADOW_ACCEPTED" && persistedRunId === undefined,
+    statusCheckOk:
+      statusResult.ok && persistedStatus === "SHADOW_ACCEPTED" && persistedRunId === undefined,
   };
   const report = {
     ...summaryBase,
@@ -357,7 +441,8 @@ export async function runLiveShadowCampaign(options) {
 
 async function main() {
   const repoRoot = resolve(import.meta.dirname, "../../..");
-  const campaignId = process.env.CONSTITUTIONAL_CAMPAIGN_ID?.trim() ||
+  const campaignId =
+    process.env.CONSTITUTIONAL_CAMPAIGN_ID?.trim() ||
     `gate-b-${new Date().toISOString().replace(/[:.]/g, "-")}`;
   const privateKey = createPrivateKey(
     Buffer.from(requiredEnvironment("KCH_ED25519_PRIVATE_KEY_PEM_B64"), "base64").toString("utf8"),
@@ -381,7 +466,8 @@ async function main() {
     repoRoot,
     cliPath: resolve(repoRoot, "openclaw.mjs"),
     outputDirectory: resolve(
-      process.env.CONSTITUTIONAL_OUTPUT_DIR?.trim() || `artifacts/constitutional-shadow/${campaignId}`,
+      process.env.CONSTITUTIONAL_OUTPUT_DIR?.trim() ||
+        `artifacts/constitutional-shadow/${campaignId}`,
     ),
   };
   const report = await runLiveShadowCampaign(options);

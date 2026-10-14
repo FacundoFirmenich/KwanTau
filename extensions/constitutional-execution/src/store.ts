@@ -116,7 +116,10 @@ export class ConstitutionalStore {
     return this.databasePromise;
   }
 
-  private selectRecord(database: DatabaseSync, idempotencyKey: string): ConstitutionalRecord | undefined {
+  private selectRecord(
+    database: DatabaseSync,
+    idempotencyKey: string,
+  ): ConstitutionalRecord | undefined {
     const row = database
       .prepare("SELECT * FROM constitutional_records WHERE idempotency_key = ?")
       .get(idempotencyKey) as RecordRow | undefined;
@@ -265,10 +268,7 @@ export class ConstitutionalStore {
     return this.transaction(database, () => {
       const current = this.selectRecord(database, idempotencyKey);
       if (!current) {
-        throw new ConstitutionalError(
-          "CONSTITUTION_UNKNOWN",
-          "Unknown constitutional execution.",
-        );
+        throw new ConstitutionalError("CONSTITUTION_UNKNOWN", "Unknown constitutional execution.");
       }
       const updated: ConstitutionalRecord = {
         ...current,
@@ -293,10 +293,7 @@ export class ConstitutionalStore {
     return this.transaction(database, () => {
       const current = this.selectRecord(database, idempotencyKey);
       if (!current) {
-        throw new ConstitutionalError(
-          "CONSTITUTION_UNKNOWN",
-          "Unknown constitutional execution.",
-        );
+        throw new ConstitutionalError("CONSTITUTION_UNKNOWN", "Unknown constitutional execution.");
       }
       if (!fromStatuses.includes(current.status)) {
         return { record: structuredClone(current), transitioned: false };
@@ -324,9 +321,10 @@ export class ConstitutionalStore {
   }
 
   async integrityCheck(): Promise<string> {
-    const row = (await this.database())
-      .prepare("PRAGMA integrity_check")
-      .get() as Record<string, unknown>;
+    const row = (await this.database()).prepare("PRAGMA integrity_check").get() as Record<
+      string,
+      unknown
+    >;
     return String(Object.values(row)[0]);
   }
 

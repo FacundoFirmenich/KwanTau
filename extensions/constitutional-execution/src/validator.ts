@@ -56,7 +56,11 @@ function requireEnvelopeShape(envelope: ConstitutionalCommandEnvelope): void {
   ] as const) {
     validateHash(envelope[key], key);
   }
-  if (!envelope.payload || typeof envelope.payload !== "object" || Array.isArray(envelope.payload)) {
+  if (
+    !envelope.payload ||
+    typeof envelope.payload !== "object" ||
+    Array.isArray(envelope.payload)
+  ) {
     throw new ConstitutionalError("CONSTITUTION_INVALID", "payload must be an object.");
   }
   if (!envelope.scope || typeof envelope.scope !== "object" || Array.isArray(envelope.scope)) {
@@ -70,10 +74,7 @@ function requireEnvelopeShape(envelope: ConstitutionalCommandEnvelope): void {
   }
 }
 
-function verificationKey(
-  proof: ConstitutionalAuthorityProof,
-  config: ConstitutionalPluginConfig,
-) {
+function verificationKey(proof: ConstitutionalAuthorityProof, config: ConstitutionalPluginConfig) {
   if (proof.algorithm !== "Ed25519") {
     throw new ConstitutionalError(
       "CONSTITUTION_SIGNATURE_INVALID",
@@ -101,10 +102,7 @@ function verifySignedHash(
 ): void {
   const key = verificationKey(proof, config);
   if (proof.signedHash !== expectedHash) {
-    throw new ConstitutionalError(
-      "CONSTITUTION_SIGNATURE_INVALID",
-      mismatchMessage,
-    );
+    throw new ConstitutionalError("CONSTITUTION_SIGNATURE_INVALID", mismatchMessage);
   }
   const valid = verify(
     null,
@@ -168,10 +166,7 @@ function validateBudget(
 ): void {
   for (const [key, value] of Object.entries(envelope.budget)) {
     if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
-      throw new ConstitutionalError(
-        "CONSTITUTION_BUDGET_DENIED",
-        `Budget ${key} is invalid.`,
-      );
+      throw new ConstitutionalError("CONSTITUTION_BUDGET_DENIED", `Budget ${key} is invalid.`);
     }
     const ceiling = config.maxBudget[key];
     if (ceiling === undefined || value > ceiling) {
@@ -208,10 +203,7 @@ export function validateExecuteParams(
   }
   const payloadHash = sha256Hex(envelope.payload);
   if (payloadHash !== envelope.payload_hash) {
-    throw new ConstitutionalError(
-      "CONSTITUTION_INVALID",
-      "Payload commitment mismatch.",
-    );
+    throw new ConstitutionalError("CONSTITUTION_INVALID", "Payload commitment mismatch.");
   }
   if (envelope.epoch < config.minimumEpoch) {
     throw new ConstitutionalError(

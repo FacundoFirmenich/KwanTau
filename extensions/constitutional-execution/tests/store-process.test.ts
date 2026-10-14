@@ -2,8 +2,8 @@ import { execFile } from "node:child_process";
 import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
-import { promisify } from "node:util";
 import { pathToFileURL } from "node:url";
+import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { ConstitutionalStore } from "../src/store.js";
 

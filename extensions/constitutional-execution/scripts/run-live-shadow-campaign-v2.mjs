@@ -1,14 +1,10 @@
 #!/usr/bin/env node
+import { spawnSync } from "node:child_process";
 import { createPrivateKey } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { spawnSync } from "node:child_process";
-import {
-  buildShadowCases,
-  canonicalJson,
-  sha256Hex,
-} from "./run-live-shadow-campaign.mjs";
+import { buildShadowCases, canonicalJson, sha256Hex } from "./run-live-shadow-campaign.mjs";
 
 function requiredEnvironment(name) {
   const value = process.env[name]?.trim();
@@ -107,9 +103,8 @@ export async function runGateB(options) {
     const status = findString(result.parsed, "status");
     const runId = findString(result.parsed, "runId");
     const observedErrorCode = findConstitutionalErrorCode(result.parsed);
-    const observed = result.ok && status === "SHADOW_ACCEPTED" && runId === undefined
-      ? "ACCEPT"
-      : "REJECT";
+    const observed =
+      result.ok && status === "SHADOW_ACCEPTED" && runId === undefined ? "ACCEPT" : "REJECT";
     const matched =
       observed === item.expectation &&
       (item.expectedErrorCode === undefined || observedErrorCode === item.expectedErrorCode);
@@ -133,11 +128,7 @@ export async function runGateB(options) {
   }
 
   const validKey = cases[0].params.idempotencyKey;
-  const statusResult = callGateway(
-    "constitutional.status",
-    { idempotencyKey: validKey },
-    options,
-  );
+  const statusResult = callGateway("constitutional.status", { idempotencyKey: validKey }, options);
   const persistedStatus = findString(statusResult.parsed, "status");
   const persistedRunId = findString(statusResult.parsed, "runId");
   const summary = {
@@ -150,9 +141,7 @@ export async function runGateB(options) {
     persistedStatus,
     persistedRunIdPresent: persistedRunId !== undefined,
     statusCheckOk:
-      statusResult.ok &&
-      persistedStatus === "SHADOW_ACCEPTED" &&
-      persistedRunId === undefined,
+      statusResult.ok && persistedStatus === "SHADOW_ACCEPTED" && persistedRunId === undefined,
   };
   const report = {
     ...summary,
@@ -175,16 +164,16 @@ export async function runGateB(options) {
 
 async function main() {
   const repoRoot = resolve(import.meta.dirname, "../../..");
-  const campaignId = process.env.CONSTITUTIONAL_CAMPAIGN_ID?.trim() ||
+  const campaignId =
+    process.env.CONSTITUTIONAL_CAMPAIGN_ID?.trim() ||
     `gate-b-${new Date().toISOString().replace(/[:.]/g, "-")}`;
   const options = {
     campaignId,
     nowUnix: Date.now() / 1000,
     privateKey: createPrivateKey(
-      Buffer.from(
-        requiredEnvironment("KCH_ED25519_PRIVATE_KEY_PEM_B64"),
-        "base64",
-      ).toString("utf8"),
+      Buffer.from(requiredEnvironment("KCH_ED25519_PRIVATE_KEY_PEM_B64"), "base64").toString(
+        "utf8",
+      ),
     ),
     keyId: requiredEnvironment("CONSTITUTIONAL_KEY_ID"),
     hostId: requiredEnvironment("CONSTITUTIONAL_HOST_ID"),
