@@ -25,7 +25,7 @@ const projections = [
     source: pluginEntry,
     required: [
       "type DefinePluginEntryOptions = {",
-      'register: NonNullable<OpenClawPluginDefinition["register"]>;'
+      'register: NonNullable<OpenClawPluginDefinition["register"]>; ',
       "export function definePluginEntry({",
       "}: DefinePluginEntryOptions): DefinedPluginEntry",
     ],
