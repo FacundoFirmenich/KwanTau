@@ -118,12 +118,7 @@ export type ConstitutionalRecord = {
   metadata?: Record<string, unknown>;
 };
 
-export type ConstitutionalStoreSnapshot = {
-  version: 1;
-  records: Record<string, ConstitutionalRecord>;
-};
-
-export type GatewayScope =
+type GatewayScope =
   | "operator.read"
   | "operator.write"
   | "operator.admin"
