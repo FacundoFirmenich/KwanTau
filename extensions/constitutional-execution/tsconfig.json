@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "declaration": false,
+    "ignoreDeprecations": "6.0",
     "noEmit": true,
     "rootDir": ".",
     "paths": {
