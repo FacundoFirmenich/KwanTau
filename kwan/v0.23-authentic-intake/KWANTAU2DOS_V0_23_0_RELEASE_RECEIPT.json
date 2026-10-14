@@ -1,0 +1,48 @@
+{
+  "artifacts": {
+    "git_bundle": {"bytes": 1705790, "path": "KwanTau2DOS_v0_23_0-alpha.1.bundle", "sha256": "c87e947f3a2251a8aeb1814299816739706c737a58293bed80d422e07641ede9"},
+    "kwan_browser": {"bytes": 51745, "path": "KwanBrowser_v0_23_0-alpha.1.zip", "sha256": "56a6296faa92cef14b759547132a5cd262d8dca4347d7fa845174058e965b48c"},
+    "source_capsule": {"bytes": 1378327, "path": "KWANTAU2DOS_V0_23_0_SOURCE_CAPSULE.tar.gz", "sha256": "59922e2380fe26c37f527bfa0d818d7a769ebf0b8261ebf64a663c379c26dddb"},
+    "source_zip": {"bytes": 6903799, "path": "KwanTau2DOS_v0_23_0-alpha.1.zip", "sha256": "c3de9565d4097a890dc39e7f4e35d968eb6c8c139c88762d86f8c17dd0c214df"},
+    "visual_qa": {"bytes": 3268, "path": "KWAN_BROWSER_V0_23_0_VISUAL_QA.json", "sha256": "a0c7ed02a43a7def727795d60d768d063326fdfe741ec8792f5da0ffb37f8598"},
+    "visual_screenshot": {"bytes": 59057, "path": "KwanBrowser_v023_governance.png", "sha256": "c941472deb46708cf169ea16f569bb4ada1bfae02b0cad413f0ff12abb168cd7"}
+  },
+  "authentic_event": {
+    "bound_case": false,
+    "payload_sha256": "7515c954abed6c8d4e8914a1be1bf97f29779baf332b615b4b3717968ff53eaf",
+    "raw_payload_persisted": false,
+    "source": "NEXT_KWANTAU_AUTHORITY_CHANGE",
+    "source_state": "APPROVED",
+    "trigger_id": "kwantau-authority-change"
+  },
+  "branch": "kwantau2dos/v0.23.0-alpha.1",
+  "claim_boundary": {
+    "authority_granted": false,
+    "empirical_personal_advantage_claimed": false,
+    "evaluation_training_eligible": false,
+    "event_approval_is_case_admission": false,
+    "promotion_performed": false,
+    "reviewer_independence_proved": false,
+    "scientific_claim": "NO_EMPIRICAL_CLAIM"
+  },
+  "feature_commit": "72c4480feb8d082156732185cb71b5cb1011ff28",
+  "format": "KWANTAU2DOS_V023_RELEASE_RECEIPT_V1",
+  "independent_validation": {
+    "logical_file_count": 535,
+    "logical_tree_sha256": "25992f66fe5f9cc0f7f2c32cd6025040706e28bc022b24a6ff5b815fef48b34d",
+    "passed": true,
+    "source_zip_bundle_equivalent": true
+  },
+  "mandatory_components": 19,
+  "material_demo": {"analyses": 0, "approved_events": 1, "authentic_events": 1, "bound_cases": 0, "empirical_outcomes": 0, "model_outputs": 0, "passed": true, "scientific_claim": "NO_EMPIRICAL_CLAIM"},
+  "passed": true,
+  "predecessor_commit": "0a6954ac901006862962ddf83eb89ff86a73785a",
+  "release": "0.23.0-alpha.1",
+  "release_commit": "f24a3258be7f2ccbe3904e2e341eaa19a5fa1131",
+  "report_sha256": "f3032da5f8903cf16a11127afaf9bc4c4a2c9c7de04d0422698352c0f17e8436",
+  "runtime_services": 30,
+  "schema_version": 21,
+  "tag": "v0.23.0-alpha.1",
+  "tag_object": "5944853f7134d249b42d95eaf9223f5bfbd72f38",
+  "tests": {"collected": 183, "errored": 0, "failed": 0, "passed": 182, "skipped": 1}
+}
