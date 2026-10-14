@@ -101,7 +101,6 @@ export class ConstitutionalExecutionService {
       });
       return toStatus(updated);
     } catch (error) {
-      if (error instanceof ConstitutionalError) throw error;
       const uncertain = await this.store.setStatus(params.idempotencyKey, "IN_DOUBT", {
         error: String(error),
       });
