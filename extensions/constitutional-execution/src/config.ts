@@ -71,10 +71,19 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
       typeof config.maxIntentAgeMs === "number" && config.maxIntentAgeMs > 0
         ? config.maxIntentAgeMs
         : 5 * 60_000,
+    maxLeaseDurationMs:
+      typeof config.maxLeaseDurationMs === "number" && config.maxLeaseDurationMs > 0
+        ? config.maxLeaseDurationMs
+        : 5 * 60_000,
     clockSkewMs:
       typeof config.clockSkewMs === "number" && config.clockSkewMs >= 0
         ? config.clockSkewMs
         : 30_000,
+    minimumEpoch:
+      typeof config.minimumEpoch === "number" && Number.isInteger(config.minimumEpoch) && config.minimumEpoch >= 0
+        ? config.minimumEpoch
+        : 0,
+    revokedLeaseIds: asStringArray(config.revokedLeaseIds),
     waitTimeoutMs:
       typeof config.waitTimeoutMs === "number" && config.waitTimeoutMs >= 0
         ? config.waitTimeoutMs
@@ -82,6 +91,7 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
     allowedKeys,
     allowedExecutors: asStringArray(config.allowedExecutors),
     allowedCapabilities: asStringArray(config.allowedCapabilities),
+    allowedContractHashes: asStringArray(config.allowedContractHashes).map((value) => value.toLowerCase()),
     allowedSessionPrefixes: asStringArray(config.allowedSessionPrefixes),
     maxBudget,
   };
@@ -106,6 +116,15 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
       throw new ConstitutionalError(
         "CONSTITUTION_INVALID",
         "Executor and capability allowlists are required when enabled.",
+      );
+    }
+    if (
+      resolved.allowedContractHashes.length === 0 ||
+      resolved.allowedContractHashes.some((value) => !SHA256_HEX.test(value))
+    ) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_INVALID",
+        "At least one valid allowedContractHash is required when enabled.",
       );
     }
   }
