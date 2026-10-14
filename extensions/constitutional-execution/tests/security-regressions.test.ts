@@ -1,4 +1,6 @@
 import { generateKeyPairSync } from "node:crypto";
+import { tmpdir } from "node:os";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { canonicalJson, sha256Hex } from "../src/canonical-json.js";
 import { resolveConstitutionalConfig } from "../src/config.js";
@@ -15,6 +17,10 @@ function baseConfig(publicKeyPem: string) {
     allowedSessionPrefixes: ["agent:test:"],
     maxBudget: { tokens: 1024 },
     liveAuthorityVerifierMethod: "kch.authority.verify",
+    kchAuthorityBrokerCommand: process.execPath,
+    kchAuthorityDatabase: resolve(tmpdir(), "kch-native-test.sqlite"),
+    kchAuthorityBrokerTimeoutMs: 2_000,
+    kchClaimTtlSeconds: 5,
     allowedKeys: [{ keyId: "key-1", publicKeyPem }],
   };
 }
@@ -43,11 +49,11 @@ describe("constitutional security regressions", () => {
     expect(resolved.liveAuthorityVerifierMethod).toBe("kch.authority.verify");
   });
 
-  it("refuses enforce mode without a separate live authority verifier", () => {
+  it("refuses enforce mode without the transactional KCH broker paths", () => {
     const { publicKey } = generateKeyPairSync("ed25519");
     const pem = publicKey.export({ type: "spki", format: "pem" }).toString();
     const input = baseConfig(pem);
-    delete (input as { liveAuthorityVerifierMethod?: string }).liveAuthorityVerifierMethod;
-    expect(() => resolveConstitutionalConfig(input)).toThrow(/liveAuthorityVerifierMethod/);
+    delete (input as { kchAuthorityBrokerCommand?: string }).kchAuthorityBrokerCommand;
+    expect(() => resolveConstitutionalConfig(input)).toThrow(/kchAuthorityBrokerCommand/);
   });
 });
