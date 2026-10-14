@@ -52,6 +52,7 @@ export type ConstitutionalCancelParams = {
 export type ConstitutionalReconcileParams = {
   idempotencyKey: string;
   runId: string;
+  receiptHash: string;
   sessionKey?: string;
   reason: string;
   authorityProof: ConstitutionalAuthorityProof;
