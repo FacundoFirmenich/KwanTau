@@ -1,0 +1,36 @@
+{
+  "name": "@openclaw/constitutional-execution",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CFL-KCH intent-bound constitutional execution for the OpenClaw Gateway",
+  "type": "module",
+  "scripts": {
+    "check": "pnpm run contract-check && pnpm run typecheck && pnpm run test",
+    "contract-check": "node scripts/check-plugin-contract.mjs",
+    "gate-b:shadow": "node scripts/run-live-shadow-campaign-v2.mjs",
+    "test": "vitest run --config vitest.config.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@openclaw/plugin-sdk": "workspace:*",
+    "@types/node": "26.1.2",
+    "typescript": "6.0.3",
+    "vitest": "4.1.10"
+  },
+  "knip": {
+    "entry": [
+      "index.ts!",
+      "scripts/check-plugin-contract.mjs!",
+      "scripts/run-live-shadow-campaign-v2.mjs!",
+      "src/shadow-campaign.ts!"
+    ],
+    "project": [
+      "**/*.{ts,mjs}!"
+    ]
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

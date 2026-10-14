@@ -1,0 +1,134 @@
+name: Constitutional Execution Live Shadow Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      campaign_id:
+        description: Stable identifier for this live shadow campaign
+        required: true
+        type: string
+      target_ref:
+        description: Exact branch, tag, or full commit SHA to evaluate
+        required: true
+        default: codex/constitutional-execution-shadow-v1
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: constitutional-live-shadow-${{ inputs.campaign_id }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  PNPM_CONFIG_VERIFY_DEPS_BEFORE_RUN: "false"
+
+jobs:
+  live-shadow:
+    environment: constitutional-shadow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Validate dispatch inputs
+        shell: bash
+        env:
+          CAMPAIGN_ID: ${{ inputs.campaign_id }}
+          TARGET_REF: ${{ inputs.target_ref }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$CAMPAIGN_ID" =~ ^[A-Za-z0-9._-]{3,96}$ ]]; then
+            echo "::error::campaign_id must be a stable 3-96 character identifier"
+            exit 1
+          fi
+          if [[ -z "$TARGET_REF" ]]; then
+            echo "::error::target_ref is required"
+            exit 1
+          fi
+
+      - name: Checkout exact target
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ inputs.target_ref }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Record tested revision
+        id: revision
+        shell: bash
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-env
+        with:
+          install-bun: "false"
+          install-deps: "false"
+          use-actions-cache: "true"
+
+      - name: Install canonical workspace dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Validate required shadow secrets
+        shell: bash
+        env:
+          OPENCLAW_GATEWAY_URL: ${{ secrets.OPENCLAW_GATEWAY_URL }}
+          OPENCLAW_GATEWAY_TOKEN: ${{ secrets.OPENCLAW_GATEWAY_TOKEN }}
+          KCH_ED25519_PRIVATE_KEY_PEM_B64: ${{ secrets.KCH_ED25519_PRIVATE_KEY_PEM_B64 }}
+          CONSTITUTIONAL_KEY_ID: ${{ vars.CONSTITUTIONAL_KEY_ID }}
+          CONSTITUTIONAL_HOST_ID: ${{ vars.CONSTITUTIONAL_HOST_ID }}
+          CONSTITUTIONAL_POLICY_HASH: ${{ vars.CONSTITUTIONAL_POLICY_HASH }}
+          CONSTITUTIONAL_CONTRACT_HASH: ${{ vars.CONSTITUTIONAL_CONTRACT_HASH }}
+          CONSTITUTIONAL_SESSION_KEY: ${{ vars.CONSTITUTIONAL_SESSION_KEY }}
+        run: |
+          set -euo pipefail
+          for name in \
+            OPENCLAW_GATEWAY_URL \
+            OPENCLAW_GATEWAY_TOKEN \
+            KCH_ED25519_PRIVATE_KEY_PEM_B64 \
+            CONSTITUTIONAL_KEY_ID \
+            CONSTITUTIONAL_HOST_ID \
+            CONSTITUTIONAL_POLICY_HASH \
+            CONSTITUTIONAL_CONTRACT_HASH \
+            CONSTITUTIONAL_SESSION_KEY; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error::missing required constitutional-shadow secret or variable: $name"
+              exit 1
+            fi
+          done
+          if [[ "$OPENCLAW_GATEWAY_URL" != wss://* && "$OPENCLAW_GATEWAY_URL" != ws://127.0.0.1:* && "$OPENCLAW_GATEWAY_URL" != ws://localhost:* ]]; then
+            echo "::error::live shadow Gateway must use wss:// or loopback ws://"
+            exit 1
+          fi
+
+      - name: Execute signed live shadow campaign
+        shell: bash
+        env:
+          CONSTITUTIONAL_CAMPAIGN_ID: ${{ inputs.campaign_id }}
+          OPENCLAW_GATEWAY_URL: ${{ secrets.OPENCLAW_GATEWAY_URL }}
+          OPENCLAW_GATEWAY_TOKEN: ${{ secrets.OPENCLAW_GATEWAY_TOKEN }}
+          KCH_ED25519_PRIVATE_KEY_PEM_B64: ${{ secrets.KCH_ED25519_PRIVATE_KEY_PEM_B64 }}
+          CONSTITUTIONAL_KEY_ID: ${{ vars.CONSTITUTIONAL_KEY_ID }}
+          CONSTITUTIONAL_HOST_ID: ${{ vars.CONSTITUTIONAL_HOST_ID }}
+          CONSTITUTIONAL_POLICY_HASH: ${{ vars.CONSTITUTIONAL_POLICY_HASH }}
+          CONSTITUTIONAL_CONTRACT_HASH: ${{ vars.CONSTITUTIONAL_CONTRACT_HASH }}
+          CONSTITUTIONAL_SESSION_KEY: ${{ vars.CONSTITUTIONAL_SESSION_KEY }}
+          CONSTITUTIONAL_MINIMUM_EPOCH: ${{ vars.CONSTITUTIONAL_MINIMUM_EPOCH || '0' }}
+          CONSTITUTIONAL_MAX_TOKENS: ${{ vars.CONSTITUTIONAL_MAX_TOKENS || '4096' }}
+          CONSTITUTIONAL_MAX_LEASE_SECONDS: ${{ vars.CONSTITUTIONAL_MAX_LEASE_SECONDS || '300' }}
+          CONSTITUTIONAL_REVOKED_LEASE_ID: ${{ vars.CONSTITUTIONAL_REVOKED_LEASE_ID || 'revoked-shadow-lease' }}
+          CONSTITUTIONAL_SHADOW_OUT: constitutional-shadow-artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p constitutional-shadow-artifacts
+          pnpm --filter @openclaw/constitutional-execution run gate-b:shadow
+          printf '%s\n' "${{ steps.revision.outputs.sha }}" \
+            > constitutional-shadow-artifacts/tested-head-sha.txt
+
+      - name: Upload immutable campaign evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: constitutional-shadow-${{ inputs.campaign_id }}-${{ steps.revision.outputs.sha }}
+          path: constitutional-shadow-artifacts/
+          if-no-files-found: error
+          retention-days: 30

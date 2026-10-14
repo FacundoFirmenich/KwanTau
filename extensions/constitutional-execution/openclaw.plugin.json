@@ -1,0 +1,130 @@
+{
+  "id": "constitutional-execution",
+  "activation": {
+    "onStartup": false,
+    "onConfigPaths": [
+      "plugins.entries.constitutional-execution"
+    ]
+  },
+  "contracts": {
+    "gatewayMethodDispatch": [
+      "authenticated-request"
+    ]
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "default": false
+      },
+      "mode": {
+        "type": "string",
+        "enum": [
+          "shadow",
+          "enforce"
+        ],
+        "default": "shadow"
+      },
+      "storePath": {
+        "type": "string"
+      },
+      "hostId": {
+        "type": "string"
+      },
+      "activePolicyHash": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "maxIntentAgeMs": {
+        "type": "number",
+        "minimum": 1
+      },
+      "clockSkewMs": {
+        "type": "number",
+        "minimum": 0
+      },
+      "waitTimeoutMs": {
+        "type": "number",
+        "minimum": 0
+      },
+      "allowedExecutors": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "allowedCapabilities": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "allowedSessionPrefixes": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "maxBudget": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "allowedKeys": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "keyId",
+            "publicKeyPem"
+          ],
+          "properties": {
+            "keyId": {
+              "type": "string"
+            },
+            "publicKeyPem": {
+              "type": "string"
+            },
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        }
+      },
+      "maxLeaseDurationMs": {
+        "type": "number",
+        "minimum": 1
+      },
+      "minimumEpoch": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "revokedLeaseIds": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "allowedContractHashes": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "maxLiveAuthorityAgeMs": {
+        "type": "number",
+        "minimum": 1
+      },
+      "liveAuthorityVerifierMethod": {
+        "type": "string"
+      }
+    }
+  }
+}
