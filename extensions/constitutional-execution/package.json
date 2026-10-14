@@ -7,7 +7,7 @@
   "scripts": {
     "check": "pnpm run contract-check && pnpm run typecheck && pnpm run test",
     "contract-check": "node scripts/check-plugin-contract.mjs",
-    "test": "vitest run --config vitest.config.ts",
+    "test": "vitest run tests/service.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
