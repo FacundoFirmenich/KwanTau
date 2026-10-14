@@ -1,0 +1,20 @@
+{
+  "format": "KWANTAU2DOS_V014_COMPONENT_VECTOR_CONTRACT_V1",
+  "operator_id": "kwan.v014.external.component-vector",
+  "operator_version": "1.0.0",
+  "lane": "WASI_COMPONENT",
+  "entrypoint": "add",
+  "artifact_path": "kwan/v0.14/ci/component.wat",
+  "artifact_sha256": "10d605495c4144d191ac029b74de1b1c1df658a687fee8024568cc1ebc08c24a",
+  "arguments": [17, 25],
+  "expected_result": 42,
+  "realm": "SHADOW",
+  "filesystem": "DENY",
+  "network": "DENY",
+  "environment": "DENY",
+  "secrets": "DENY",
+  "authority_inherited": false,
+  "productive_effects": false,
+  "promotion": "BLOCKED",
+  "scientific_claim_created": false
+}
