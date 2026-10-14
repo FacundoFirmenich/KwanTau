@@ -1,0 +1,24 @@
+{
+  "authority_granted": false,
+  "etcd_asset": {
+    "name": "etcd-v3.7.2-linux-amd64.tar.gz",
+    "sha256": "3a3679bc51a4ee9d30bccea1da7cd4fe62c6fc1d2ca1255068d2c53bf3026135",
+    "version": "3.7.2"
+  },
+  "format": "KWANTAU2DOS_V018_EXTERNAL_CONFORMANCE_SCOPE_V1",
+  "full_product_client_executed": false,
+  "gate_script_sha256": "fa03c0a7bce3980939ce0419ca103978a0f63636a586ad3a0edab214f41fdc03",
+  "local_product_module_sha256": "f5f1b2e83f94cc703d9f04b0ab4ac8247405b512cf8888314dc48d40331a741e",
+  "local_product_protocol_gate_sha256": "473356c99d9c520f07d65669dd10ecc6c0a89e4ceaec5f13746b373a6f49c002",
+  "promotion_performed": false,
+  "scope": [
+    "three-member etcd cluster",
+    "linearizable range",
+    "conditional compare-and-put",
+    "leader loss with surviving quorum",
+    "monotonic successor epoch",
+    "quorum-loss fail-closed"
+  ],
+  "scientific_claim_created": false,
+  "statement": "The external gate validates the replicated fencing protocol vector against real etcd Raft state. The full KwanTau2DOS product client is validated separately by the 153-test local suite and is not claimed to execute in this workflow."
+}

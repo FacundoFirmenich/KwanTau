@@ -1,0 +1,36 @@
+package kwan:operator@0.13.0;
+
+interface types {
+  record execution-context {
+    ride-id: string,
+    contract-id: string,
+    seed: option<u64>,
+  }
+
+  record metric {
+    name: string,
+    value: float64,
+  }
+
+  variant operator-error {
+    invalid-input(string),
+    budget-exceeded(string),
+    capability-denied(string),
+    internal(string),
+  }
+
+  record operator-result {
+    output: list<u8>,
+    metrics: list<metric>,
+    result-sha256: string,
+  }
+}
+
+world kwan-shadow-operator {
+  import types;
+
+  export execute: func(
+    context: types.execution-context,
+    input: list<u8>,
+  ) -> result<types.operator-result, types.operator-error>;
+}

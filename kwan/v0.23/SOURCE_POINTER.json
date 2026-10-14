@@ -1,0 +1,31 @@
+{
+  "canonical_artifacts": {
+    "delivery": {
+      "filename": "KWANTAU2DOS_V0_23_0_DELIVERY.zip",
+      "sha256": "556de2aa19bbeb46431e1055ca0a4ddf248a94959c5566b82e26aa96079e18b9"
+    },
+    "git_bundle": {
+      "filename": "KwanTau2DOS_v0_23_0-alpha.1.bundle",
+      "sha256": "641f226e0f4939577e6b3af5cf8a555f2a8659fdf0164143990ab0c4e4115c0e"
+    },
+    "kwan_browser": {
+      "filename": "KwanBrowser_v0_23_0-alpha.1.zip",
+      "sha256": "d49da51755249a00f0668fd3ada70db26a0d7f744ecab3be258ed160f8bfd178"
+    },
+    "release_zip": {
+      "filename": "KwanTau2DOS_v0_23_0-alpha.1.zip",
+      "sha256": "158069130e43c6b489fc1316beab81e30cf4cad3983075904b16e3e1b35c5108"
+    },
+    "source_capsule": {
+      "filename": "KWANTAU2DOS_V0_23_0_SOURCE_CAPSULE.tar.gz",
+      "sha256": "491515e5152e866999e273abc19b791bb197e890424807013dd3e1d62b5399eb"
+    }
+  },
+  "format": "KWANTAU2DOS_SOURCE_POINTER_V1",
+  "logical_file_count": 572,
+  "logical_tree_sha256": "013f95bb05ae799b460c509e7aa8db01a0eefacb2f17dcbdac85ad50fd700e5d",
+  "reason": "The staging connector carries textual audit material only. The complete canonical bytes are the verified source ZIP, Git bundle, source capsule and integral delivery; binary transport through this branch is not claimed.",
+  "release": "0.23.0-alpha.1",
+  "release_commit": "8fd1f1d095e9da112a840f11df28122c0d9d3f3c",
+  "staging_repository_is_canonical_source": false
+}

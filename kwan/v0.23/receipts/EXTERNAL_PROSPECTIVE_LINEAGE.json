@@ -1,0 +1,22 @@
+{
+  "code_imported": false,
+  "external_v021": {
+    "release_receipt_sha256": "755b8a2f95647c4f7e97997cbf05b21547a4a9797a8ffe0a80b963494fe48442",
+    "rfc_sha256": "deacac0d8a9b2ddc95135d248704ab81d73e77439b1401df17d91cfb7e08abb9"
+  },
+  "external_v022": {
+    "declared_bundle_sha256": "9f26a8bff9da0a27fe5f72625fc4f838c777a7f25429293fc528de7d6d8757de",
+    "declared_release_commit": "0a6954ac901006862962ddf83eb89ff86a73785a",
+    "declared_source_capsule_sha256": "8075f5a7c6542bf148aab1fa88ab4a1ce36720c0a49472deaf3ddc4a24a946cb",
+    "declared_source_zip_sha256": "7741228432e1f1fea049857a84110a0e2272638c88fb9fdc044fa979c17ccbeb",
+    "logical_tree_sha256": "9d81213032d174f155690025b863d97cff2e0273986e71abe4b5cd7ccac8d98d",
+    "release_receipt_sha256": "901b2f04e18c23508c0f568187a06499e4990d7fae7699599a39481bad9bcbc3",
+    "rfc_sha256": "bba350255695de0681854f08433f0e97411645b4f9fa17f4642fe93719a786b4"
+  },
+  "false_git_merge_claimed": false,
+  "format": "KWANTAU2DOS_V023_EXTERNAL_PROSPECTIVE_LINEAGE_V1",
+  "reason": "Only RFC and release-receipt bytes were available in the active runtime. The external source ZIP, source capsule and Git bundle were not materialised and are not claimed as imported.",
+  "release": "0.23.0-alpha.1",
+  "semantic_invariants_reimplemented": true,
+  "source_bytes_imported": false
+}
