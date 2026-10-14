@@ -307,6 +307,7 @@ export function validateReconcileParams(
   }
   requireNonEmpty(params.idempotencyKey, "idempotencyKey");
   requireNonEmpty(params.runId, "runId");
+  validateHash(params.receiptHash, "receiptHash");
   requireNonEmpty(params.reason, "reason");
   if (params.sessionKey !== undefined) {
     requireNonEmpty(params.sessionKey, "sessionKey");
@@ -315,6 +316,7 @@ export function validateReconcileParams(
     operation: "constitutional.reconcile",
     idempotencyKey: params.idempotencyKey,
     runId: params.runId,
+    receiptHash: params.receiptHash,
     sessionKey: params.sessionKey,
     reason: params.reason,
     policyHash: config.activePolicyHash,

@@ -1,6 +1,7 @@
 import { definePluginEntry } from "@openclaw/plugin-sdk/plugin-entry";
 import { resolveConstitutionalConfig } from "./src/config.js";
 import { ConstitutionalError } from "./src/errors.js";
+import { StdioKchAuthorityBroker } from "./src/kch-broker-client.js";
 import { ConstitutionalExecutionService } from "./src/service.js";
 import type {
   ConstitutionalCancelParams,
@@ -39,8 +40,18 @@ export default definePluginEntry({
   description: "Shadow-first, intent-bound constitutional execution over the Gateway agent path",
   register(api) {
     const config = resolveConstitutionalConfig(api.pluginConfig);
-    const service = new ConstitutionalExecutionService(config, (method, params, options) =>
-      api.runtime.gateway.request(method, params, options),
+    const authorityBroker =
+      config.kchAuthorityBrokerCommand && config.kchAuthorityDatabase
+        ? new StdioKchAuthorityBroker(
+            config.kchAuthorityBrokerCommand,
+            config.kchAuthorityDatabase,
+            config.kchAuthorityBrokerTimeoutMs,
+          )
+        : undefined;
+    const service = new ConstitutionalExecutionService(
+      config,
+      (method, params, options) => api.runtime.gateway.request(method, params, options),
+      authorityBroker,
     );
 
     api.registerGatewayMethod(

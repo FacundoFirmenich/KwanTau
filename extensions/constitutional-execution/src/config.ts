@@ -1,6 +1,6 @@
 import { createPublicKey } from "node:crypto";
 import { homedir } from "node:os";
-import { resolve } from "node:path";
+import { isAbsolute, resolve } from "node:path";
 import { ConstitutionalError } from "./errors.js";
 import type { ConstitutionalPluginConfig } from "./types.js";
 
@@ -14,7 +14,13 @@ function asStringArray(value: unknown): string[] {
 }
 
 function expandHome(path: string): string {
-  return path.startsWith("~/") ? resolve(homedir(), path.slice(2)) : resolve(path);
+  return path.startsWith("~/") ? resolve(homedir(), path.slice(2)) : path;
+}
+
+function absoluteConfiguredPath(value: unknown): string | undefined {
+  if (typeof value !== "string" || !value.trim()) return undefined;
+  const expanded = expandHome(value.trim());
+  return isAbsolute(expanded) ? expanded : undefined;
 }
 
 export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginConfig {
@@ -81,6 +87,21 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
       config.liveAuthorityVerifierMethod.trim()
         ? config.liveAuthorityVerifierMethod.trim()
         : undefined,
+    kchAuthorityBrokerCommand: absoluteConfiguredPath(config.kchAuthorityBrokerCommand),
+    kchAuthorityDatabase: absoluteConfiguredPath(config.kchAuthorityDatabase),
+    kchAuthorityBrokerTimeoutMs:
+      typeof config.kchAuthorityBrokerTimeoutMs === "number" &&
+      config.kchAuthorityBrokerTimeoutMs >= 100 &&
+      config.kchAuthorityBrokerTimeoutMs <= 30_000
+        ? config.kchAuthorityBrokerTimeoutMs
+        : 2_000,
+    kchClaimTtlSeconds:
+      typeof config.kchClaimTtlSeconds === "number" &&
+      Number.isInteger(config.kchClaimTtlSeconds) &&
+      config.kchClaimTtlSeconds >= 1 &&
+      config.kchClaimTtlSeconds <= 30
+        ? config.kchClaimTtlSeconds
+        : 5,
     clockSkewMs:
       typeof config.clockSkewMs === "number" && config.clockSkewMs >= 0
         ? config.clockSkewMs
@@ -141,12 +162,11 @@ export function resolveConstitutionalConfig(raw: unknown): ConstitutionalPluginC
     }
     if (
       mode === "enforce" &&
-      (!resolved.liveAuthorityVerifierMethod ||
-        resolved.liveAuthorityVerifierMethod.startsWith("constitutional."))
+      (!resolved.kchAuthorityBrokerCommand || !resolved.kchAuthorityDatabase)
     ) {
       throw new ConstitutionalError(
         "CONSTITUTION_INVALID",
-        "Enforce mode requires a non-constitutional liveAuthorityVerifierMethod.",
+        "Enforce mode requires absolute kchAuthorityBrokerCommand and kchAuthorityDatabase paths.",
       );
     }
     if (resolved.allowedExecutors.length === 0 || resolved.allowedCapabilities.length === 0) {

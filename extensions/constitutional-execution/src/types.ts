@@ -52,6 +52,7 @@ export type ConstitutionalCancelParams = {
 export type ConstitutionalReconcileParams = {
   idempotencyKey: string;
   runId: string;
+  receiptHash: string;
   sessionKey?: string;
   reason: string;
   authorityProof: ConstitutionalAuthorityProof;
@@ -96,6 +97,10 @@ export type ConstitutionalPluginConfig = {
   maxLeaseDurationMs: number;
   maxLiveAuthorityAgeMs: number;
   liveAuthorityVerifierMethod?: string;
+  kchAuthorityBrokerCommand?: string;
+  kchAuthorityDatabase?: string;
+  kchAuthorityBrokerTimeoutMs: number;
+  kchClaimTtlSeconds: number;
   clockSkewMs: number;
   minimumEpoch: number;
   revokedLeaseIds: string[];

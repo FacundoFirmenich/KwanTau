@@ -1,10 +1,14 @@
 import { sha256Hex } from "./canonical-json.js";
 import { ConstitutionalError } from "./errors.js";
+import type {
+  KchAuthorityBroker,
+  KchAuthorityClaim,
+  KchAuthorityPrepareParams,
+} from "./kch-broker-client.js";
 import { ConstitutionalStore } from "./store.js";
 import type {
   ConstitutionalCancelParams,
   ConstitutionalExecuteParams,
-  ConstitutionalLiveAuthorityResult,
   ConstitutionalPluginConfig,
   ConstitutionalReconcileParams,
   ConstitutionalRecord,
@@ -57,90 +61,101 @@ function mergedMetadata(
   return { ...(record.metadata ?? {}), ...patch };
 }
 
+function metadataObject(record: ConstitutionalRecord, key: string): Record<string, unknown> | undefined {
+  const value = record.metadata?.[key];
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
+}
+
 export class ConstitutionalExecutionService {
   readonly store: ConstitutionalStore;
 
   constructor(
     readonly config: ConstitutionalPluginConfig,
     private readonly gatewayRequest: GatewayRequest,
+    private readonly authorityBroker?: KchAuthorityBroker,
   ) {
     this.store = new ConstitutionalStore(config.storePath);
   }
 
-  private async verifyLiveAuthority(
+  private brokerParams(
     params: ConstitutionalExecuteParams,
-  ): Promise<ConstitutionalLiveAuthorityResult> {
-    const method = this.config.liveAuthorityVerifierMethod;
-    if (!method) {
-      throw new ConstitutionalError(
-        "CONSTITUTION_LIVE_AUTHORITY_UNAVAILABLE",
-        "Enforce mode requires a live KCH authority verifier.",
-        { retryable: true },
-      );
-    }
+    envelopeHash: string,
+  ): KchAuthorityPrepareParams {
     const envelope = params.envelope;
-    let result: ConstitutionalLiveAuthorityResult;
-    try {
-      result = await this.gatewayRequest<ConstitutionalLiveAuthorityResult>(
-        method,
-        {
-          envelopeHash: sha256Hex(envelope),
-          leaseId: envelope.lease_id,
-          reservationId: envelope.reservation_id,
-          decisionId: envelope.decision_id,
-          intentId: envelope.intent_id,
-          candidateId: envelope.candidate_id,
-          permissionId: envelope.permission_id,
-          supportCertificateId: envelope.support_certificate_id,
-          assuranceId: envelope.assurance_id,
-          epoch: envelope.epoch,
-          policyHash: envelope.policy_hash,
-          hostId: envelope.host_id,
-          sessionId: envelope.session_id,
-        },
-        { scopes: ["operator.admin"] },
-      );
-    } catch (error) {
-      throw new ConstitutionalError(
-        "CONSTITUTION_LIVE_AUTHORITY_UNAVAILABLE",
-        "Live KCH authority verification is unavailable.",
-        { retryable: true, details: { cause: String(error) } },
-      );
-    }
+    return {
+      envelopeHash,
+      leaseId: envelope.lease_id,
+      reservationId: envelope.reservation_id,
+      decisionId: envelope.decision_id,
+      intentId: envelope.intent_id,
+      policyHash: envelope.policy_hash,
+      epoch: envelope.epoch,
+      sessionId: envelope.session_id,
+      toolName: envelope.executor_id,
+      argsSha256: envelope.payload_hash,
+      ttlSeconds: this.config.kchClaimTtlSeconds,
+    };
+  }
+
+  private assertBrokerClaim(
+    claim: KchAuthorityClaim,
+    params: ConstitutionalExecuteParams,
+    envelopeHash: string,
+    expectedStatus: string,
+    active: boolean,
+  ): void {
+    const envelope = params.envelope;
     const now = Date.now() / 1000;
-    const maxAgeSeconds = this.config.maxLiveAuthorityAgeMs / 1000;
-    const maxFutureSkewSeconds = this.config.clockSkewMs / 1000;
+    const maxAge = this.config.maxLiveAuthorityAgeMs / 1000;
+    const futureSkew = this.config.clockSkewMs / 1000;
     const identityMatches =
-      result.leaseId === envelope.lease_id &&
-      result.reservationId === envelope.reservation_id &&
-      result.decisionId === envelope.decision_id &&
-      result.intentId === envelope.intent_id &&
-      result.policyHash === envelope.policy_hash &&
-      result.epoch >= envelope.epoch;
-    const freshnessValid =
-      Number.isFinite(result.verifiedAtUnix) &&
-      result.verifiedAtUnix <= now + maxFutureSkewSeconds &&
-      now - result.verifiedAtUnix <= maxAgeSeconds;
+      claim.envelopeHash === envelopeHash &&
+      claim.leaseId === envelope.lease_id &&
+      claim.reservationId === envelope.reservation_id &&
+      claim.decisionId === envelope.decision_id &&
+      claim.intentId === envelope.intent_id &&
+      claim.policyHash === envelope.policy_hash &&
+      claim.epoch === envelope.epoch &&
+      claim.sessionId === envelope.session_id &&
+      claim.toolName === envelope.executor_id &&
+      claim.argsSha256 === envelope.payload_hash;
+    const freshness =
+      Number.isFinite(claim.verifiedAtUnix) &&
+      claim.verifiedAtUnix <= now + futureSkew &&
+      now - claim.verifiedAtUnix <= maxAge;
     if (
-      result.active !== true ||
       !identityMatches ||
-      !freshnessValid ||
-      typeof result.generation !== "string" ||
-      !result.generation.trim()
+      !freshness ||
+      claim.status !== expectedStatus ||
+      claim.active !== active ||
+      !claim.generation ||
+      (expectedStatus === "PREPARED" && !claim.claimId)
     ) {
       throw new ConstitutionalError(
         "CONSTITUTION_LIVE_AUTHORITY_DENIED",
-        result.reason || "Live KCH authority does not match the executable envelope.",
+        "KCH authority claim does not match the executable envelope.",
         {
           details: {
-            active: result.active,
-            generation: result.generation,
-            verifiedAtUnix: result.verifiedAtUnix,
+            status: claim.status,
+            generation: claim.generation,
+            attestationLevel: claim.attestationLevel,
           },
         },
       );
     }
-    return result;
+  }
+
+  private authorityMetadata(claim: KchAuthorityClaim): Record<string, unknown> {
+    return {
+      claimId: claim.claimId,
+      proposalId: claim.proposalId,
+      status: claim.status,
+      generation: claim.generation,
+      verifiedAtUnix: claim.verifiedAtUnix,
+      attestationLevel: claim.attestationLevel,
+    };
   }
 
   async execute(params: ConstitutionalExecuteParams): Promise<ConstitutionalStatus> {
@@ -151,9 +166,46 @@ export class ConstitutionalExecutionService {
       payloadHash: verified.payloadHash,
       mode: this.config.mode,
     });
+
     if (this.config.mode === "shadow") {
-      return toStatus(reserved.record);
+      if (!this.authorityBroker) return toStatus(reserved.record);
+      try {
+        const shadow = await this.authorityBroker.verify(
+          this.brokerParams(params, verified.envelopeHash),
+        );
+        const updated = await this.store.update(
+          params.idempotencyKey,
+          {
+            metadata: mergedMetadata(reserved.record, {
+              kchShadowAuthority: this.authorityMetadata(shadow),
+              kchShadowActive: shadow.active,
+            }),
+          },
+          "KCH_SHADOW_AUTHORITY_OBSERVED",
+        );
+        return toStatus(updated);
+      } catch (error) {
+        const updated = await this.store.update(
+          params.idempotencyKey,
+          {
+            metadata: mergedMetadata(reserved.record, {
+              kchShadowAuthorityError: String(error),
+            }),
+          },
+          "KCH_SHADOW_AUTHORITY_UNAVAILABLE",
+        );
+        return toStatus(updated);
+      }
     }
+
+    if (!this.authorityBroker) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_LIVE_AUTHORITY_UNAVAILABLE",
+        "Enforce mode requires the transactional KCH authority broker.",
+        { retryable: true },
+      );
+    }
+
     if (!reserved.created && reserved.record.status !== "ACCEPTED") {
       return toStatus(reserved.record);
     }
@@ -162,11 +214,11 @@ export class ConstitutionalExecutionService {
     if (envelope.executor_id !== "openclaw.agent" || envelope.capability !== "agent.run") {
       throw new ConstitutionalError(
         "CONSTITUTION_EXECUTOR_UNSUPPORTED",
-        "The native v1 extension only dispatches openclaw.agent / agent.run.",
+        "The transactional v2 extension only dispatches openclaw.agent / agent.run.",
       );
     }
 
-    const claim = await this.store.transitionStatus(
+    const localClaim = await this.store.transitionStatus(
       params.idempotencyKey,
       ["ACCEPTED"],
       "DISPATCHING",
@@ -177,35 +229,84 @@ export class ConstitutionalExecutionService {
         }),
       },
     );
-    if (!claim.transitioned) {
-      return toStatus(claim.record);
-    }
+    if (!localClaim.transitioned) return toStatus(localClaim.record);
 
-    let liveAuthority: ConstitutionalLiveAuthorityResult;
+    let prepared: KchAuthorityClaim;
     try {
       validateExecuteParams(params, this.config);
-      liveAuthority = await this.verifyLiveAuthority(params);
+      prepared = await this.authorityBroker.prepare(
+        this.brokerParams(params, verified.envelopeHash),
+      );
+      this.assertBrokerClaim(prepared, params, verified.envelopeHash, "PREPARED", true);
+      await this.store.update(
+        params.idempotencyKey,
+        {
+          metadata: mergedMetadata(localClaim.record, {
+            kchAuthority: this.authorityMetadata(prepared),
+          }),
+        },
+        "KCH_AUTHORITY_PREPARED",
+      );
     } catch (error) {
       if (
         error instanceof ConstitutionalError &&
         error.code === "CONSTITUTION_LIVE_AUTHORITY_UNAVAILABLE"
       ) {
-        await this.store.transitionStatus(params.idempotencyKey, ["DISPATCHING"], "ACCEPTED", {
-          error: error.message,
-          metadata: mergedMetadata(claim.record, {
-            liveAuthorityUnavailableAtUnix: Date.now() / 1000,
-          }),
-        });
+        await this.store.transitionStatus(
+          params.idempotencyKey,
+          ["DISPATCHING"],
+          "ACCEPTED",
+          {
+            error: error.message,
+            metadata: mergedMetadata(localClaim.record, {
+              kchPrepareUnavailableAtUnix: Date.now() / 1000,
+            }),
+          },
+        );
       } else {
         await this.store.setStatus(params.idempotencyKey, "FAILED", {
           error: String(error),
           completedAtUnix: Date.now() / 1000,
-          metadata: mergedMetadata(claim.record, {
-            liveAuthorityDeniedAtUnix: Date.now() / 1000,
+          metadata: mergedMetadata(localClaim.record, {
+            kchPrepareDeniedAtUnix: Date.now() / 1000,
           }),
         });
       }
       throw error;
+    }
+
+    let committed: KchAuthorityClaim;
+    try {
+      committed = await this.authorityBroker.commit({
+        claimId: prepared.claimId as string,
+        envelopeHash: verified.envelopeHash,
+        dispatchId: params.idempotencyKey,
+      });
+      this.assertBrokerClaim(committed, params, verified.envelopeHash, "COMMITTED", false);
+    } catch (error) {
+      if (
+        error instanceof ConstitutionalError &&
+        error.code === "CONSTITUTION_LIVE_AUTHORITY_DENIED"
+      ) {
+        return toStatus(
+          await this.store.setStatus(params.idempotencyKey, "FAILED", {
+            error: error.message,
+            completedAtUnix: Date.now() / 1000,
+            metadata: mergedMetadata(localClaim.record, {
+              kchAuthority: this.authorityMetadata(prepared),
+              kchCommitDeniedAtUnix: Date.now() / 1000,
+            }),
+          }),
+        );
+      }
+      const uncertain = await this.store.setStatus(params.idempotencyKey, "IN_DOUBT", {
+        error: String(error),
+        metadata: mergedMetadata(localClaim.record, {
+          kchAuthority: this.authorityMetadata(prepared),
+          kchCommitUncertainAtUnix: Date.now() / 1000,
+        }),
+      });
+      return toStatus(uncertain);
     }
 
     const payload = { ...envelope.payload, idempotencyKey: params.idempotencyKey };
@@ -222,28 +323,59 @@ export class ConstitutionalExecutionService {
       }
       const sessionKey =
         typeof acceptance.sessionKey === "string" ? acceptance.sessionKey : undefined;
+      const acceptanceReceiptHash = sha256Hex(acceptance);
+
+      let receipted: KchAuthorityClaim;
+      try {
+        receipted = await this.authorityBroker.receipt({
+          claimId: committed.claimId as string,
+          envelopeHash: verified.envelopeHash,
+          runId,
+          receiptHash: acceptanceReceiptHash,
+        });
+        this.assertBrokerClaim(receipted, params, verified.envelopeHash, "COMMITTED", false);
+      } catch (error) {
+        const uncertain = await this.store.setStatus(params.idempotencyKey, "IN_DOUBT", {
+          runId,
+          sessionKey,
+          error: String(error),
+          metadata: mergedMetadata(localClaim.record, {
+            acceptance,
+            acceptanceReceiptHash,
+            kchAuthority: this.authorityMetadata(committed),
+            kchReceiptUncertainAtUnix: Date.now() / 1000,
+          }),
+        });
+        return toStatus(uncertain);
+      }
+
       const updated = await this.store.setStatus(params.idempotencyKey, "RUNNING", {
         runId,
         sessionKey,
         error: undefined,
-        metadata: mergedMetadata(claim.record, {
+        metadata: mergedMetadata(localClaim.record, {
           acceptance,
-          liveAuthority: {
-            generation: liveAuthority.generation,
-            verifiedAtUnix: liveAuthority.verifiedAtUnix,
-          },
+          acceptanceReceiptHash,
+          kchAuthority: this.authorityMetadata(receipted),
         }),
       });
       return toStatus(updated);
     } catch (error) {
+      let indoubt: KchAuthorityClaim | undefined;
+      try {
+        indoubt = await this.authorityBroker.indoubt({
+          claimId: committed.claimId as string,
+          envelopeHash: verified.envelopeHash,
+          reason: "Gateway dispatch returned no reliable acceptance: " + String(error),
+        });
+      } catch {
+        // Local state still becomes IN_DOUBT; KCH authority was already consumed.
+      }
       const uncertain = await this.store.setStatus(params.idempotencyKey, "IN_DOUBT", {
         error: String(error),
-        metadata: mergedMetadata(claim.record, {
+        metadata: mergedMetadata(localClaim.record, {
           uncertaintyRecordedAtUnix: Date.now() / 1000,
-          liveAuthority: {
-            generation: liveAuthority.generation,
-            verifiedAtUnix: liveAuthority.verifiedAtUnix,
-          },
+          kchAuthority: this.authorityMetadata(indoubt ?? committed),
         }),
       });
       return toStatus(uncertain);
@@ -267,6 +399,33 @@ export class ConstitutionalExecutionService {
       const status = terminalStatus(payload);
       const terminal = ["SUCCEEDED", "FAILED", "TIMEOUT"].includes(status);
       const output = status === "SUCCEEDED" ? payload : undefined;
+
+      if (record.status === "IN_DOUBT" && this.authorityBroker) {
+        const kch = metadataObject(record, "kchAuthority");
+        const claimId = typeof kch?.claimId === "string" ? kch.claimId : undefined;
+        const acceptanceReceiptHash =
+          typeof record.metadata?.acceptanceReceiptHash === "string"
+            ? record.metadata.acceptanceReceiptHash
+            : undefined;
+        if (claimId && acceptanceReceiptHash) {
+          try {
+            await this.authorityBroker.receipt({
+              claimId,
+              envelopeHash: record.envelopeHash,
+              runId: record.runId,
+              receiptHash: acceptanceReceiptHash,
+            });
+          } catch {
+            return toStatus(
+              await this.store.setStatus(idempotencyKey, "IN_DOUBT", {
+                error: "Remote run is observable but KCH receipt binding remains unresolved.",
+                metadata: mergedMetadata(record, { terminalEvidence: payload }),
+              }),
+            );
+          }
+        }
+      }
+
       const updated = await this.store.setStatus(idempotencyKey, status, {
         output,
         outputHash: output === undefined ? undefined : sha256Hex(output),
@@ -304,17 +463,80 @@ export class ConstitutionalExecutionService {
         "Reconciliation runId conflicts with the persisted remote run.",
       );
     }
+    if (!this.authorityBroker) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_LIVE_AUTHORITY_UNAVAILABLE",
+        "KCH authority broker is required for reconciliation.",
+        { retryable: true },
+      );
+    }
+    const kch = metadataObject(current, "kchAuthority");
+    const claimId = typeof kch?.claimId === "string" ? kch.claimId : undefined;
+    if (!claimId) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_LIVE_AUTHORITY_DENIED",
+        "No KCH claim is bound to this uncertain execution.",
+      );
+    }
+
+    let remote: Record<string, unknown>;
+    try {
+      remote = await this.gatewayRequest<Record<string, unknown>>(
+        "agent.wait",
+        { runId: params.runId, timeoutMs: this.config.waitTimeoutMs },
+        { timeoutMs: this.config.waitTimeoutMs + 5_000, scopes: ["operator.write"] },
+      );
+    } catch (error) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_REMOTE_ERROR",
+        "The remote run cannot be independently observed for reconciliation.",
+        { retryable: true, details: { cause: String(error) } },
+      );
+    }
+    const observedReceiptHash = sha256Hex(remote);
+    if (observedReceiptHash !== params.receiptHash) {
+      throw new ConstitutionalError(
+        "CONSTITUTION_IDEMPOTENCY_CONFLICT",
+        "Signed reconciliation receipt hash does not match the observed Gateway run.",
+      );
+    }
+    const observedStatus = terminalStatus(remote);
+    if (observedStatus === "IN_DOUBT") {
+      throw new ConstitutionalError(
+        "CONSTITUTION_REMOTE_ERROR",
+        "Gateway run remains semantically indeterminate.",
+        { retryable: true },
+      );
+    }
+
+    await this.authorityBroker.receipt({
+      claimId,
+      envelopeHash: current.envelopeHash,
+      runId: params.runId,
+      receiptHash: observedReceiptHash,
+    });
+
+    const terminal = ["SUCCEEDED", "FAILED", "TIMEOUT"].includes(observedStatus);
+    const output = observedStatus === "SUCCEEDED" ? remote : undefined;
     const transitioned = await this.store.transitionStatus(
       params.idempotencyKey,
       ["DISPATCHING", "IN_DOUBT"],
-      "RUNNING",
+      observedStatus,
       {
         runId: params.runId,
         sessionKey: params.sessionKey ?? current.sessionKey,
-        error: undefined,
+        output,
+        outputHash: output === undefined ? undefined : observedReceiptHash,
+        error:
+          observedStatus === "FAILED" || observedStatus === "TIMEOUT"
+            ? String(remote.error ?? remote.stopReason ?? observedStatus)
+            : undefined,
+        completedAtUnix: terminal ? Date.now() / 1000 : undefined,
         metadata: mergedMetadata(current, {
           reconciledAtUnix: Date.now() / 1000,
           reconciliationReason: params.reason,
+          acceptanceReceiptHash: observedReceiptHash,
+          reconciliationObservation: remote,
         }),
       },
     );
@@ -332,7 +554,7 @@ export class ConstitutionalExecutionService {
       ["SHADOW_ACCEPTED", "ACCEPTED", "DISPATCHING", "RUNNING", "IN_DOUBT"],
       "CANCEL_REQUESTED",
       {
-        error: `Cancellation requested but not dispatched: ${params.reason}`,
+        error: "Cancellation requested but not dispatched: " + params.reason,
         metadata: mergedMetadata(record, {
           cancellationRequestedAtUnix: Date.now() / 1000,
         }),
