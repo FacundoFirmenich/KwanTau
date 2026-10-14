@@ -135,6 +135,9 @@ function validateTemporalBounds(
   if (expiresMs <= createdMs) {
     throw new ConstitutionalError("CONSTITUTION_INVALID", "Lease expires before creation.");
   }
+  if (expiresMs - createdMs > config.maxLeaseDurationMs) {
+    throw new ConstitutionalError("CONSTITUTION_EXPIRED", "Lease duration exceeds policy.");
+  }
 }
 
 function validateBudget(
@@ -188,10 +191,38 @@ export function validateExecuteParams(
       "Payload commitment mismatch.",
     );
   }
+  if (envelope.epoch < config.minimumEpoch) {
+    throw new ConstitutionalError(
+      "CONSTITUTION_EXPIRED",
+      "Envelope epoch predates the active minimum epoch.",
+    );
+  }
+  if (config.revokedLeaseIds.includes(envelope.lease_id)) {
+    throw new ConstitutionalError("CONSTITUTION_EXPIRED", "Authority lease has been revoked.");
+  }
   if (envelope.policy_hash !== config.activePolicyHash) {
     throw new ConstitutionalError(
       "CONSTITUTION_POLICY_MISMATCH",
       "Intent policy hash is not active.",
+    );
+  }
+  if (!config.allowedContractHashes.includes(envelope.contract_hash)) {
+    throw new ConstitutionalError(
+      "CONSTITUTION_POLICY_MISMATCH",
+      "Contract hash is not admitted by the active policy.",
+    );
+  }
+  const payloadSessionKey = envelope.payload.sessionKey;
+  if (typeof payloadSessionKey !== "string" || payloadSessionKey !== envelope.session_id) {
+    throw new ConstitutionalError(
+      "CONSTITUTION_SCOPE_DENIED",
+      "Payload sessionKey must exactly match the constitutionally bound session_id.",
+    );
+  }
+  if (envelope.scope.session !== envelope.session_id) {
+    throw new ConstitutionalError(
+      "CONSTITUTION_SCOPE_DENIED",
+      "Scope session must exactly match session_id.",
     );
   }
   if (envelope.host_id !== config.hostId) {
