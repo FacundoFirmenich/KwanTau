@@ -1,4 +1,4 @@
-import { definePluginEntry } from "@openclaw/plugin-sdk/plugin-entry";
+import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { resolveConstitutionalConfig } from "./src/config.js";
 import { ConstitutionalError } from "./src/errors.js";
 import { ConstitutionalExecutionService } from "./src/service.js";
