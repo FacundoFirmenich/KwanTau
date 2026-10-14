@@ -44,6 +44,14 @@ function terminalStatus(payload: Record<string, unknown>): ConstitutionalStatusV
   return "IN_DOUBT";
 }
 
+export type RecoverySummary = {
+  discovered: number;
+  dispatched: number;
+  running: number;
+  inDoubt: number;
+  failed: number;
+};
+
 export class ConstitutionalExecutionService {
   readonly store: ConstitutionalStore;
 
@@ -54,33 +62,29 @@ export class ConstitutionalExecutionService {
     this.store = new ConstitutionalStore(config.storePath);
   }
 
-  async execute(params: ConstitutionalExecuteParams): Promise<ConstitutionalStatus> {
-    const verified = validateExecuteParams(params, this.config);
-    const reserved = await this.store.reserve({
-      idempotencyKey: params.idempotencyKey,
-      envelopeHash: verified.envelopeHash,
-      payloadHash: verified.payloadHash,
-      mode: this.config.mode,
-    });
-    if (this.config.mode === "shadow") {
-      return toStatus(reserved.record);
-    }
-    if (!reserved.created) {
-      if (["SUCCEEDED", "FAILED", "TIMEOUT", "RUNNING", "CANCEL_REQUESTED"].includes(reserved.record.status)) {
-        return toStatus(reserved.record);
-      }
-      if (reserved.record.runId) return toStatus(reserved.record);
+  private async dispatch(idempotencyKey: string): Promise<ConstitutionalStatus> {
+    const claim = await this.store.claimDispatch(idempotencyKey);
+    if (!claim.claimed || !claim.params || !claim.claimToken) {
+      return toStatus((await this.store.get(idempotencyKey)) ?? claim.record);
     }
 
-    const envelope = params.envelope;
-    if (envelope.executor_id !== "openclaw.agent" || envelope.capability !== "agent.run") {
-      throw new ConstitutionalError(
-        "CONSTITUTION_EXECUTOR_UNSUPPORTED",
-        "The native v1 extension only dispatches openclaw.agent / agent.run.",
-      );
-    }
-    const payload = { ...envelope.payload, idempotencyKey: params.idempotencyKey };
     try {
+      // Revalidate the exact stored request against the policy that is active at
+      // recovery/dispatch time. A stale epoch, revoked lease or rotated policy
+      // therefore fails before any remote side effect.
+      validateExecuteParams(claim.params, this.config);
+      const envelope = claim.params.envelope;
+      if (envelope.executor_id !== "openclaw.agent" || envelope.capability !== "agent.run") {
+        throw new ConstitutionalError(
+          "CONSTITUTION_EXECUTOR_UNSUPPORTED",
+          "The native v1 extension only dispatches openclaw.agent / agent.run.",
+        );
+      }
+
+      const payload = {
+        ...envelope.payload,
+        idempotencyKey: claim.params.idempotencyKey,
+      };
       const acceptance = await this.gatewayRequest<Record<string, unknown>>(
         "agent",
         payload,
@@ -93,19 +97,71 @@ export class ConstitutionalExecutionService {
           "Gateway agent acceptance lacks runId.",
         );
       }
-      const sessionKey = typeof acceptance.sessionKey === "string" ? acceptance.sessionKey : undefined;
-      const updated = await this.store.setStatus(params.idempotencyKey, "RUNNING", {
+      const sessionKey =
+        typeof acceptance.sessionKey === "string" ? acceptance.sessionKey : undefined;
+      const updated = await this.store.acknowledgeDispatch({
+        idempotencyKey,
+        claimToken: claim.claimToken,
         runId,
         sessionKey,
-        metadata: { acceptance },
+        acceptance,
       });
       return toStatus(updated);
     } catch (error) {
-      const uncertain = await this.store.setStatus(params.idempotencyKey, "IN_DOUBT", {
+      if (error instanceof ConstitutionalError && error.code !== "CONSTITUTION_REMOTE_ERROR") {
+        const failed = await this.store.setStatus(idempotencyKey, "FAILED", {
+          error: `${error.code}: ${error.message}`,
+          completedAtUnix: Date.now() / 1000,
+        });
+        return toStatus(failed);
+      }
+      const uncertain = await this.store.markDispatchInDoubt({
+        idempotencyKey,
+        claimToken: claim.claimToken,
         error: String(error),
       });
       return toStatus(uncertain);
     }
+  }
+
+  async execute(params: ConstitutionalExecuteParams): Promise<ConstitutionalStatus> {
+    const verified = validateExecuteParams(params, this.config);
+    const reserved = await this.store.reserveCommand({
+      idempotencyKey: params.idempotencyKey,
+      envelopeHash: verified.envelopeHash,
+      payloadHash: verified.payloadHash,
+      mode: this.config.mode,
+      params,
+    });
+    if (this.config.mode === "shadow") {
+      return toStatus(reserved.record);
+    }
+    if (["SUCCEEDED", "FAILED", "TIMEOUT", "RUNNING", "CANCEL_REQUESTED"].includes(
+      reserved.record.status,
+    )) {
+      return toStatus(reserved.record);
+    }
+    return this.dispatch(params.idempotencyKey);
+  }
+
+  async recoverPending(limit = 100): Promise<RecoverySummary> {
+    const keys = await this.store.listRecoverable(limit);
+    const summary: RecoverySummary = {
+      discovered: keys.length,
+      dispatched: 0,
+      running: 0,
+      inDoubt: 0,
+      failed: 0,
+    };
+    for (const idempotencyKey of keys) {
+      const before = await this.store.get(idempotencyKey);
+      const result = await this.dispatch(idempotencyKey);
+      if (result.runId && result.runId !== before?.runId) summary.dispatched += 1;
+      if (result.status === "RUNNING") summary.running += 1;
+      if (result.status === "IN_DOUBT") summary.inDoubt += 1;
+      if (result.status === "FAILED") summary.failed += 1;
+    }
+    return summary;
   }
 
   async status(idempotencyKey: string): Promise<ConstitutionalStatus> {
@@ -142,6 +198,10 @@ export class ConstitutionalExecutionService {
       });
       return toStatus(updated);
     }
+  }
+
+  async close(): Promise<void> {
+    await this.store.close();
   }
 
   async cancel(params: ConstitutionalCancelParams): Promise<ConstitutionalStatus> {

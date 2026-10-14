@@ -8,11 +8,16 @@ async function tempStoreRoot(): Promise<string> {
   return mkdtemp(join(tmpdir(), "constitutional-sqlite-"));
 }
 
-const reservation = {
+const shadowReservation = {
   idempotencyKey: "idem-atomic",
   envelopeHash: "a".repeat(64),
   payloadHash: "b".repeat(64),
   mode: "shadow" as const,
+};
+
+const enforceReservation = {
+  ...shadowReservation,
+  mode: "enforce" as const,
 };
 
 describe("constitutional SQLite store", () => {
@@ -21,8 +26,8 @@ describe("constitutional SQLite store", () => {
     const first = new ConstitutionalStore(root);
     const second = new ConstitutionalStore(root);
     const results = await Promise.all([
-      first.reserve(reservation),
-      second.reserve(reservation),
+      first.reserve(shadowReservation),
+      second.reserve(shadowReservation),
     ]);
     expect(results.filter((result) => result.created)).toHaveLength(1);
     expect(results.filter((result) => !result.created)).toHaveLength(1);
@@ -36,19 +41,33 @@ describe("constitutional SQLite store", () => {
     const root = await tempStoreRoot();
     const first = new ConstitutionalStore(root);
     const second = new ConstitutionalStore(root);
-    await first.reserve(reservation);
+    await first.reserve(shadowReservation);
     await expect(
-      second.reserve({ ...reservation, envelopeHash: "c".repeat(64) }),
+      second.reserve({ ...shadowReservation, envelopeHash: "c".repeat(64) }),
     ).rejects.toMatchObject({ code: "CONSTITUTION_IDEMPOTENCY_CONFLICT" });
     expect(await first.eventCount()).toBe(1);
     await first.close();
     await second.close();
   });
 
-  it("persists terminal evidence and its operational event journal", async () => {
+  it("forbids promotion of a shadow reservation into an executed outcome", async () => {
+    const root = await tempStoreRoot();
+    const store = new ConstitutionalStore(root);
+    await store.reserve(shadowReservation);
+    await expect(
+      store.setStatus("idem-atomic", "SUCCEEDED", {
+        runId: "forbidden-run",
+        completedAtUnix: 123,
+      }),
+    ).rejects.toMatchObject({ code: "CONSTITUTION_INVALID" });
+    expect((await store.get("idem-atomic"))?.status).toBe("SHADOW_ACCEPTED");
+    await store.close();
+  });
+
+  it("persists terminal evidence and its operational event journal for enforce mode", async () => {
     const root = await tempStoreRoot();
     const first = new ConstitutionalStore(root);
-    await first.reserve(reservation);
+    await first.reserve(enforceReservation);
     await first.setStatus("idem-atomic", "SUCCEEDED", {
       runId: "run-1",
       output: { status: "ok" },

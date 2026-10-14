@@ -5,6 +5,12 @@
     "paths": {
       "openclaw/plugin-sdk/plugin-entry": [
         "types/plugin-entry.d.ts"
+      ],
+      "openclaw/plugin-sdk/sqlite-runtime": [
+        "types/sqlite-runtime.d.ts"
+      ],
+      "@openclaw/plugin-sdk/sqlite-runtime": [
+        "types/sqlite-runtime.d.ts"
       ]
     }
   }
