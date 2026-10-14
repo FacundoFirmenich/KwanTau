@@ -181,21 +181,10 @@ export class ConstitutionalExecutionService {
       return toStatus(claim.record);
     }
 
+    let liveAuthority: ConstitutionalLiveAuthorityResult;
     try {
       validateExecuteParams(params, this.config);
-      const liveAuthority = await this.verifyLiveAuthority(params);
-      await this.store.update(
-        params.idempotencyKey,
-        {
-          metadata: mergedMetadata(claim.record, {
-            liveAuthority: {
-              generation: liveAuthority.generation,
-              verifiedAtUnix: liveAuthority.verifiedAtUnix,
-            },
-          }),
-        },
-        "LIVE_AUTHORITY_VERIFIED",
-      );
+      liveAuthority = await this.verifyLiveAuthority(params);
     } catch (error) {
       if (
         error instanceof ConstitutionalError &&
@@ -242,7 +231,13 @@ export class ConstitutionalExecutionService {
         runId,
         sessionKey,
         error: undefined,
-        metadata: mergedMetadata(claim.record, { acceptance }),
+        metadata: mergedMetadata(claim.record, {
+          acceptance,
+          liveAuthority: {
+            generation: liveAuthority.generation,
+            verifiedAtUnix: liveAuthority.verifiedAtUnix,
+          },
+        }),
       });
       return toStatus(updated);
     } catch (error) {
@@ -250,6 +245,10 @@ export class ConstitutionalExecutionService {
         error: String(error),
         metadata: mergedMetadata(claim.record, {
           uncertaintyRecordedAtUnix: Date.now() / 1000,
+          liveAuthority: {
+            generation: liveAuthority.generation,
+            verifiedAtUnix: liveAuthority.verifiedAtUnix,
+          },
         }),
       });
       return toStatus(uncertain);
