@@ -1,11 +1,3 @@
 {
-  "extends": "../tsconfig.package-boundary.base.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "openclaw/plugin-sdk/plugin-entry": [
-        "types/plugin-entry.d.ts"
-      ]
-    }
-  }
+  "extends": "../tsconfig.package-boundary.base.json"
 }
