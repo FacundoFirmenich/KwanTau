@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: constitutional-execution-autoformat-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   format:
