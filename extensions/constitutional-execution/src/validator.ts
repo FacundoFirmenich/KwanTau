@@ -7,6 +7,7 @@ import type {
   ConstitutionalCommandEnvelope,
   ConstitutionalExecuteParams,
   ConstitutionalPluginConfig,
+  ConstitutionalReconcileParams,
 } from "./types.js";
 
 const SHA256_HEX = /^[a-f0-9]{64}$/;
@@ -69,11 +70,10 @@ function requireEnvelopeShape(envelope: ConstitutionalCommandEnvelope): void {
   }
 }
 
-function validateProof(
-  envelope: ConstitutionalCommandEnvelope,
+function verificationKey(
   proof: ConstitutionalAuthorityProof,
   config: ConstitutionalPluginConfig,
-): string {
+) {
   if (proof.algorithm !== "Ed25519") {
     throw new ConstitutionalError(
       "CONSTITUTION_SIGNATURE_INVALID",
@@ -83,14 +83,6 @@ function validateProof(
   validateHash(proof.signedHash, "authorityProof.signedHash");
   requireNonEmpty(proof.keyId, "authorityProof.keyId");
   requireNonEmpty(proof.signatureBase64, "authorityProof.signatureBase64");
-
-  const envelopeHash = sha256Hex(envelope);
-  if (proof.signedHash !== envelopeHash) {
-    throw new ConstitutionalError(
-      "CONSTITUTION_SIGNATURE_INVALID",
-      "Signed hash does not match canonical envelope hash.",
-    );
-  }
   const key = config.allowedKeys.find((candidate) => candidate.keyId === proof.keyId);
   if (!key?.enabled) {
     throw new ConstitutionalError(
@@ -98,9 +90,25 @@ function validateProof(
       "Authority key is unknown or disabled.",
     );
   }
+  return key;
+}
+
+function verifySignedHash(
+  expectedHash: string,
+  proof: ConstitutionalAuthorityProof,
+  config: ConstitutionalPluginConfig,
+  mismatchMessage: string,
+): void {
+  const key = verificationKey(proof, config);
+  if (proof.signedHash !== expectedHash) {
+    throw new ConstitutionalError(
+      "CONSTITUTION_SIGNATURE_INVALID",
+      mismatchMessage,
+    );
+  }
   const valid = verify(
     null,
-    Buffer.from(envelopeHash, "hex"),
+    Buffer.from(expectedHash, "hex"),
     createPublicKey(key.publicKeyPem),
     Buffer.from(proof.signatureBase64, "base64"),
   );
@@ -110,6 +118,20 @@ function validateProof(
       "Ed25519 authority proof verification failed.",
     );
   }
+}
+
+function validateProof(
+  envelope: ConstitutionalCommandEnvelope,
+  proof: ConstitutionalAuthorityProof,
+  config: ConstitutionalPluginConfig,
+): string {
+  const envelopeHash = sha256Hex(envelope);
+  verifySignedHash(
+    envelopeHash,
+    proof,
+    config,
+    "Signed hash does not match canonical envelope hash.",
+  );
   return envelopeHash;
 }
 
@@ -267,14 +289,6 @@ export function validateCancelParams(
   }
   requireNonEmpty(params.idempotencyKey, "idempotencyKey");
   requireNonEmpty(params.reason, "reason");
-  const proof = params.authorityProof;
-  if (!proof || proof.algorithm !== "Ed25519") {
-    throw new ConstitutionalError(
-      "CONSTITUTION_SIGNATURE_INVALID",
-      "Cancellation requires an Ed25519 authority proof.",
-    );
-  }
-  validateHash(proof.signedHash, "authorityProof.signedHash");
   const cancellationIntent = {
     operation: "constitutional.cancel",
     idempotencyKey: params.idempotencyKey,
@@ -283,30 +297,43 @@ export function validateCancelParams(
     hostId: config.hostId,
   };
   const expectedHash = sha256Hex(cancellationIntent);
-  if (proof.signedHash !== expectedHash) {
-    throw new ConstitutionalError(
-      "CONSTITUTION_SIGNATURE_INVALID",
-      "Cancellation proof does not bind the exact cancellation intent.",
-    );
-  }
-  const key = config.allowedKeys.find((candidate) => candidate.keyId === proof.keyId);
-  if (!key?.enabled) {
-    throw new ConstitutionalError(
-      "CONSTITUTION_SIGNATURE_INVALID",
-      "Cancellation key is unknown or disabled.",
-    );
-  }
-  const valid = verify(
-    null,
-    Buffer.from(expectedHash, "hex"),
-    createPublicKey(key.publicKeyPem),
-    Buffer.from(proof.signatureBase64, "base64"),
+  verifySignedHash(
+    expectedHash,
+    params.authorityProof,
+    config,
+    "Cancellation proof does not bind the exact cancellation intent.",
   );
-  if (!valid) {
-    throw new ConstitutionalError(
-      "CONSTITUTION_SIGNATURE_INVALID",
-      "Cancellation authority proof verification failed.",
-    );
+  return expectedHash;
+}
+
+export function validateReconcileParams(
+  params: ConstitutionalReconcileParams,
+  config: ConstitutionalPluginConfig,
+): string {
+  if (!config.enabled) {
+    throw new ConstitutionalError("CONSTITUTION_DISABLED", "Constitutional execution is disabled.");
   }
+  requireNonEmpty(params.idempotencyKey, "idempotencyKey");
+  requireNonEmpty(params.runId, "runId");
+  requireNonEmpty(params.reason, "reason");
+  if (params.sessionKey !== undefined) {
+    requireNonEmpty(params.sessionKey, "sessionKey");
+  }
+  const reconciliationIntent = {
+    operation: "constitutional.reconcile",
+    idempotencyKey: params.idempotencyKey,
+    runId: params.runId,
+    sessionKey: params.sessionKey,
+    reason: params.reason,
+    policyHash: config.activePolicyHash,
+    hostId: config.hostId,
+  };
+  const expectedHash = sha256Hex(reconciliationIntent);
+  verifySignedHash(
+    expectedHash,
+    params.authorityProof,
+    config,
+    "Reconciliation proof does not bind the exact remote run.",
+  );
   return expectedHash;
 }
