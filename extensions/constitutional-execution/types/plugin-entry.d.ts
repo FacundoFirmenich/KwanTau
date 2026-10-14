@@ -12,18 +12,10 @@ export type RuntimeGatewayRequestOptions = {
   scopes?: OperatorScope[];
 };
 
-export type GatewayRequestError = {
-  code: string;
-  message: string;
-  details?: unknown;
-  retryable?: boolean;
-  retryAfterMs?: number;
-};
-
 export type GatewayRespond = (
   ok: boolean,
   payload?: unknown,
-  error?: GatewayRequestError,
+  error?: unknown,
   meta?: unknown,
 ) => void;
 
