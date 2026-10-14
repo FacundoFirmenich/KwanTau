@@ -39,9 +39,8 @@ export default definePluginEntry({
   description: "Shadow-first, intent-bound constitutional execution over the Gateway agent path",
   register(api) {
     const config = resolveConstitutionalConfig(api.pluginConfig);
-    const service = new ConstitutionalExecutionService(
-      config,
-      (method, params, options) => api.runtime.gateway.request(method, params, options),
+    const service = new ConstitutionalExecutionService(config, (method, params, options) =>
+      api.runtime.gateway.request(method, params, options),
     );
 
     api.registerGatewayMethod(
@@ -63,10 +62,7 @@ export default definePluginEntry({
           const idempotencyKey =
             typeof params.idempotencyKey === "string" ? params.idempotencyKey : "";
           if (!idempotencyKey) {
-            throw new ConstitutionalError(
-              "CONSTITUTION_INVALID",
-              "idempotencyKey is required.",
-            );
+            throw new ConstitutionalError("CONSTITUTION_INVALID", "idempotencyKey is required.");
           }
           respond(true, await service.status(idempotencyKey));
         } catch (error) {
