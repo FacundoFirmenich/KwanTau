@@ -9,102 +9,104 @@ This branch is a governed textual audit surface for migration into the canonical
 - **KwanTau DOS** = **KwanTau Dual Operational System**.
 - **No run. No implant. Ride.**
 - In Spanish use **centrum** for KWAN-developed architectural centra; in English, **core** is acceptable.
-- **KwanBlocks** is canonical and plural. KwanBlogs never existed.
+- **KwanBlocks** is canonical and plural. The former blog-like transcription never existed as a product.
 - Capability ≠ support ≠ permission ≠ authority ≠ execution ≠ training.
-- Rehydration, replay, import, installation, mission presence and CI PASS do not transport ACTIVE authority.
+- Rehydration, replay, import, installation, mission presence, compilation and CI PASS do not transport ACTIVE authority.
 - KwanMe personal payloads do not become ambient model context by default.
 - KwanBlocks has authority ceiling `NONE`.
 
 ## Current release
 
-- Release: **KwanTau2DOS v0.25.0-alpha.1 — Durable Mission Runtime and Human Authority Console**
-- Release commit: `b99ee39b2f11adfebf78cb604816879935023622`
-- Feature commit: `823cef1a69ac17ba9a302d6c61ba3ec81ac87be2`
-- Predecessor: `2be70dc224ea4fab05db1f118adc4722b2ca83b4`
-- Tests: **198 executed, 197 passed, 1 explicit conditional Wasmtime skip** in source, clean ZIP and clean bundle clone
-- Logical files: `619`
-- Logical tree SHA-256: `5abdb778c7c2519eff80929eaf5c8238bacaf8ebce01de6f43a15983497b4320`
-- Git bundle SHA-256: `572e183076053683df90dcf422eb591c39f10567dd7294083fdaf0721010841a`
-- Release ZIP SHA-256: `ee683efd3c30e7071a214f57585346787bfbd0d73c7bf72f6f8833768f2ae073`
-- Kwan Browser SHA-256: `99a7a53e5df54fd095bd42a7d95d1acca457f795614b305c1ba4376838362408`
-- Delivery SHA-256: `d026ddb241c495a8c0388ea989f7980e917e179838534c501a4bc9c47b129fa3`
+- Release: **KwanTau2DOS v0.26.0-alpha.1 — KwanThread User-Turn Compilation and Mission Coherence**
+- Release commit: `5b95d90a7913d2977a2983f2462d7d748bbdf430`
+- Feature commit: `15a141e608573e91b3715799765ac0052ed601bf`
+- Predecessor: `b99ee39b2f11adfebf78cb604816879935023622`
+- Tests: **207 executed, 206 passed, 1 explicit conditional Wasmtime skip** in source, clean ZIP and clean bundle clone
+- Logical files: `642`
+- Logical tree SHA-256: `d00b75f1a54b9acdc6fcc68cb1b7b531b33bd9e60ddfd1077ae976e61c3abdf3`
+- Git bundle SHA-256: `ac3a29b4148b06bd6c2cd7c6f3873f0fede51d0842b34798a18569400f9944e2`
+- Release ZIP SHA-256: `c6ecf477c118e70832ad16a25655861645930a1bd67618204886db50de590151`
+- Kwan Browser SHA-256: `ef58e30dad369d3244f649a2d2745cf2518b5c473f5d6ff1d3d6f3dfe85f5583`
+- Delivery SHA-256: `8c18aaa6d93f58c7f92b096567be2873c09a1fc46b49f0b3dfcda21b00e8b690`
 
 ## Integral result
 
-v0.25 converts the v0.24 mission DAG into a durable local runtime while preserving all nineteen mandatory components:
+v0.26 adds **KwanThread**, a first-level KWAN tool and cross-cutting runtime service:
 
 ```text
-sealed integral mission
-→ durable run and work queue
-→ dependency-aware scheduler
-→ worker claim and heartbeat
-→ human authority request
-→ exact human decision record
-→ separate component execution lease
-→ observed effect binding
-→ mission-scoped closure
+exact user turn
+→ encrypted source record
+→ source-span compiled items
+→ temporal correction and supersession
+→ live task contract
+→ vector conduciveness
+→ candidate-only ecosystem projections
 ```
 
-The runtime exposes 28 services and SQLite schema v23. It does not own a universal execution capability. Worker claims coordinate work only; human approval records consent only; productive completion requires a separately authorised and already observed component effect.
+KwanThread compiles chats, sessions, tasks, missions and projects. It integrates with Onboarding Learning, KwanMe, KwanBlocks, CSI, KwanDocs, Observer–Jarvis, Mission Runtime and KCH while preserving their independent promotion, consent, evidence and authority gates.
 
-## Material fixture
+The runtime exposes 29 services and SQLite schema v24 while retaining all nineteen mandatory architectural components.
 
-The fixture executes a real local encrypted KwanMe document effect inside a temporary isolated home:
+## Real-input material gate
+
+Seven genuine user turns from the current project conversation were supplied privately to the material gate and deleted after execution. Their plaintext is not embedded in this branch, the release receipt or the delivery. Only SHA-256 digests and aggregate evidence remain.
 
 ```text
-nonproductive step                         SUCCEEDED
-productive step before approval            WAITING_HUMAN
-human decision                             APPROVE
-missing execution lease                    rejected
-exact KwanMe execution lease               required
-local encrypted effect                     COMPLETED
-bound observed effect                      true
-mission run                                SUCCEEDED
+real user turns compiled                 7
+structured items                        18
+candidate projection targets             8
+plaintext user turns in SQLite       absent
+assistant output accepted as user fact false
+training performed                    false
+authority granted                     false
+promotion performed                   false
 ```
+
+The result demonstrates the compilation and governance protocol with real inputs. It does not demonstrate prospective utility improvement or complete semantic understanding.
+
+## Constitutional boundaries
 
 ```text
-scientific claim                           PROTOCOL_FIXTURE_ONLY
-local material effect                      true
-external effect                            false
-authority granted by mission               false
-promotion performed                        false
-cleartext at rest                          absent
+user turn ≠ extracted claim
+extracted claim ≠ confirmed personal state
+assistant output ≠ user evidence
+projection ≠ active memory
+learning candidate ≠ training
+conduciveness ≠ execution authority
+correction ≠ historical deletion
 ```
 
-## Recovery and authority boundaries
+Every projection remains:
 
-- expired claims for safe unstarted nonproductive work may return to the queue;
-- claimed or running work found after rehydration is quarantined;
-- no work is replayed automatically;
-- no authority is reissued;
-- a human approval is not a productive KCH lease;
-- a mission claim is not execution authority;
-- pause, resume and abort obey explicit state transitions;
-- rejected secret-like decision constraints do not consume the one-time authority challenge.
+```text
+status = CANDIDATE
+authority_ceiling = NONE
+training_eligible = false
+promoted = false
+```
 
 ## Claim boundary
 
 Demonstrated:
 
-- durable local scheduling and dependency reconciliation;
-- exact worker claims and heartbeat expiry;
-- human authority requests with alternatives, consequences and reversibility;
-- encrypted rationale and fail-closed local challenge;
-- separation between human decision and component execution authority;
-- local encrypted KwanMe effect and exact effect binding;
-- productive completion only after observed effect evidence;
-- fail-closed rehydration without replay or authority reissue;
-- source/ZIP/bundle logical equivalence.
+- user-only source evidence;
+- encrypted raw turns, metadata, item payloads, snapshots and rationales;
+- exact source spans and hashes;
+- corrections and terminology supersessions without deleting history;
+- live task contracts and vector-valued blockers;
+- eight governed projection targets;
+- API, CLI and Kwan Browser surfaces;
+- source/ZIP/bundle logical equivalence;
+- no automatic memory, training, authority or promotion.
 
 Not demonstrated:
 
-- distributed or multihost scheduling;
-- global ACID across mission and effect stores;
-- production external effects;
-- general exactly-once execution;
-- remote human identity attestation;
+- complete semantic understanding of arbitrary dialogue;
+- safe automatic promotion into KwanMe or Onboarding Learning;
+- representative multilingual calibration;
+- cross-device thread federation;
+- prospective reduction of repetition, omissions or premature closure;
 - production security hardening;
-- real-world user utility;
 - ACTIVE readiness or scientific superiority.
 
 ## Repository state
@@ -113,4 +115,4 @@ The current `FacundoFirmenich/KwanTau` repository remains a SHADOW textual stagi
 
 ## Next legitimate gate
 
-`v0.26 — Federated Mission Execution and Attested Human Authority`: coordinate mission work and effect outboxes transactionally, add multihost worker fencing, attest human-console sessions, connect exact compensation and adjudication paths, and execute the first explicitly approved non-fixture mission without allowing mission success to mint authority or scientific validity.
+`v0.27 — Thread Federation, Missing-Intent Recovery and Mission Feedback Closure`: federate chat/session/task/project threads across devices, materialise a private missing-intent service, reconcile thread branches, bind mission outcomes back to exact user requirements and evaluate prospectively whether KwanThread reduces repetition, drift and premature closure.
