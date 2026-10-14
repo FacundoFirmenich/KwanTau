@@ -7,29 +7,25 @@ import type {
   ConstitutionalExecuteParams,
 } from "./src/types.js";
 
-type GatewayErrorShape = {
-  code: string;
-  message: string;
-  details?: unknown;
-  retryable?: boolean;
-  retryAfterMs?: number;
-};
-
-function gatewayErrorShape(error: unknown): GatewayErrorShape {
+function respondError(
+  respond: (ok: boolean, payload?: unknown, error?: unknown) => void,
+  error: unknown,
+): void {
   if (error instanceof ConstitutionalError) {
-    return {
+    respond(false, undefined, {
       code: error.retryable ? "UNAVAILABLE" : "INVALID_REQUEST",
       message: error.message,
       retryable: error.retryable,
       details: { code: error.code, ...error.details },
-    };
+    });
+    return;
   }
-  return {
+  respond(false, undefined, {
     code: "INTERNAL_ERROR",
     message: "Constitutional execution failed closed.",
     retryable: false,
     details: { code: "CONSTITUTION_REMOTE_ERROR" },
-  };
+  });
 }
 
 export default definePluginEntry({
@@ -49,7 +45,7 @@ export default definePluginEntry({
         try {
           respond(true, await service.execute(params as ConstitutionalExecuteParams));
         } catch (error) {
-          respond(false, undefined, gatewayErrorShape(error));
+          respondError(respond, error);
         }
       },
       { scope: "operator.admin" },
@@ -69,7 +65,7 @@ export default definePluginEntry({
           }
           respond(true, await service.status(idempotencyKey));
         } catch (error) {
-          respond(false, undefined, gatewayErrorShape(error));
+          respondError(respond, error);
         }
       },
       { scope: "operator.admin" },
@@ -81,11 +77,26 @@ export default definePluginEntry({
         try {
           respond(true, await service.cancel(params as ConstitutionalCancelParams));
         } catch (error) {
-          respond(false, undefined, gatewayErrorShape(error));
+          respondError(respond, error);
         }
       },
       { scope: "operator.admin" },
     );
+
+    api.registerService({
+      id: "constitutional-execution-recovery",
+      async start() {
+        if (!config.enabled || config.mode !== "enforce") return;
+        const summary = await service.recoverPending();
+        api.logger.info(
+          `constitutional-execution recovery: discovered=${summary.discovered} ` +
+            `running=${summary.running} in_doubt=${summary.inDoubt} failed=${summary.failed}`,
+        );
+      },
+      async stop() {
+        await service.close();
+      },
+    });
 
     api.logger.info(
       `constitutional-execution registered (${config.enabled ? config.mode : "disabled"})`,

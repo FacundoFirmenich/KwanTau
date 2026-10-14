@@ -192,6 +192,10 @@
       "types": "./dist/src/plugin-sdk/security-runtime.d.ts",
       "default": "./src/security-runtime.ts"
     },
+    "./sqlite-runtime": {
+      "types": "./dist/src/plugin-sdk/sqlite-runtime.d.ts",
+      "default": "./src/sqlite-runtime.ts"
+    },
     "./ssrf-runtime": {
       "types": "./dist/src/plugin-sdk/ssrf-runtime.d.ts",
       "default": "./src/ssrf-runtime.ts"
