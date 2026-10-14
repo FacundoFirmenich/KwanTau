@@ -49,10 +49,19 @@ export type ConstitutionalCancelParams = {
   authorityProof: ConstitutionalAuthorityProof;
 };
 
+export type ConstitutionalReconcileParams = {
+  idempotencyKey: string;
+  runId: string;
+  sessionKey?: string;
+  reason: string;
+  authorityProof: ConstitutionalAuthorityProof;
+};
+
 export type ConstitutionalStatusValue =
   | "UNKNOWN"
   | "SHADOW_ACCEPTED"
   | "ACCEPTED"
+  | "DISPATCHING"
   | "RUNNING"
   | "SUCCEEDED"
   | "FAILED"
