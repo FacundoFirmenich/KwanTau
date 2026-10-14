@@ -7,6 +7,7 @@
   "scripts": {
     "check": "pnpm run contract-check && pnpm run typecheck && pnpm run test",
     "contract-check": "node scripts/check-plugin-contract.mjs",
+    "gate-b:shadow": "node scripts/run-live-shadow-campaign-v2.mjs",
     "test": "vitest run --config vitest.config.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
@@ -15,6 +16,17 @@
     "@types/node": "26.1.2",
     "typescript": "6.0.3",
     "vitest": "4.1.10"
+  },
+  "knip": {
+    "entry": [
+      "index.ts!",
+      "scripts/check-plugin-contract.mjs!",
+      "scripts/run-live-shadow-campaign-v2.mjs!",
+      "src/shadow-campaign.ts!"
+    ],
+    "project": [
+      "**/*.{ts,mjs}!"
+    ]
   },
   "openclaw": {
     "extensions": [
