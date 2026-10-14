@@ -1,0 +1,32 @@
+{
+  "format": "KWANTAU2DOS_V023_INDEPENDENT_VALIDATION_SUMMARY_V1",
+  "release": "0.23.0-alpha.1",
+  "passed": true,
+  "release_commit": "f24a3258be7f2ccbe3904e2e341eaa19a5fa1131",
+  "tag_object": "5944853f7134d249b42d95eaf9223f5bfbd72f38",
+  "encarnations": ["source", "clean_source_zip", "clean_git_bundle_clone"],
+  "tests_per_encarnation": {"collected": 183, "passed": 182, "skipped": 1, "failed": 0, "errored": 0},
+  "material_demo_per_encarnation": "PASS",
+  "integral_validator_per_encarnation": "PASS",
+  "logical_file_count": 535,
+  "logical_tree_sha256": "25992f66fe5f9cc0f7f2c32cd6025040706e28bc022b24a6ff5b815fef48b34d",
+  "equivalent_logical_tree": true,
+  "regenerable_execution_evidence_excluded_from_logical_identity": [
+    "receipts/V023_PYTEST_GATE_REPORT.json",
+    "receipts/V023_MATERIAL_DEMO_REPORT.json",
+    "receipts/V023_VALIDATION_REPORT.json",
+    "evidence/V023_AUTHENTIC_EVENT_DESCRIPTOR.json"
+  ],
+  "execution_specific_identity_note": "Fresh demo Rides produce different intake and KwanBlocks receipt IDs while preserving payload hash, frozen trigger, claim boundary and every non-regenerable release byte.",
+  "authentic_events": 1,
+  "approved_events": 1,
+  "bound_cases": 0,
+  "model_outputs": 0,
+  "empirical_outcomes": 0,
+  "analyses": 0,
+  "evaluation_training_eligible": false,
+  "authority_granted": false,
+  "promotion_performed": false,
+  "scientific_claim": "NO_EMPIRICAL_CLAIM",
+  "full_local_report_sha256": "87ce0c653c1e5dc21571de98d7b504f7ae418f69d5462d48da49451968fb7928"
+}
