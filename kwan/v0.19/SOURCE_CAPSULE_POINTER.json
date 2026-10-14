@@ -1,0 +1,15 @@
+{
+  "authority_granted": false,
+  "bytes": 175688,
+  "canonical_bundle_sha256": "48695db3f6837380c60583acbf3e837941a691f13af9c8ad3524afc80297ed26",
+  "canonical_transport": "KwanTau2DOS_v0_19_0-alpha.1.bundle",
+  "exact_binary_uploaded_to_staging": false,
+  "file_name": "KWANTAU2DOS_V0_19_0_SOURCE_CAPSULE.tar.gz",
+  "format": "KWANTAU2DOS_V019_SOURCE_CAPSULE_POINTER_V1",
+  "predecessor_commit": "d5b1d98ae1dca175905e100dc73e9e0a61998b1d",
+  "promotion_performed": false,
+  "reason": "The connected GitHub text mutation surface is not used as evidence of exact binary transport.",
+  "release": "0.19.0-alpha.1",
+  "release_commit": "cbc557e25c46b195f8e389609c2e6a83e3b188f3",
+  "sha256": "bfe6095d0985cb517ea48fed1c503963ec4b2b8cc18decdb22dc9ac4b5457906"
+}

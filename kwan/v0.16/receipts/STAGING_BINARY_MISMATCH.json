@@ -1,0 +1,15 @@
+{
+  "action": "DELETE_MISMATCHING_STAGING_BLOB_AND_PUBLISH_VERIFIABLE_POINTER",
+  "authority_granted": false,
+  "canonical_capsule_git_blob_sha1": "0bc09793441a6a4ce79c53d201749139d8a0970a",
+  "canonical_capsule_sha256": "8dc8633396f6f090088c52e6b9f002eab8d16e7f087897b9205877156dfec1e4",
+  "canonical_capsule_size_bytes": 136104,
+  "format": "KWANTAU2DOS_STAGING_BINARY_MISMATCH_RECEIPT_V1",
+  "mismatching_github_blob_deleted": true,
+  "mismatching_github_blob_sha1": "40fae71789a14e4523eb4e485901193888ca2bdd",
+  "promotion_performed": false,
+  "reason": "Binary transport through the staging connector did not preserve the sealed capsule bytes. Retaining the blob would have created false evidence of exact transport.",
+  "release": "0.16.0-alpha.1",
+  "replacement": "kwan/v0.16/SOURCE_CAPSULE_POINTER.json",
+  "scientific_claim_created": false
+}

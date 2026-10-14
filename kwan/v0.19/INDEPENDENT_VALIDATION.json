@@ -1,0 +1,45 @@
+{
+  "authority_granted": false,
+  "bundle": {
+    "archive_bytes": 1454605,
+    "archive_sha256": "48695db3f6837380c60583acbf3e837941a691f13af9c8ad3524afc80297ed26",
+    "clone_head": "cbc557e25c46b195f8e389609c2e6a83e3b188f3",
+    "logical_file_count": 439,
+    "logical_tree_sha256": "440a7c0ec06eef24fd0806b7d58855d34e4700befe19f1bc6b2d5370efb62275",
+    "tag_target": "cbc557e25c46b195f8e389609c2e6a83e3b188f3",
+    "validation_passed": true
+  },
+  "equivalence": {
+    "source_bundle_head_equal": true,
+    "source_bundle_logical_tree_equal": true,
+    "source_zip_manifest_equal": true
+  },
+  "format": "KWANTAU2DOS_V019_INDEPENDENT_VALIDATION_V1",
+  "passed": true,
+  "promotion_performed": false,
+  "release": "0.19.0-alpha.1",
+  "report_sha256": "622638097c6ef134e051cc20726fa1b4f69342ff7475c15db89141a3edf5909e",
+  "scientific_claim_created": false,
+  "source": {
+    "head": "cbc557e25c46b195f8e389609c2e6a83e3b188f3",
+    "logical_file_count": 439,
+    "logical_tree_sha256": "440a7c0ec06eef24fd0806b7d58855d34e4700befe19f1bc6b2d5370efb62275",
+    "tests_collected": 160,
+    "tests_passed": 159,
+    "tests_skipped": 1,
+    "validation_passed": true
+  },
+  "zip": {
+    "archive_bytes": 5751144,
+    "archive_sha256": "b405bfb055e3b7920d48a0db45813a35f2f0a64a8c25b9e148b2515e2b872aa9",
+    "boundary": "ZIP verification reexecuted v0.19 focused gates and material demo; full 160-test evidence is the sealed source receipt.",
+    "findings": [],
+    "focused_v019_tests_failed": 0,
+    "focused_v019_tests_passed": 14,
+    "full_historical_suite_reexecuted": false,
+    "logical_manifest_checked_files": 439,
+    "logical_manifest_valid": true,
+    "logical_tree_sha256": "440a7c0ec06eef24fd0806b7d58855d34e4700befe19f1bc6b2d5370efb62275",
+    "material_demo_passed": true
+  }
+}
