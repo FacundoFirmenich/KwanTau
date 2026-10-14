@@ -7,7 +7,7 @@
   },
   "format": "KWANTAU2DOS_V018_EXTERNAL_CONFORMANCE_SCOPE_V1",
   "full_product_client_executed": false,
-  "gate_script_sha256": "13d98223dbacccbcbe8aff8c35af49e882428799cf4658c4cde6476c1b2aef72",
+  "gate_script_sha256": "fa03c0a7bce3980939ce0419ca103978a0f63636a586ad3a0edab214f41fdc03",
   "local_product_module_sha256": "f5f1b2e83f94cc703d9f04b0ab4ac8247405b512cf8888314dc48d40331a741e",
   "local_product_protocol_gate_sha256": "473356c99d9c520f07d65669dd10ecc6c0a89e4ceaec5f13746b373a6f49c002",
   "promotion_performed": false,
