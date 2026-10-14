@@ -1,0 +1,33 @@
+{
+  "authority_granted": false,
+  "branch": "kwantau2dos/v0.14.0-alpha.1",
+  "canonical_remote": "FacundoFirmenich/KwanTau2DOS",
+  "canonical_remote_created": false,
+  "delivery_sha256": "f5e2895f42e1728a6c39f7e67cfaec99351726f64af153f80b1511225e54e11a",
+  "external_component_vector": {
+    "linux_artifact_digest": "sha256:9b4acfe1abad3a6d9708981444d44effd6ba838e867199ec7c06cb1662618881",
+    "linux_artifact_id": 11848276249,
+    "linux_job_id": 115527435903,
+    "linux_result": 42,
+    "windows_artifact_digest": "sha256:5b166e8792d67b07fa5ced1565fb51ba88796b887d94ab67c1082c03510e5cf5",
+    "windows_artifact_id": 11848396241,
+    "windows_job_id": 115527436171,
+    "windows_result": 42,
+    "workflow_run_id": 38464386346
+  },
+  "format": "KWANTAU2DOS_V014_STAGING_RELEASE_STATUS_V1",
+  "git_bundle_sha256": "a4ea89c4d04aea8151eb39212bcd66a8ceff611b00783e1978c02321b73d7b37",
+  "lineage_merge_commit": "41e11e04d554df023ab7a6df255efd4abd536949",
+  "logical_file_count": 305,
+  "logical_tree_sha256": "3d83278304d2f5932647963d4aeb8c17fa85112087103cb80482dc0a1f191496",
+  "predecessor_commit": "e5d6f72fecf43e892b982a0adef956919f4ab3e1",
+  "promotion_performed": false,
+  "release": "0.14.0-alpha.1",
+  "release_commit": "6575b814178130c115bfce61c0a215416248f3ff",
+  "release_zip_sha256": "4f9787362f9fdcad6dd3b8bb9ae21bf9903523a4b442c84211b0af8ba34f297e",
+  "scientific_claim_created": false,
+  "source_zip_bundle_equivalent": true,
+  "staging_branch": "kwan/integral-v0.14-shadow",
+  "staging_repository": "FacundoFirmenich/KwanTau",
+  "tests_passed_per_incarnation": 117
+}
