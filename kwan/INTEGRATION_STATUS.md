@@ -11,89 +11,87 @@ This branch is a governed textual audit surface for migration into the canonical
 - In Spanish use **centrum** for KWAN-developed architectural centra; in English, **core** is acceptable.
 - **KwanBlocks** is canonical and plural. The former blog-like transcription never existed as a product.
 - Capability ≠ support ≠ permission ≠ authority ≠ execution ≠ training.
-- Rehydration, replay, import, installation, federation, evaluation, repair and CI PASS do not transport ACTIVE authority.
+- Rehydration, replay, import, installation, campaign activation, case consent, evaluation, repair and CI PASS do not transport ACTIVE authority.
 - KwanMe personal payloads do not become ambient model context by default.
 - KwanBlocks has authority ceiling `NONE`.
 
 ## Current release
 
-- Release: **KwanTau2DOS v0.28.0-alpha.1 — Prospective Thread Utility and Causal Mission Repair**
-- Release commit: `f7f3270cc523763db357c893cdaf3bf00b158177`
-- Feature commit: `c4a6127fa08ff549aa8f4f7462f235673091e967`
-- Predecessor: `8d9077a13d5ee20b692458fd2f2930833bce6014`
-- Tests: **217 executed, 216 passed, 1 explicit conditional Wasmtime skip** in source, clean ZIP and clean bundle clone
-- Logical files: `704`
-- Logical tree SHA-256: `9200855660147ffdaa9a791138a099c49b04a040adc7c29b864ca85257f30113`
-- Git bundle SHA-256: `862f651fab2d9bc91bf715407bd2b7fb64ab5f920ba8e046e2ddf45a3b67ae83`
-- Release ZIP SHA-256: `964198b92a2eaf0f5112251f8ffce7d17c9a3e58cf9f510fc10416ed408dad4d`
-- Kwan Browser SHA-256: `f63bda79d591fbc61ee75906d75a23738351bf61128b0dbe66cd950a77105715`
-- Source capsule SHA-256: `fdcbcb3133a1bc39b13ca38f702d863867a95e13c2eaa957bf955c0368f36074`
-- Delivery SHA-256: `919e90ec57b56b63cb53ec3256dedf918c89506b4f89782b0f7e983159859e40`
+- Release: **KwanTau2DOS v0.29.0-alpha.1 — Real Prospective Task Campaign and Integral Repair Trial**
+- Release commit: `c2392da5566b017fcdc27c2ec1fdebde08027df2`
+- Feature commit: `31c02f2dd53359c3ed4832085f55c7ebbdc12227`
+- Predecessor: `f7f3270cc523763db357c893cdaf3bf00b158177`
+- Tests: **223 collected, 222 passed, 1 explicit conditional Wasmtime skip** in source, clean ZIP and clean bundle clone
+- Logical files: `732`
+- Logical tree SHA-256: `435c39fe4220dba8b6cfda279cca2817e6cbdb2fc7c78bd9264c2386f53255ce`
+- Git bundle SHA-256: `56377d29c3f2e6287e870460ceca84d0d21e3d8dbfb9b0951b16ef21b865f215`
+- Release ZIP SHA-256: `b3fcb042736d44452e3ea406c4fdec08f8e05e0287c84331fe138ae1a3811fb2`
+- Kwan Browser SHA-256: `d8dd800b2b75848b2a8d515ed23c78b16f9e9297d9e1e36eb1f83eec8b5fca60`
+- Source capsule SHA-256: `d84036235af62ae4f0a4f5db9306f3b385d89592ca8374212de4fc3d2c94c2c9`
+- Delivery SHA-256: `cdf145a1e06539e495e1aa86e67c2c87488c1c80166db30fea0e99d98fd1f5d0`
 
 ## Integral result
 
-v0.28 connects KwanThread, KwanMe, CreaLabs, KCH, KwanBlocks, the Integral Mission Fabric, the durable Mission Runtime and Kwan Browser without narrowing the nineteen-component KWAN envelope.
+v0.29 turns the v0.28 protocol into an activated, durable future-only campaign while preserving KwanThread, KwanMe, KCH, CreaLabs, KwanBlocks, Mission Fabric, Mission Runtime, Country World, Kwan Browser and the complete nineteen-component KWAN envelope.
 
 ```text
-future-only campaign freeze
-→ explicitly approved future case
-→ RAW_TASK / LOCAL_THREAD / FEDERATED_THREAD / INTEGRAL_CONTEXT
-→ blinded structural review
-→ deterministic preregistered blind-label assignment
-→ later arm-specific outcome
-→ local analysis with no fixture-to-evidence promotion
+exact user authorisation hash
+→ material campaign freeze
+→ authorising turn structurally excluded as a case
+→ post-freeze user-turn detection
+→ fresh case-by-case APPROVE_CASE | REJECT_CASE | DEFER
+→ four-arm blinded planning and review
+→ preregistered arm-specific outcome
+→ authority/privacy audit
+→ optional integral repair trial
 ```
 
-```text
-closed mission
-→ Mission Feedback assessment
-→ uncovered user-originated requirements
-→ explicit repair approval
-→ separate repair and mission-seal leases
-→ new SHADOW successor mission
-→ before/after assessment
-→ parent remains immutable
-```
-
-The runtime exposes 34 services and SQLite schema v26 while preserving all nineteen mandatory components.
+The runtime exposes 36 services and SQLite schema v27 while preserving all nineteen mandatory components.
 
 ## Material result
 
-The software fixture demonstrates structural differences among the four arms and a complete causal-repair successor. It intentionally contains **zero real prospective cases**.
+The material runtime fixture activates the first real prospective campaign but contains no future task after the freeze.
 
 ```text
+campaign state                     ACTIVE
+activation turn is a case          false
 real prospective cases             0
-scientific decision                STRUCTURAL_AUDIT_ONLY
-empirical user-utility claim       false
-causal effect identified           false
-arm identity before review         hidden
-outcome wrong-label binding         rejected
-parent mission mutated             false
-repair target items resolved        all
-training performed                  false
-authority granted                   false
-promotion performed                 false
+candidate future turns             0
+scientific decision                NO_EMPIRICAL_CLAIM
+persistent installed campaign      false
+training performed                 false
+authority granted                  false
+promotion performed                false
+plaintext in SQLite                absent
 ```
+
+The exact authorising user turn is represented only by SHA-256:
+
+```text
+0702dc440909b54d6d7e6bef20489fea29117841bbb84ae08883cb353662fbb6
+```
+
+It authorises activation and development. Because it precedes the material freeze, it is ineligible as its own prospective success case.
 
 ## Constitutional boundaries
 
 ```text
-more context ≠ better plan
-better structural plan ≠ user utility
-user utility ≠ authority safety
-fixture success ≠ empirical evidence
-repair successor ≠ mutation of parent
-mission repair ≠ automatic promotion
+campaign activation ≠ case consent
+case consent ≠ case admission
+case admission ≠ plan execution
+human decision ≠ component authority
+repair eligibility ≠ repair execution
+zero cases ≠ empirical evidence
 ```
 
 ## Validation boundary
 
-The complete suite ran one test file per isolated process group, requiring complete JUnit before evidence aggregation. The gate detected and corrected three instrument/method problems before resealing: absolute-versus-relative path comparison, a Browser-token expectation mismatch and an outcome model initially not tied to the preregistered executed blind label. Source, ZIP and bundle clone subsequently converged on the same logical tree.
+The complete suite ran one test file per isolated process group and required complete JUnit before aggregation. Source, clean ZIP and clean bundle clone each produced 223 collected tests, 222 PASS and one explicit conditional Wasmtime skip, the same 732-file logical tree and a passing zero-case material campaign demo. No console-only success signal was accepted.
 
 ## Repository state
 
-The current `FacundoFirmenich/KwanTau` repository remains a SHADOW textual staging surface. `main` is untouched. The canonical target `FacundoFirmenich/KwanTau2DOS` still returns `404` and is not claimed as created. The complete Git bundle and publication script are sealed for exact migration.
+The current `FacundoFirmenich/KwanTau` repository remains a SHADOW textual staging surface. `main` is untouched. The canonical target `FacundoFirmenich/KwanTau2DOS` is not claimed as created. The complete Git bundle and publication script are sealed for exact migration.
 
 ## Next legitimate gate
 
-`v0.29 — Real Prospective Task Campaign and Integral Repair Trial`: admit the first explicitly approved future tasks after campaign freeze, generate all four blinded plans, collect independent reviews and later outcomes, audit authority and privacy locally, and create repair successors only when the observed mission fails its user-originated contract. No empirical claim is allowed before the preregistered case threshold and all four arms are represented.
+The next gate is not another software-only claim. It is the **first future task that occurs strictly after this campaign freeze and receives a fresh exact case approval**. That case must generate all four blinded plans, execute the preregistered label, collect independent review and later outcome, audit privacy and authority, and open an integral repair successor only if the executed mission leaves user-originated requirements unsatisfied. No empirical claim is permitted before the preregistered minimum of eight real cases with all four arms represented.
