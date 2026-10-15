@@ -1,0 +1,31 @@
+{
+  "authority_transport": false,
+  "git_bundle": {
+    "bytes": 987367,
+    "sha256": "10c420719bb49aea8b327225194c7a50c47ec4c21c2c73f244e4d487042ca364"
+  },
+  "github_branch": "kwan/integral-v0.13-shadow",
+  "github_import_complete": false,
+  "github_repository": "FacundoFirmenich/KwanTau",
+  "local_git_commit": "32c583dda6f4b477f4e9fbf8d4e3b02d05af7aa2",
+  "notes": [
+    "The complete source release is preserved by ZIP and Git bundle while GitHub subtree import proceeds additively.",
+    "Existing OpenClaw-derived repository history is not rewritten by this manifest."
+  ],
+  "predecessor_git_commit": "a080c433b85278dcec61518df38aab108db49abe",
+  "promotion_performed": false,
+  "realm": "SHADOW",
+  "release": "0.13.0-alpha.1",
+  "release_zip": {
+    "bytes": 3808252,
+    "sha256": "d914ba5ff357cd62515a77babac4e1bbb5e8eed5a0771a9656854dc152df5c32"
+  },
+  "schema": "kwantau.github-shadow-import-manifest.v1",
+  "source_validation": {
+    "development_receipt_sha256": "bada0c80b39ad0499ed5ded7229a9cb2c1fecaa6777b984025da75bae5c6ec34",
+    "file_count": 249,
+    "file_manifest_sha256": "2549322131a044033bfaf97837ec70496d2a4af211bd1b7e7bbb5409a3c1d0b6",
+    "passed": true,
+    "tests_passed": 93
+  }
+}

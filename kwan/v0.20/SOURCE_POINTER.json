@@ -1,0 +1,27 @@
+{
+  "canonical_artifacts": {
+    "delivery": {
+      "filename": "KWANTAU2DOS_V0_20_0_DELIVERY.zip",
+      "sha256": "29b0a4972d8c6b36fc187a0659fe450e98f261b3fb0988472057b8fec8cdd038"
+    },
+    "git_bundle": {
+      "filename": "KwanTau2DOS_v0_20_0-alpha.1.bundle",
+      "sha256": "c1cd2fb33411968ff0f6fbc9d6e5d1912a2023a577071330b9d4fa1c2df7323b"
+    },
+    "kwan_browser": {
+      "filename": "KwanBrowser_v0_20_0-alpha.1.zip",
+      "sha256": "28a0d1c1419610018b8da737b131fc1ef440e542e94dc88e450da7f43c2082be"
+    },
+    "release_zip": {
+      "filename": "KwanTau2DOS_v0_20_0-alpha.1.zip",
+      "sha256": "6b416b55ce80699c20689665e962fe865400623c3b807a0bd004d3a01a455156"
+    }
+  },
+  "format": "KWANTAU2DOS_SOURCE_POINTER_V1",
+  "logical_file_count": 493,
+  "logical_tree_sha256": "099bf09c26ac6913592440536abe60fafd627d2db9445ea90df286334d71d19a",
+  "reason": "The staging connector is used for textual audit surfaces only. The complete canonical bytes remain the verified release ZIP, Git bundle and delivery artifact; no binary transport through this branch is claimed.",
+  "release": "0.20.0-alpha.1",
+  "release_commit": "49d7e132e7bf4da12b685eddb8b4b6d535bd81d4",
+  "staging_repository_is_canonical_source": false
+}
