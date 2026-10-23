@@ -11,82 +11,74 @@ This branch is a governed textual audit surface for migration into the canonical
 - In Spanish use **centrum** for KWAN-developed architectural centra; in English, **core** is acceptable.
 - **KwanBlocks** is canonical and plural. The former blog-like transcription never existed as a product.
 - Capability ≠ support ≠ permission ≠ authority ≠ execution ≠ training.
-- Rehydration, replay, import, installation, campaign activation, case consent, evaluation, repair and CI PASS do not transport ACTIVE authority.
+- Rehydration, replay, import, installation, campaign activation, case consent, execution evidence, review and CI PASS do not transport ACTIVE authority.
 - KwanMe personal payloads do not become ambient model context by default.
 - KwanBlocks has authority ceiling `NONE`.
 
 ## Current release
 
-- Release: **KwanTau2DOS v0.29.0-alpha.1 — Real Prospective Task Campaign and Integral Repair Trial**
-- Release commit: `c2392da5566b017fcdc27c2ec1fdebde08027df2`
-- Feature commit: `31c02f2dd53359c3ed4832085f55c7ebbdc12227`
-- Predecessor: `f7f3270cc523763db357c893cdaf3bf00b158177`
-- Tests: **223 collected, 222 passed, 1 explicit conditional Wasmtime skip** in source, clean ZIP and clean bundle clone
-- Logical files: `732`
-- Logical tree SHA-256: `435c39fe4220dba8b6cfda279cca2817e6cbdb2fc7c78bd9264c2386f53255ce`
-- Git bundle SHA-256: `56377d29c3f2e6287e870460ceca84d0d21e3d8dbfb9b0951b16ef21b865f215`
-- Release ZIP SHA-256: `b3fcb042736d44452e3ea406c4fdec08f8e05e0287c84331fe138ae1a3811fb2`
-- Kwan Browser SHA-256: `d8dd800b2b75848b2a8d515ed23c78b16f9e9297d9e1e36eb1f83eec8b5fca60`
-- Source capsule SHA-256: `d84036235af62ae4f0a4f5db9306f3b385d89592ca8374212de4fc3d2c94c2c9`
-- Delivery SHA-256: `cdf145a1e06539e495e1aa86e67c2c87488c1c80166db30fea0e99d98fd1f5d0`
+- Release: **KwanTau2DOS v0.30.0-alpha.1 — First Real Prospective Case Execution and Outcome-Pending Trial**
+- Release commit: `65f8784b43b15adc9d0b3f311512712d8c124d47`
+- Feature commit: `8b31260f81d41a9fd21cf3b0eb7199c42a487d9b`
+- Predecessor: `c2392da5566b017fcdc27c2ec1fdebde08027df2`
+- Tests: **226 collected, 225 passed, 1 explicit conditional Wasmtime skip** in source, clean ZIP and clean bundle clone
+- Logical files: `753`
+- Logical tree SHA-256: `c55b0f924f8a6a63b6ce293a9f841a47fa5e8affb6fbbb780e8a40dc07251b8b`
+- Git bundle SHA-256: `dfcfa5fcb23c6ccc0ecd672426cae2c4d63f2fc8eb2291e5e5580e71027e8b85`
+- Release ZIP SHA-256: `d25d26efcc875bf321fd30c2b7c2d808ab3290beb8d3286bc260b944696bc0c4`
+- Kwan Browser SHA-256: `43ff6df17a281ff0b591c1e88a5b4adf21fbaf04e0fa201621e97e064d6d81f9`
+- Source capsule SHA-256: `eeee2e6b87a353bef7b7f11cbe7e083907c3a1020e4bb7511236da59a80e3c0a`
+- Delivery SHA-256: `795a98ca0faf7a152327ba718936e809bed18a1536ce76d574ea31491e957942`
 
 ## Integral result
 
-v0.29 turns the v0.28 protocol into an activated, durable future-only campaign while preserving KwanThread, KwanMe, KCH, CreaLabs, KwanBlocks, Mission Fabric, Mission Runtime, Country World, Kwan Browser and the complete nineteen-component KWAN envelope.
+v0.30 admits the first USER task strictly after the v0.29 campaign freeze and executes the preregistered blind plan within a completed integral SHADOW mission while preserving KwanThread, KwanMe, KCH, CreaLabs, KwanBlocks, Country World, Mission Fabric, Mission Runtime, Kwan Browser and all nineteen mandatory components.
 
 ```text
-exact user authorisation hash
-→ material campaign freeze
-→ authorising turn structurally excluded as a case
-→ post-freeze user-turn detection
-→ fresh case-by-case APPROVE_CASE | REJECT_CASE | DEFER
-→ four-arm blinded planning and review
-→ preregistered arm-specific outcome
-→ authority/privacy audit
-→ optional integral repair trial
+post-freeze USER task
+→ exact case-specific consent
+→ four canonical planning arms
+→ complete blind structural review
+→ preregistered blind-label reveal
+→ integral SHADOW mission
+→ immutable encrypted execution artifact
+→ EXECUTED_AWAITING_USER_OUTCOME
 ```
 
-The runtime exposes 36 services and SQLite schema v27 while preserving all nineteen mandatory components.
+The runtime exposes 37 services and SQLite schema v28.
 
-## Material result
-
-The material runtime fixture activates the first real prospective campaign but contains no future task after the freeze.
+## First real case
 
 ```text
-campaign state                     ACTIVE
-activation turn is a case          false
-real prospective cases             0
-candidate future turns             0
-scientific decision                NO_EMPIRICAL_CLAIM
-persistent installed campaign      false
-training performed                 false
-authority granted                  false
-promotion performed                false
-plaintext in SQLite                absent
+USER turn SHA-256                 000891d399859b995b9f20ef7413975ff7bb650e21849c1287bee61b577f957e
+occurred_at                       2026-10-23T16:20:32Z
+case ID                           ktucase:12fc92037bfc386a64aaafc233cc4e229cf52536bc561aa94f88101f7e67bb95
+execution ID                      kpcx:4b49be8e9e42bbe9f59d8c55ccd158ec9f530a92c9ab7c75b207b1cb07b732cd
+assigned blind label              D
+arm identity publicly redacted    true
+execution state                   EXECUTED_AWAITING_USER_OUTCOME
+review independence               INTERNAL_STRUCTURAL_ONLY
+real cases                        1
+completed outcomes                0
+scientific decision               INSUFFICIENT_REAL_CASES
 ```
 
-The exact authorising user turn is represented only by SHA-256:
-
-```text
-0702dc440909b54d6d7e6bef20489fea29117841bbb84ae08883cb353662fbb6
-```
-
-It authorises activation and development. Because it precedes the material freeze, it is ineligible as its own prospective success case.
+The exact USER text remains private and is not present in the staging branch, release receipts or delivery artifacts. The current response cannot label its own utility; a later USER outcome must bind to the exact execution and blind label.
 
 ## Constitutional boundaries
 
 ```text
-campaign activation ≠ case consent
-case consent ≠ case admission
-case admission ≠ plan execution
-human decision ≠ component authority
-repair eligibility ≠ repair execution
-zero cases ≠ empirical evidence
+case consent ≠ execution authority
+complete blind review ≠ independent review
+integral mission completion ≠ user outcome
+execution evidence ≠ utility evidence
+later outcome ≠ training permission
+one real case ≠ empirical support
 ```
 
 ## Validation boundary
 
-The complete suite ran one test file per isolated process group and required complete JUnit before aggregation. Source, clean ZIP and clean bundle clone each produced 223 collected tests, 222 PASS and one explicit conditional Wasmtime skip, the same 732-file logical tree and a passing zero-case material campaign demo. No console-only success signal was accepted.
+Source, clean ZIP and bundle clone each executed the complete 226-test suite and produced 225 PASS plus one explicit conditional Wasmtime skip. All three validators converged on the same 753-file logical tree. The private demo input was deleted after use, and no task plaintext was found in SQLite.
 
 ## Repository state
 
@@ -94,4 +86,4 @@ The current `FacundoFirmenich/KwanTau` repository remains a SHADOW textual stagi
 
 ## Next legitimate gate
 
-The next gate is not another software-only claim. It is the **first future task that occurs strictly after this campaign freeze and receives a fresh exact case approval**. That case must generate all four blinded plans, execute the preregistered label, collect independent review and later outcome, audit privacy and authority, and open an integral repair successor only if the executed mission leaves user-originated requirements unsatisfied. No empirical claim is permitted before the preregistered minimum of eight real cases with all four arms represented.
+The next legitimate event is a **later USER outcome** for this exact execution: acceptance or rejection, repeated instructions, omitted requirements, repair need, privacy concerns and authority concerns. Recording that outcome will not by itself establish benefit; the campaign remains below its preregistered minimum of eight balanced real cases.
