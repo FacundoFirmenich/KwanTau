@@ -1,0 +1,20 @@
+{
+  "assigned_arm_identity_publicly_redacted": true,
+  "assigned_blind_label": "D",
+  "authority_ceiling": "NONE",
+  "automatic_promotion": false,
+  "campaign_freeze": "2026-10-15T00:00:59.830794Z",
+  "case_specific_consent": true,
+  "case_user_turn_sha256": "000891d399859b995b9f20ef7413975ff7bb650e21849c1287bee61b577f957e",
+  "completed_outcomes_at_release": 0,
+  "execution_state": "EXECUTED_AWAITING_USER_OUTCOME",
+  "format": "KWANTAU2DOS_V030_FIRST_REAL_CASE_PREREGISTRATION_V1",
+  "minimum_campaign_real_cases": 8,
+  "outcome_must_bind_exact_execution": true,
+  "prospective_case_occurred_at": "2026-10-23T16:20:32Z",
+  "real_case_count_at_release": 1,
+  "release": "0.30.0-alpha.1",
+  "review_independence": "INTERNAL_STRUCTURAL_ONLY",
+  "scientific_decision": "INSUFFICIENT_REAL_CASES",
+  "training_eligible": false
+}
