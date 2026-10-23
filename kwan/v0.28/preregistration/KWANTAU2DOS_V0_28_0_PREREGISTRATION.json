@@ -1,0 +1,31 @@
+{
+  "all_arms_must_be_represented_for_real_evidence": true,
+  "arms": [
+    "RAW_TASK",
+    "LOCAL_THREAD",
+    "FEDERATED_THREAD",
+    "INTEGRAL_CONTEXT"
+  ],
+  "authority_ceiling": "NONE",
+  "automatic_promotion": false,
+  "blind_review_required": true,
+  "causal_effect_identified": false,
+  "execution_assignment": "DETERMINISTIC_BLINDED_HMAC_AFTER_REVIEWS",
+  "format": "KWANTAU2DOS_V028_PREREGISTRATION_V1",
+  "future_only": true,
+  "global_summary_accessory": true,
+  "local_strata_primary": true,
+  "minimum_real_cases": 8,
+  "outcome_must_match_assigned_blind_label": true,
+  "primary_question": "Does KwanThread context improve future mission planning and closure without increasing privacy leakage or authority expansion?",
+  "raw_user_text_allowed_in_plan": false,
+  "release": "0.28.0-alpha.1",
+  "repair_protocol": {
+    "explicit_user_approval_required": true,
+    "parent_mutation_permitted": false,
+    "separate_repair_and_mission_seal_leases": true,
+    "successor_realm": "SHADOW"
+  },
+  "software_fixture_claim": "STRUCTURAL_AUDIT_ONLY",
+  "training_eligible": false
+}

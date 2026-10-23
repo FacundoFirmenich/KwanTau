@@ -1,0 +1,16 @@
+{
+  "canonical_delivery": "KWANTAU2DOS_V0_16_0_DELIVERY.zip",
+  "canonical_git_bundle": "KwanTau2DOS_v0_16_0-alpha.1.bundle",
+  "canonical_release_zip": "KwanTau2DOS_v0_16_0-alpha.1.zip",
+  "capsule_bytes": 136104,
+  "capsule_filename": "KWANTAU2DOS_V0_16_0_SOURCE_CAPSULE.tar.gz",
+  "capsule_git_blob_sha1_expected": "0bc09793441a6a4ce79c53d201749139d8a0970a",
+  "capsule_manifest_tree_sha256": "75c62754fd0c017add1fdd6b2002366ad45a6e83016db27d810486be94b453d6",
+  "capsule_sha256": "8dc8633396f6f090088c52e6b9f002eab8d16e7f087897b9205877156dfec1e4",
+  "embedded_in_staging_repository": false,
+  "format": "KWANTAU2DOS_SOURCE_CAPSULE_POINTER_V1",
+  "reason": "The GitHub connector transport produced a blob whose Git identity did not match the locally sealed capsule. The mismatching blob was deleted fail-closed. Use the canonical release ZIP, Git bundle, delivery artifact or separately supplied capsule and verify the declared hashes.",
+  "release": "0.16.0-alpha.1",
+  "scientific_claim_created": false,
+  "staging_repository_is_canonical_source": false
+}
