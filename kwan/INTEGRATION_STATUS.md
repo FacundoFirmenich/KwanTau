@@ -11,51 +11,71 @@ This branch is a governed textual audit surface for migration into the canonical
 - In Spanish use **centrum** for KWAN-developed architectural centra.
 - **KwanBlocks** is canonical and plural.
 - Capability ≠ support ≠ permission ≠ authority ≠ execution ≠ training.
-- Continuation count ≠ acceptance; adjudication ≠ policy activation.
+- Continuation ≠ acceptance; explicit outcome ≠ execution authority; adjudication ≠ policy activation.
 
 ## Current release
 
-- Release: **KwanTau2DOS v0.34.0-alpha.1 — Longitudinal Outcome Adjudication and Counterfactual Attention Policy Sandbox**
-- Release commit: `06aa4fa56ee5fdef21365945638b32056a4cda9d`
-- Feature commit: `6a4ebd26ff75f1d3d306ec11f1fe59dba17f8742`
-- Predecessor: `a2c800825cf87b7eabb2bf54c7fddd1426e421f1`
-- Tests: **249 executed, 248 passed, 1 explicit conditional Wasmtime skip**
-- Logical files: `886`
-- Logical tree SHA-256: `f8672e5520518c9a5c771af4390d6c728ba4d2d4b265e27ffaef6c9db8d681c2`
-- Git bundle SHA-256: `551c024ceaf1549d739374e46924687372e28148ae5ec43f3dd778ce7f94c8fa`
-- Release ZIP SHA-256: `d0662d34a5954d6e06411044a1b92b103607377c9b49c519c3565b60ba40885f`
-- Kwan Browser SHA-256: `cc4f5a2104dfc089dced0e68a8978a6cd3240e75191f3d52846f0bdc5558af99`
-- Source capsule SHA-256: `c5aba5d458418e7adc2ecc692feb29a77f7aacf1249061775d3c618d529f129c`
+- Release: **KwanTau2DOS v0.35.0-alpha.1 — Explicit Outcome Console and Prospective Attention Policy Trial**
+- Release commit: `7e74d0d7a18c86c30d93f9b7441a1ff81ce5bda6`
+- Feature commit: `83fba6ae38ee15a036dd86917c0311406b5a7be2`
+- Predecessor: `06aa4fa56ee5fdef21365945638b32056a4cda9d`
+- Tests: **257 executed, 256 passed, 1 explicit conditional Wasmtime skip**
+- Logical files: `912`
+- Logical tree SHA-256: `a385ad94e472a19a5c6cc7c3e903c64fa050928a158fe525d50d79c5824407c2`
+- Git bundle SHA-256: `943f00cb26105a9efedc4f3fa22b59e9e560e82a6d30fb74c3f110d6eec68c5c`
+- Release ZIP SHA-256: `1597648d82ac028b936ecf484640a16e7f4257136aa0e2749b6f6453990b9d29`
+- Kwan Browser SHA-256: `e20a4b2c6c7502bc3bb6ef99355965805ac49e51c57a1c540669aa2adbb0a0ed`
+- Source capsule SHA-256: `f0ebc095414eed6cb1f3ed147f8af8bab38881b4b765facb77dc11c9d8880a9e`
 
 ## Material result
 
 ```text
-partial natural-language outcomes × 2
-→ longitudinal summary
-→ utility INDETERMINATE
-→ explicit acceptance null
-→ candidate routing policy
-→ four-arm SHADOW experiment
-→ four historical-replay observations
-→ PROTOCOL_ONLY adjudication
-→ policy activation blocked
+three partial continuation outcomes
+→ explicit human-outcome request PENDING
+→ no acceptance inferred
+→ no final outcome fabricated
+→ v0.34 policy sandbox adjudication
+→ prospective four-arm trial ACTIVE
+→ zero real prospective trial cases
+→ policy activation structurally absent
 ```
 
 ```text
-real cases                           1
-partial outcomes                     2
-final outcomes                       0
-real prospective policy observations 0
-empirical benefit claimed            false
-causal effect identified             false
-policy automatically applied         false
+explicit outcome requests           1
+explicit outcome decisions          0
+partial outcomes                    3
+final outcomes                      0
+prospective trials                  1
+real prospective trial cases        0
+utility conclusion                  INDETERMINATE
+scientific claim                    OUTCOME_REQUEST_PENDING_AND_TRIAL_ACTIVE
+policy activation allowed           false
 ```
+
+## Constitutional result
+
+The outcome console records a bounded human judgement under a local one-time challenge, encrypts the rationale, and then still requires a separate KCH lease to bind that decision to the exact historical case. Human judgement never becomes a component execution lease.
+
+The prospective trial contains the four preregistered arms:
+
+```text
+CURRENT_BOUNDED_ROUTER
+CANDIDATE_BACKSTAGE_BY_DEFAULT
+NEGATIVE_CONTROL_SUPPRESS_ALL
+ABLATION_NO_PROJECT_CONTEXT
+```
+
+Historical replay and fixtures can validate mechanics only. Real policy evidence requires future cases, exact final outcomes and local privacy/authority guardrails. There is intentionally no policy-activation method in this release.
 
 ## Claim boundary
 
-Demonstrated: repeated continuation remains partial evidence; four-arm policy experiments are durable and immutable; historical replay cannot become prospective evidence; a negative control can detect hidden user-only decisions; source, ZIP and bundle produce the same logical tree.
+Demonstrated: pending explicit-outcome requests, encrypted rationale and constraints, separate human-decision and KCH-binding boundaries, pre-freeze case rejection, balanced arm assignment, fixture-only `PROTOCOL_ONLY` adjudication, real-case threshold logic and source/ZIP/bundle logical equivalence.
 
-Not demonstrated: cognitive benefit, explicit final acceptance, causal superiority, independent review, optimal cognitive budgets, safe policy activation, production hardening or ACTIVE readiness.
+Not demonstrated: explicit final user acceptance, cognitive benefit, causal superiority, independent review, optimal attention budgets, safe production routing, policy activation or ACTIVE readiness.
+
+## Validation boundary
+
+The complete historical suite was executed through 58 preregistered JUnit shards. A long-lived orchestration attempt retained descendants after complete test evidence; the final gate used bounded shell batches, process-group cleanup and complete-JUnit aggregation. No console-only success signal was accepted.
 
 ## Repository state
 
@@ -63,4 +83,4 @@ The current repository remains a SHADOW textual staging surface. `main` is untou
 
 ## Next legitimate gate
 
-`v0.35 — Prospective Attention Policy Trial and Explicit Outcome Closure`: obtain an explicit final outcome for the current case, preregister a real prospective comparison, collect balanced observations across the four arms and preserve any adverse privacy or authority signal as a veto rather than averaging it away.
+A future explicit outcome may close the current cognitive-attention case, but it cannot activate a routing policy. Separately, the prospective trial must admit future post-freeze cases, balance all four arms and preserve any privacy or authority harm as a local veto. Until then, utility remains `INDETERMINATE` and the policy remains inactive.
