@@ -40,6 +40,6 @@
   "git_bundle_sha256": "8fc6dcba0a8667859dcaa1c75b1dcfb75fb0b1c1dbaed443a3e9cc1e4c18aba0",
   "source_capsule_sha256": "25294572e6a9a4809d5bbae254d0fc62347bd3f178ec547697e50e585a810cc6",
   "kwan_browser_sha256": "84f568687f0c6935efa1dd1a43bf219f6c4eb3af4b719ed2e7d6a486e9f99061",
-  "independent_validation_sha256": "fa92737a90b7f4edb83f736d8580a10607a54e4b1daf10c50ddc18adee2145fa",
+  "independent_validation_sha256": "666a69e55c1bfded69286762a79ff6577a30f854a587be42f05fc3fa95a3c113",
   "release_receipt_sha256": "339e677939368f0f849c1a24b3c38d1eb0056077047298be5f2ca69778841ae1"
 }
