@@ -1,0 +1,29 @@
+{
+  "format": "KWANTAU2DOS_OUTCOME_STUDIO_V036_PUBLIC_STAGING_RECEIPT_V1",
+  "release": "0.36.0-alpha.1",
+  "branch": "outcome-studio/v0.36.0-alpha.1",
+  "tag": "outcome-studio-v0.36.0-alpha.1",
+  "release_commit": "ee01e75e3f4bc611bb3a5b4b9539762b4d105cd9",
+  "feature_commit": "f6181ca4043849908a321135674acfdd0af591f9",
+  "predecessor_commit": "7ef47cfd4af117e257227592ef97b2d7b079ba41",
+  "git_tree": "06a8c38dbbab69fb334919058cf3f904019df5f5",
+  "annotated_tag_object": "40605050e652d8109c927f842d3a88f761a7f11a",
+  "tracked_file_count": 51,
+  "logical_tree_sha256": "9d95145b19ef43a9ea96f9f3fc78612278b6a891dfc2282e33465e98176a64c9",
+  "successor_target_sha256": "083b647094b57c992766bfd0907da1ba714c7d5ce3d23c79d5cf8fcc94c0948b",
+  "validated_state_paths": [
+    "SUCCESSOR_ACCEPTED_NO_REPAIR_SIGNAL",
+    "SUCCESSOR_ACCEPTED_WITH_REPAIR_REVIEW_REQUIRED"
+  ],
+  "real_user_successor_outcome_recorded": false,
+  "repair_blueprint_executed": false,
+  "causal_attribution_claimed": false,
+  "training_performed": false,
+  "authority_granted": false,
+  "promotion_performed": false,
+  "standalone_html_sha256": "c1eb098c7bcda90a42ae8871945aa5bf536fe4bed8dda8f7037bdbd072434711",
+  "source_zip_sha256": "92db6ba91cbd8ef92ba525ad41784674f31e165cd6be48ed30b9a838463d0ef6",
+  "git_bundle_sha256": "f020347fcad271b04f97594109f68ada26506af7e6db52ce326594974b423b8d",
+  "kwan_browser_sha256": "5a806d2c2a963ca044b63adad416ab4ba19e3846ac60eb398425e2f94d4daee1",
+  "integral_delivery_sha256": "f4f5057dc182a1fbf2d24e154224c1873e991ec3ff3bc90eae5589cf705a7469"
+}
