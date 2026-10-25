@@ -41,7 +41,7 @@
   "source_capsule_sha256": "25294572e6a9a4809d5bbae254d0fc62347bd3f178ec547697e50e585a810cc6",
   "kwan_browser_sha256": "84f568687f0c6935efa1dd1a43bf219f6c4eb3af4b719ed2e7d6a486e9f99061",
   "independent_validation_sha256": "666a69e55c1bfded69286762a79ff6577a30f854a587be42f05fc3fa95a3c113",
-  "release_receipt_sha256": "e3159d49750481674486d686d57308d8530c39dbc551041c347918266dc0be3b",
-  "delivery_manifest_sha256": "d8f66495c62d07afb2e8c724871d59ed9fea8bcd3e5f37345bb961e4661aade5",
-  "integral_delivery_sha256": "09f8cddadbbeb87ee41991853d2021bf54b1d2319ee454d63d848e9ca2f5ce7e"
+  "release_receipt_sha256": "5ebe0892f599f9de4074eb1545d11a5e553dedff588f4b55dd03aec348e713a5",
+  "delivery_manifest_sha256": "80d76e269be3d3912d0f9543385f5bd3171ec0b90c87af5e73933b40e1398f59",
+  "integral_delivery_sha256": "2b58691d02e7cc8290f8fa80b3c8fa0c74ac5a0a9df20334bb757eff4af484d5"
 }
