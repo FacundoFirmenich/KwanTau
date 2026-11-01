@@ -1,0 +1,31 @@
+{
+  "canonical_artifacts": {
+    "delivery": {
+      "filename": "KWANTAU2DOS_V0_33_0_DELIVERY.zip",
+      "sha256": "6c028d78335def2c5020f512dfb8244ea082270cc01d3954a5cdaf4da06ec73b"
+    },
+    "git_bundle": {
+      "filename": "KwanTau2DOS_v0_33_0-alpha.1.bundle",
+      "sha256": "789773383305e1df60fe8cd48ecaf351e8739c74aebf3cea807b65884fa4dfa1"
+    },
+    "kwan_browser": {
+      "filename": "KwanBrowser_v0_33_0-alpha.1.zip",
+      "sha256": "a41ec23267c12ae27b4054af5a89aeb4aae5bb073ee7b44a2cc461aed604168d"
+    },
+    "release_zip": {
+      "filename": "KwanTau2DOS_v0_33_0-alpha.1.zip",
+      "sha256": "eb513ea1b5676911493b7f507d85a17f1aa255074bfde3dd4e5c5ed2213ac86f"
+    },
+    "source_capsule": {
+      "filename": "KWANTAU2DOS_V0_33_0_SOURCE_CAPSULE.tar.gz",
+      "sha256": "d7291c5411931f4f576432f9ac0f95fa6239f589a81fffa1af30fbd2863521ea"
+    }
+  },
+  "format": "KWANTAU2DOS_SOURCE_POINTER_V1",
+  "logical_file_count": 857,
+  "logical_tree_sha256": "0e4f928049acffece793ecfa39f7b69a62e5834c68c5b43f178c26bc5c3d1c13",
+  "reason": "The predecessor repository is a textual SHADOW audit surface. Complete canonical bytes remain the verified release ZIP, Git bundle, Kwan Browser ZIP, source capsule and delivery artifact.",
+  "release": "0.33.0-alpha.1",
+  "release_commit": "a2c800825cf87b7eabb2bf54c7fddd1426e421f1",
+  "staging_repository_is_canonical_source": false
+}
